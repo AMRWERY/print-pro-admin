@@ -1,0 +1,324 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Dark is the default theme (design.md). Values are space-separated RGB channels. */
+  :root {
+    --c-ink: 14 17 24;
+    --c-surface: 21 26 36;
+    --c-raised: 29 35 48;
+    --c-line: 43 51 69;
+    --c-paper: 233 230 223;
+    --c-mute: 139 148 168;
+    --c-cyan: 46 196 214;
+    --c-magenta: 224 64 127;
+    --c-yellow: 245 200 66;
+    --c-onprimary: 14 17 24;
+    --c-accent: 240 78 52;
+    --c-onaccent: 14 17 24;
+    --c-success: 52 199 130;
+    --c-sheet: 233 230 223;
+    --c-sheet-ink: 14 17 24;
+    color-scheme: dark;
+  }
+
+  /* Light theme: same roles, darker accents so text keeps AA contrast on white. */
+  :root[data-theme="light"] {
+    --c-ink: 244 242 237;
+    --c-surface: 255 255 255;
+    --c-raised: 237 234 227;
+    --c-line: 217 213 203;
+    --c-paper: 20 24 31;
+    --c-mute: 88 97 116;
+    --c-cyan: 8 126 143;
+    --c-magenta: 190 33 98;
+    --c-yellow: 166 120 0;
+    --c-onprimary: 255 255 255;
+    --c-accent: 196 36 18;
+    --c-onaccent: 255 255 255;
+    --c-success: 14 124 74;
+    --c-sheet: 255 255 255;
+    --c-sheet-ink: 14 17 24;
+    color-scheme: light;
+  }
+
+  html {
+    @apply bg-ink text-paper font-sans antialiased scroll-smooth;
+  }
+
+  body {
+    @apply transition-colors duration-200;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display font-semibold;
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-cyan ring-offset-2 ring-offset-ink;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-[1280px] px-4 md:px-6;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-control px-5 py-2.5 text-sm font-medium transition duration-200 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .btn-primary {
+    @apply btn bg-cyan text-onprimary hover:brightness-110;
+  }
+  .btn-ghost {
+    @apply btn border border-line text-paper hover:border-cyan hover:text-cyan;
+  }
+  .btn-icon {
+    @apply inline-flex h-10 w-10 items-center justify-center rounded-control border border-line text-paper transition duration-200 hover:border-cyan hover:text-cyan active:scale-95;
+  }
+  .field {
+    @apply w-full rounded-control border border-line bg-surface px-3 py-2.5 text-sm text-paper placeholder:text-mute transition duration-200 focus:border-cyan focus:outline-none focus:ring-2 focus:ring-cyan/60 disabled:opacity-40;
+  }
+  .card {
+    @apply rounded-card border border-line bg-surface;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+  .section {
+    @apply py-16 md:py-24;
+  }
+}
+
+@layer components {
+  .btn-accent {
+    @apply btn bg-accent text-onaccent hover:brightness-110;
+  }
+
+  .eyebrow {
+    @apply font-mono text-xs tracking-widest text-mute;
+  }
+
+  .chip {
+    @apply inline-flex items-center rounded-control border border-line bg-raised px-2 py-0.5 font-mono text-xs text-mute;
+  }
+
+  .link-quiet {
+    @apply text-mute transition duration-200 hover:text-paper;
+  }
+}
+
+/* Shared patterns extracted from repeated utility strings across components. */
+@layer components {
+  /* Cards */
+  .card-compact {
+    @apply card p-4;
+  }
+  .card-roomy {
+    @apply card p-5 sm:p-6;
+  }
+
+  /* Text roles */
+  .meta {
+    @apply font-mono text-xs text-mute;
+  }
+  .label {
+    @apply block text-sm font-medium;
+  }
+  .title-sm {
+    @apply font-display text-base font-bold text-paper;
+  }
+  .title-md {
+    @apply font-display text-xl font-bold text-paper;
+  }
+  .title-lg {
+    @apply font-display text-2xl font-bold tracking-tight text-paper sm:text-3xl;
+  }
+  .eyebrow-accent {
+    @apply flex items-center gap-2 font-mono text-xs tracking-widest text-accent;
+  }
+  .link-accent {
+    @apply font-mono text-xs tracking-wider text-accent hover:underline;
+  }
+  .bullet-icon {
+    @apply mt-0.5 shrink-0 text-accent;
+  }
+
+  /* Callouts */
+  .callout {
+    @apply flex items-start gap-2 rounded-card border border-line bg-raised p-3 text-xs text-mute;
+  }
+  .callout-accent {
+    @apply flex items-start gap-2 rounded-card border border-accent/40 bg-accent-soft p-3 text-sm;
+  }
+
+  /* Overlays */
+  .modal-root {
+    @apply fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6;
+  }
+  .modal-backdrop {
+    @apply absolute inset-0 bg-ink/70 backdrop-blur-sm;
+  }
+  .modal-panel {
+    @apply relative max-h-full w-full max-w-lg overflow-y-auto rounded-panel border border-line bg-surface shadow-2xl shadow-black/60;
+  }
+  .modal-head {
+    @apply flex items-center justify-between border-b border-line bg-ink px-5 py-3.5;
+  }
+  .modal-foot {
+    @apply flex items-center justify-between border-t border-line bg-ink px-5 py-3;
+  }
+
+  /* Small pieces */
+  .pip {
+    @apply h-2 w-2 bg-accent;
+  }
+  .status-dot {
+    @apply h-1.5 w-1.5 animate-pulse rounded-full bg-success;
+  }
+  .ping-ring {
+    @apply absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75;
+  }
+  .count-badge {
+    @apply absolute -end-1.5 -top-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-accent px-1 font-mono text-2xs font-bold text-onaccent;
+  }
+  .chip-link {
+    @apply inline-flex items-center gap-1.5 rounded-control border border-line bg-surface px-3 py-1.5 font-mono text-xs text-mute transition hover:border-accent hover:text-paper;
+  }
+  .thumb-contain {
+    @apply h-full w-full bg-white object-contain p-1;
+  }
+  .collapse-grid {
+    @apply grid transition-[grid-template-rows] duration-300 ease-out;
+  }
+
+  /* Skeleton placeholder: a calm block with a sheen that sweeps across. */
+  .skeleton {
+    @apply relative overflow-hidden bg-raised;
+  }
+  .skeleton::after {
+    content: "";
+    @apply absolute inset-0 animate-shimmer motion-reduce:animate-none;
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      rgb(var(--c-paper) / 0.07),
+      transparent
+    );
+  }
+
+  /* Page rhythm */
+  .page-stack {
+    @apply space-y-6 py-6 lg:py-8;
+  }
+  .section-compact {
+    @apply !py-12 md:!py-16;
+  }
+}
+
+.page-enter-active,
+.page-leave-active {
+  transition:
+    opacity 0.25s ease-out,
+    transform 0.25s ease-out;
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.page-leave-to {
+  opacity: 0;
+}
+
+/* View Transitions: theme reveals as a circle (clip-path driven from JS), locale cross-fades. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+:root[data-vt="theme"]::view-transition-old(root) {
+  z-index: 1;
+}
+
+:root[data-vt="theme"]::view-transition-new(root) {
+  z-index: 2;
+}
+
+:root[data-vt="locale"]::view-transition-old(root) {
+  animation: vt-out 0.3s ease-out both;
+}
+
+:root[data-vt="locale"]::view-transition-new(root) {
+  animation: vt-in 0.35s ease-out both;
+}
+
+@keyframes vt-out {
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Scrollbars (page + every scrollable panel). Accent thumb on the surface tone, per theme. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--c-accent) / 0.65) transparent;
+}
+
+html {
+  scrollbar-width: auto;
+  scrollbar-color: rgb(var(--c-accent) / 0.75) rgb(var(--c-ink));
+}
+
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgb(var(--c-ink));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--c-accent) / 0.65);
+    border-radius: 9999px;
+    border: 2px solid rgb(var(--c-ink));
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--c-accent));
+  }
+
+  ::-webkit-scrollbar-button {
+    display: none;
+  }
+}
