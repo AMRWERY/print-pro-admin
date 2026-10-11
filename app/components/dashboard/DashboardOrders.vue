@@ -1,14 +1,12 @@
 <template>
   <VPanel
-    :title="$t('dashboard.orders.title')"
-    :subtitle="$t('dashboard.orders.subtitle')"
+    title="Recent requisitions & escrow"
+    subtitle="Live stream of verified studio transactions awaiting dispatch or settlement"
     icon="lucide:receipt-text"
     body-class=""
   >
     <template #actions>
-      <LazyVButton variant="tertiary" size="sm" to="/requisitions-escrow" icon-end="lucide:arrow-up-right" icon-end-class="rtl:-scale-x-100">{{
-        $t("dashboard.orders.all")
-      }}</LazyVButton>
+      <LazyVButton variant="tertiary" size="sm" to="/requisitions-escrow" icon-end="lucide:arrow-up-right" icon-end-class="rtl:-scale-x-100">All orders</LazyVButton>
     </template>
 
     <div v-if="!data" class="space-y-3 p-4 sm:p-5" aria-busy="true">
@@ -19,15 +17,15 @@
       <!-- Stacked cards on mobile, a real table from md. -->
       <div class="overflow-x-auto">
       <table class="block w-full text-sm md:table">
-        <caption class="sr-only">{{ $t("dashboard.orders.subtitle") }}</caption>
+        <caption class="sr-only">Live stream of verified studio transactions awaiting dispatch or settlement</caption>
         <thead class="hidden md:table-header-group">
           <tr class="border-y border-line bg-ink">
-            <th scope="col" class="label-caps px-5 py-2.5 text-start font-normal">{{ $t("dashboard.orders.col.id") }}</th>
-            <th scope="col" class="label-caps px-3 py-2.5 text-start font-normal">{{ $t("dashboard.orders.col.client") }}</th>
-            <th scope="col" class="label-caps hidden px-3 py-2.5 text-start font-normal 2xl:table-cell">{{ $t("dashboard.orders.col.allocation") }}</th>
-            <th scope="col" class="label-caps px-3 py-2.5 text-end font-normal">{{ $t("dashboard.orders.col.escrow") }}</th>
-            <th scope="col" class="label-caps px-3 py-2.5 text-start font-normal">{{ $t("dashboard.orders.col.status") }}</th>
-            <th scope="col" class="px-5 py-2.5"><span class="sr-only">{{ $t("dashboard.orders.col.action") }}</span></th>
+            <th scope="col" class="label-caps px-5 py-2.5 text-start font-normal">Requisition ID</th>
+            <th scope="col" class="label-caps px-3 py-2.5 text-start font-normal">Client atelier</th>
+            <th scope="col" class="label-caps hidden px-3 py-2.5 text-start font-normal 2xl:table-cell">Allocated equipment</th>
+            <th scope="col" class="label-caps px-3 py-2.5 text-end font-normal">Settlement</th>
+            <th scope="col" class="label-caps px-3 py-2.5 text-start font-normal">Custody stage</th>
+            <th scope="col" class="px-5 py-2.5"><span class="sr-only">Action</span></th>
           </tr>
         </thead>
         <tbody class="block divide-y divide-line md:table-row-group">
@@ -44,10 +42,10 @@
             <td class="col-span-2 row-start-3 text-xs text-mute md:hidden md:px-3 md:py-3 2xl:table-cell">{{ row.allocation }}</td>
             <td class="row-start-1 justify-self-end font-mono text-sm font-semibold tabular-nums md:table-cell md:px-3 md:py-3 md:text-end">{{ currency(row.amount) }}</td>
             <td class="col-span-2 row-start-4 md:table-cell md:px-3 md:py-3">
-              <VStatusBadge :tone="status[row.status].tone" :icon="status[row.status].icon">{{ $t(`dashboard.orders.status.${row.status}`) }}</VStatusBadge>
+              <VStatusBadge :tone="status[row.status].tone" :icon="status[row.status].icon">{{ statusText[row.status] }}</VStatusBadge>
             </td>
             <td class="col-span-2 row-start-5 md:table-cell md:px-5 md:py-3 md:text-end">
-              <LazyVButton variant="tertiary" size="sm">{{ $t(`dashboard.orders.action.${row.action}`) }}<span class="sr-only"> — {{ row.id }}</span></LazyVButton>
+              <LazyVButton variant="tertiary" size="sm">{{ actionText[row.action] }}<span class="sr-only"> — {{ row.id }}</span></LazyVButton>
             </td>
           </tr>
         </tbody>
@@ -55,8 +53,8 @@
       </div>
 
       <p class="flex flex-wrap items-center justify-between gap-2 border-t border-line px-4 py-3 font-mono text-2xs text-mute sm:px-5">
-        <span>{{ $t("dashboard.orders.showing", { shown: data.rows.length, total: number(data.total) }) }}</span>
-        <span class="text-success">{{ $t("dashboard.orders.sla", { value: percent(data.slaPct, 0) }) }}</span>
+        <span>Showing {{ data.rows.length }} of {{ number(data.total) }} pending requisitions</span>
+        <span class="text-success">Escrow clearing SLA: {{ percent(data.slaPct, 0) }} on time</span>
       </p>
     </template>
   </VPanel>
@@ -64,6 +62,22 @@
 
 <script lang="ts" setup>
 import type { DashboardSummary, OrderStatus, Tone } from "~/types/admin/dashboard";
+
+const statusText: Record<string, string> = {
+  qaPending: "QA pending",
+  armoredTransit: "Armored courier",
+  escrowSettled: "Escrow settled",
+  inProduction: "In production",
+  cleanroomQa: "Cleanroom QA",
+};
+
+const actionText: Record<string, string> = {
+  releaseEscrow: "Release escrow",
+  printWaybill: "Print waybill",
+  viewDossier: "View dossier",
+  auditBatch: "Audit batch",
+};
+
 
 defineProps<{ data?: DashboardSummary["orders"] | null }>();
 

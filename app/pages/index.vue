@@ -5,18 +5,18 @@
       <div class="min-w-0 space-y-2">
         <p class="eyebrow-accent">
           <span class="pip" aria-hidden="true" />
-          {{ $t("dashboard.eyebrow") }}
+          Archival control · Core terminal
         </p>
         <h1 class="font-display text-2xl font-bold tracking-tight sm:text-3xl xl:text-4xl">
-          {{ $t("dashboard.title") }}
+          Executive Operations Bench
         </h1>
         <p class="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-mute">
           <span class="chip" dir="ltr">SYS/METROLOGY-V2.4</span>
           <span class="flex items-center gap-1.5 text-success">
             <span class="status-dot" aria-hidden="true" />
-            {{ $t("dashboard.nodes", { sla: percent(99.98, 2) }) }}
+            14/14 nodes synced · {{ percent(99.98, 2) }} SLA
           </span>
-          <span><DashboardClock /> · {{ $t("dashboard.locked") }}</span>
+          <span><DashboardClock /> · D50 locked</span>
         </p>
       </div>
 
@@ -28,9 +28,7 @@
           variant="counters"
           class="hidden xl:flex"
         />
-        <LazyVButton icon="lucide:download" icon-class="icon-lift" @click="exportLedger">{{
-          $t("dashboard.export")
-        }}</LazyVButton>
+        <LazyVButton icon="lucide:download" icon-class="icon-lift" @click="exportLedger">Export ledger (CSV)</LazyVButton>
       </div>
     </div>
 
@@ -38,10 +36,8 @@
     <div v-if="summaryError" class="callout-accent" role="alert">
       <Icon name="lucide:circle-alert" size="16" class="bullet-icon" aria-hidden="true" />
       <div class="space-y-2">
-        <p>{{ $t("dashboard.error.summary") }}</p>
-        <LazyVButton size="sm" variant="secondary" icon="lucide:refresh-cw" @click="() => refreshSummary()">{{
-          $t("dashboard.error.retry")
-        }}</LazyVButton>
+        <p>The bench data could not be loaded. Check your connection and try again.</p>
+        <LazyVButton size="sm" variant="secondary" icon="lucide:refresh-cw" @click="() => refreshSummary()">Retry</LazyVButton>
       </div>
     </div>
 
@@ -59,7 +55,7 @@
       <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <div class="space-y-3">
           <div class="flex justify-end">
-            <VSegmented v-model="range" :options="rangeOptions" :label="$t('dashboard.range.label')" />
+            <VSegmented v-model="range" :options="rangeOptions" label="Reporting period" />
           </div>
           <DashboardRevenueChart
             :series="revenue"
@@ -99,7 +95,6 @@ import type {
 
 definePageMeta({ layout: "admin" });
 
-const { t } = useI18n();
 const { percent } = useFormatters();
 
 useSeoMeta({
@@ -126,12 +121,13 @@ const {
   query: { range },
 });
 
-const rangeOptions = computed(() =>
-  (["today", "week", "month", "quarter", "year"] as const).map((value) => ({
-    value,
-    label: t(`dashboard.range.${value}`),
-  })),
-);
+const rangeOptions: { value: RangeKey; label: string }[] = [
+  { value: "today", label: "Today" },
+  { value: "week", label: "Last 7 days" },
+  { value: "month", label: "30-day fiscal" },
+  { value: "quarter", label: "Quarterly" },
+  { value: "year", label: "Year-to-date" },
+];
 
 // Downloads the requisitions currently on the bench as a CSV ledger.
 const exportLedger = () => {

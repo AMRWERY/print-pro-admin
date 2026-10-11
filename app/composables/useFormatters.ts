@@ -1,11 +1,9 @@
-// Number formatting for the admin dashboard. Latin digits in both locales keeps
-// figures, SKUs and ledger IDs readable side by side (design.md §36).
+// Number formatting for the admin dashboard (English only for now).
 export const useFormatters = () => {
-  const { locale } = useI18n();
-  const tag = computed(() => `${locale.value}-u-nu-latn`);
+  const tag = "en-US";
 
   const number = (value: number, options: Intl.NumberFormatOptions = {}) =>
-    new Intl.NumberFormat(tag.value, options).format(value);
+    new Intl.NumberFormat(tag, options).format(value);
 
   const currency = (value: number, options: Intl.NumberFormatOptions = {}) =>
     number(value, { style: "currency", currency: "EUR", ...options });

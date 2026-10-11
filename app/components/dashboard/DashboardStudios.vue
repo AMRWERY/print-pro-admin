@@ -1,13 +1,11 @@
 <template>
   <VPanel
-    :title="$t('dashboard.studios.title')"
-    :subtitle="$t('dashboard.studios.subtitle')"
+    title="Studio dossiers"
+    subtitle="Verified institutional accounts with dedicated cleanroom vaults"
     icon="lucide:contact-round"
   >
     <template #actions>
-      <LazyVButton variant="secondary" size="sm" to="/studio-dossiers" icon="lucide:database">{{
-        $t("dashboard.studios.registry")
-      }}</LazyVButton>
+      <LazyVButton variant="secondary" size="sm" to="/studio-dossiers" icon="lucide:database">Open full registry</LazyVButton>
     </template>
 
     <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-1" :aria-busy="!items || undefined">
@@ -26,7 +24,7 @@
           <p class="meta truncate">{{ studio.location }}</p>
           <p class="mt-1 flex flex-wrap items-center gap-x-2 font-mono text-2xs text-mute">
             <span class="font-semibold text-paper tabular-nums">{{ currency(studio.lifetimeEscrow, { maximumFractionDigits: 0 }) }}</span>
-            <span class="text-accent">{{ $t(`dashboard.studios.tier.${studio.tier}`) }}</span>
+            <span class="text-accent">{{ tierText[studio.tier] }}</span>
           </p>
         </div>
       </li>
@@ -36,6 +34,14 @@
 
 <script lang="ts" setup>
 import type { StudioDossier } from "~/types/admin/dashboard";
+
+const tierText: Record<string, string> = {
+  museumCustody: "Museum custody AAA",
+  galleryPremium: "Gallery premium",
+  collectiveGuild: "Collective guild",
+  institutionalArchive: "Institutional archive",
+};
+
 
 defineProps<{ items?: StudioDossier[] | null }>();
 

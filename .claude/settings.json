@@ -3,7 +3,8 @@
     "allow": [
       "Bash(node -e ' *)",
       "Bash(grep -rnE '\\\\$t\\\\\\(|[^.\\\\w]t\\\\\\(|useI18n' layouts components/layouts components/dashboard pages/index.vue)",
-      "Bash(grep -E '\\\\$\\\\{|useI18n|[^$]t\\\\\\(`')"
+      "Bash(grep -E '\\\\$\\\\{|useI18n|[^$]t\\\\\\(`')",
+      "Bash(grep -rn '\\\\$t\\(\\\\|useI18n\\\\|\\\\$t\\\\b' layouts components/layouts components/dashboard pages composables)"
     ]
   }
 }

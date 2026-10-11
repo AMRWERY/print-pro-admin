@@ -1,40 +1,40 @@
 export interface AdminNavItem {
   to: string;
-  labelKey: string;
+  label: string;
   icon: string;
 }
 
 export interface AdminNavGroup {
-  labelKey: string;
+  label: string;
   items: AdminNavItem[];
 }
 
 export const adminNav: AdminNavGroup[] = [
   {
-    labelKey: "admin.nav.controlPlane",
+    label: "Control plane",
     items: [
-      { to: "/", labelKey: "admin.nav.executiveBench", icon: "lucide:layout-dashboard" },
-      { to: "/metrology-yield", labelKey: "admin.nav.metrology", icon: "lucide:chart-line" },
+      { to: "/", label: "Executive bench", icon: "lucide:layout-dashboard" },
+      { to: "/metrology-yield", label: "Metrology & yield", icon: "lucide:chart-line" },
     ],
   },
   {
-    labelKey: "admin.nav.substrates",
+    label: "Substrates & hardware",
     items: [
-      { to: "/camera-systems", labelKey: "admin.nav.cameraSystems", icon: "lucide:camera" },
-      { to: "/cine-prime-glass", labelKey: "admin.nav.cineGlass", icon: "lucide:clapperboard" },
-      { to: "/piezo-engines", labelKey: "admin.nav.piezoEngines", icon: "lucide:printer" },
-      { to: "/cotton-rag-substrates", labelKey: "admin.nav.cottonRag", icon: "lucide:layers" },
-      { to: "/pigment-chemistry", labelKey: "admin.nav.pigmentChemistry", icon: "lucide:flask-conical" },
+      { to: "/camera-systems", label: "Camera systems", icon: "lucide:camera" },
+      { to: "/cine-prime-glass", label: "Cine & prime glass", icon: "lucide:clapperboard" },
+      { to: "/piezo-engines", label: "Piezo engines", icon: "lucide:printer" },
+      { to: "/cotton-rag-substrates", label: "Cotton rag substrates", icon: "lucide:layers" },
+      { to: "/pigment-chemistry", label: "Pigment chemistry", icon: "lucide:flask-conical" },
     ],
   },
   {
-    labelKey: "admin.nav.workflows",
+    label: "Workflows & operations",
     items: [
-      { to: "/requisitions-escrow", labelKey: "admin.nav.requisitions", icon: "lucide:receipt-text" },
-      { to: "/studio-dossiers", labelKey: "admin.nav.dossiers", icon: "lucide:contact-round" },
-      { to: "/print-lab-configurator", labelKey: "admin.nav.configurator", icon: "lucide:sliders-horizontal" },
-      { to: "/chain-of-custody", labelKey: "admin.nav.custody", icon: "lucide:link-2" },
-      { to: "/system-parameters", labelKey: "admin.nav.parameters", icon: "lucide:settings" },
+      { to: "/requisitions-escrow", label: "Requisitions & escrow", icon: "lucide:receipt-text" },
+      { to: "/studio-dossiers", label: "Studio dossiers", icon: "lucide:contact-round" },
+      { to: "/print-lab-configurator", label: "Print lab configurator", icon: "lucide:sliders-horizontal" },
+      { to: "/chain-of-custody", label: "Chain of custody", icon: "lucide:link-2" },
+      { to: "/system-parameters", label: "System parameters", icon: "lucide:settings" },
     ],
   },
 ];

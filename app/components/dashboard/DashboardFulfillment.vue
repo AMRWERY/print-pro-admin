@@ -1,7 +1,7 @@
 <template>
   <VPanel
-    :title="$t('dashboard.fulfillment.title')"
-    :subtitle="$t('dashboard.fulfillment.subtitle', { n: number(data?.total ?? 0) })"
+    title="Cadence & escrow"
+    :subtitle="`Stage allocation across ${number(data?.total ?? 0)} custodial dispatches`"
     icon="lucide:truck"
   >
     <div v-if="!data" class="space-y-4" aria-busy="true">
@@ -11,7 +11,7 @@
 
     <div v-else class="flex flex-col gap-5">
       <div class="relative mx-auto w-44">
-        <svg viewBox="0 0 128 128" class="h-auto w-full -rotate-90" role="img" :aria-label="$t('dashboard.fulfillment.chartLabel', { pct: percent(data.fulfilledPct) })">
+        <svg viewBox="0 0 128 128" class="h-auto w-full -rotate-90" role="img" :aria-label="`${percent(data.fulfilledPct)} of dispatches fulfilled`">
           <circle cx="64" cy="64" :r="R" fill="none" class="stroke-raised" stroke-width="14" />
           <circle
             v-for="seg in arcs"
@@ -26,7 +26,7 @@
         </svg>
         <p class="absolute inset-0 flex flex-col items-center justify-center text-center">
           <span class="font-display text-2xl font-bold tabular-nums">{{ percent(data.fulfilledPct) }}</span>
-          <span class="label-caps">{{ $t("dashboard.fulfillment.fulfilled") }}</span>
+          <span class="label-caps">Fulfilled</span>
         </p>
       </div>
 
@@ -37,7 +37,7 @@
           class="flex items-center gap-2 text-sm"
         >
           <Icon :name="segIcon[seg.key]" size="14" :class="segText[seg.key]" aria-hidden="true" />
-          <span class="min-w-0 flex-1 truncate">{{ $t(`dashboard.fulfillment.${seg.key}`) }}</span>
+          <span class="min-w-0 flex-1 truncate">{{ fulfillmentText[seg.key] }}</span>
           <span class="font-mono text-xs tabular-nums text-mute">
             {{ number(seg.value) }} · {{ percent((seg.value / data.total) * 100, 0) }}
           </span>
@@ -49,6 +49,14 @@
 
 <script lang="ts" setup>
 import type { DashboardSummary } from "~/types/admin/dashboard";
+
+const fulfillmentText: Record<string, string> = {
+  delivered: "Delivered & escrow released",
+  transit: "Armored courier transit",
+  qa: "Cleanroom QA / collimation",
+  curing: "Curing / outgassing",
+};
+
 
 const props = defineProps<{ data?: DashboardSummary["fulfillment"] | null }>();
 

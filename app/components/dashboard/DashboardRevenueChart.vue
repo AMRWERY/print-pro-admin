@@ -1,18 +1,18 @@
 <template>
   <VPanel
-    :title="$t('dashboard.revenue.title')"
-    :subtitle="$t('dashboard.revenue.subtitle')"
+    title="Fiscal revenue & gross margin velocity"
+    subtitle="Dual-stream comparison: archival optical hardware vs substrate and consignment print runs"
     icon="lucide:chart-line"
   >
     <template #actions>
       <ul class="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-mute">
         <li class="flex items-center gap-1.5">
           <span class="h-0.5 w-4 rounded-full bg-accent" aria-hidden="true" />
-          {{ $t("dashboard.revenue.hardware") }}
+          Hardware
         </li>
         <li class="flex items-center gap-1.5">
           <span class="h-0.5 w-4 rounded-full bg-yellow" aria-hidden="true" />
-          {{ $t("dashboard.revenue.substrates") }}
+          Substrates
         </li>
       </ul>
     </template>
@@ -26,10 +26,8 @@
     >
       <Icon name="lucide:circle-alert" size="16" class="bullet-icon" aria-hidden="true" />
       <div class="space-y-2">
-        <p>{{ $t("dashboard.error.revenue") }}</p>
-        <LazyVButton size="sm" variant="secondary" icon="lucide:refresh-cw" @click="emit('retry')">{{
-          $t("dashboard.error.retry")
-        }}</LazyVButton>
+        <p>The revenue chart could not be loaded.</p>
+        <LazyVButton size="sm" variant="secondary" icon="lucide:refresh-cw" @click="emit('retry')">Retry</LazyVButton>
       </div>
     </div>
 
@@ -40,7 +38,7 @@
         dir="ltr"
         tabindex="0"
         role="group"
-        :aria-label="$t('dashboard.revenue.chartLabel')"
+        aria-label="Revenue chart. Use the left and right arrow keys to inspect each point."
         @keydown="onKey"
         @pointerleave="active = series.peakIndex"
       >
@@ -87,25 +85,25 @@
           :style="{ left: `${tooltipLeft}%` }"
         >
           <p class="font-bold text-paper">{{ pointLabel(active) }}</p>
-          <p class="text-accent">{{ $t("dashboard.revenue.hardware") }} {{ compactCurrency(series.points[active]!.hardware) }}</p>
-          <p class="text-yellow">{{ $t("dashboard.revenue.substrates") }} {{ compactCurrency(series.points[active]!.substrates) }}</p>
+          <p class="text-accent">Hardware {{ compactCurrency(series.points[active]!.hardware) }}</p>
+          <p class="text-yellow">Substrates {{ compactCurrency(series.points[active]!.substrates) }}</p>
         </div>
       </div>
 
       <p class="sr-only" aria-live="polite">
         {{ pointLabel(active) }}:
-        {{ $t("dashboard.revenue.hardware") }} {{ currency(series.points[active]!.hardware, { maximumFractionDigits: 0 }) }},
-        {{ $t("dashboard.revenue.substrates") }} {{ currency(series.points[active]!.substrates, { maximumFractionDigits: 0 }) }}.
+        Hardware {{ currency(series.points[active]!.hardware, { maximumFractionDigits: 0 }) }},
+        Substrates {{ currency(series.points[active]!.substrates, { maximumFractionDigits: 0 }) }}.
       </p>
 
       <dl class="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 border-t border-line pt-3 font-mono text-xs text-mute">
         <div class="flex items-center gap-1.5">
-          <dt class="flex items-center gap-1.5"><Icon name="lucide:gauge" size="14" aria-hidden="true" />{{ $t("dashboard.revenue.peak") }}</dt>
+          <dt class="flex items-center gap-1.5"><Icon name="lucide:gauge" size="14" aria-hidden="true" />Peak</dt>
           <dd class="font-semibold text-yellow">{{ compactCurrency(series.points[series.peakIndex]!.hardware) }} · {{ pointLabel(series.peakIndex) }}</dd>
         </div>
         <div class="flex items-center gap-1.5">
-          <dt>{{ $t("dashboard.revenue.margin") }}</dt>
-          <dd class="font-semibold text-paper">{{ percent(series.marginIndex) }} <span class="text-success">({{ signedPercent(series.marginDelta) }} {{ $t("dashboard.revenue.yoy") }})</span></dd>
+          <dt>Gross margin index</dt>
+          <dd class="font-semibold text-paper">{{ percent(series.marginIndex) }} <span class="text-success">({{ signedPercent(series.marginDelta) }} YoY)</span></dd>
         </div>
       </dl>
     </div>
@@ -122,7 +120,6 @@ const props = defineProps<{
 }>();
 const emit = defineEmits<{ retry: [] }>();
 
-const { t } = useI18n();
 const { currency, compactCurrency, percent, signedPercent } = useFormatters();
 
 const W = 640;
@@ -164,9 +161,12 @@ const ticks = computed(() =>
   }),
 );
 
+const unitNames = { day: "Day", week: "Week", month: "Month" } as const;
+
 const pointLabel = (i: number) => {
   const unit = props.series?.unit ?? "day";
-  return t(`dashboard.revenue.unit.${unit}`, { n: unit === "hour" ? i : i + 1 });
+  const n = unit === "hour" ? i : i + 1;
+  return unit === "hour" ? `${n}:00` : `${unitNames[unit]} ${n}`;
 };
 
 const xTicks = computed(() => {

@@ -10,7 +10,7 @@
         icon="lucide:menu"
         class="lg:hidden"
         aria-controls="admin-nav"
-        :aria-label="$t('admin.header.open')"
+        aria-label="Open navigation"
         @click="emit('openNav')"
       />
       <VBrandMark class="lg:hidden" />
@@ -19,7 +19,7 @@
         class="hidden items-center gap-2 font-mono text-xs text-mute xl:flex"
       >
         <span class="chip">ISO-5</span>
-        <span class="uppercase">{{ $t("admin.header.path") }}</span>
+        <span class="uppercase">LP-OPS / Archival control / Bench v2.4</span>
       </p>
 
       <form
@@ -27,9 +27,7 @@
         class="relative order-last w-full md:order-none md:ms-auto md:w-72 lg:w-80"
         @submit.prevent
       >
-        <label for="admin-search" class="sr-only">{{
-          $t("admin.header.search")
-        }}</label>
+        <label for="admin-search" class="sr-only">Search telemetry, serials and dossiers</label>
         <Icon
           name="lucide:search"
           size="16"
@@ -41,7 +39,7 @@
           type="search"
           autocomplete="off"
           class="field !ps-9"
-          :placeholder="$t('admin.header.searchPlaceholder')"
+          placeholder="Search telemetry, serials, dossiers…"
         />
       </form>
 
@@ -50,7 +48,7 @@
           class="me-1 hidden items-center gap-1.5 whitespace-nowrap font-mono text-2xs text-success 2xl:flex"
         >
           <span class="status-dot" aria-hidden="true" />
-          {{ $t("admin.header.iso") }}
+          ISO 14644-1 active
         </p>
         <VThemeToggle />
         <VLocaleSwitcher />
@@ -59,7 +57,7 @@
           icon="lucide:bell"
           icon-class="icon-wiggle"
           class="relative"
-          :aria-label="$t('admin.header.notifications', { n: unread })"
+          :aria-label="`Notifications (${unread} unread)`"
         >
           <span class="count-badge" aria-hidden="true">{{ unread }}</span>
         </LazyVButton>
@@ -68,9 +66,9 @@
           class="ms-1 flex items-center gap-2.5 border-s border-line ps-3"
         >
           <div class="hidden text-end leading-tight md:block">
-            <p class="text-xs font-semibold">{{ $t("admin.header.role") }}</p>
+            <p class="text-xs font-semibold">COO · Cleanroom admin</p>
             <p class="font-mono text-2xs text-success">
-              {{ $t("admin.header.station") }}
+              Station-01 // Secure
             </p>
           </div>
           <span

@@ -1,13 +1,11 @@
 <template>
   <VPanel
-    :title="$t('dashboard.stock.title')"
-    :subtitle="$t('dashboard.stock.subtitle')"
+    title="Critical low-stock matrix"
+    subtitle="Reserve buffers currently below the safe 14-day production velocity threshold"
     icon="lucide:triangle-alert"
   >
     <template #actions>
-      <LazyVButton size="sm" icon="lucide:package-plus" icon-class="icon-bob">{{
-        $t("dashboard.stock.emergency")
-      }}</LazyVButton>
+      <LazyVButton size="sm" icon="lucide:package-plus" icon-class="icon-bob">Trigger emergency batch PO</LazyVButton>
     </template>
 
     <ul class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" :aria-busy="!items || undefined">
@@ -26,11 +24,9 @@
         :class="topBorder[item.status]"
       >
         <div class="flex items-center justify-between gap-2">
-          <VStatusBadge :tone="tone[item.status]" :icon="icon[item.status]">{{
-            $t(`dashboard.stock.status.${item.status}`)
-          }}</VStatusBadge>
+          <VStatusBadge :tone="tone[item.status]" :icon="icon[item.status]">{{ statusText[item.status] }}</VStatusBadge>
           <span class="font-mono text-2xs text-mute tabular-nums">
-            {{ $t("dashboard.stock.min", { n: item.threshold }) }}
+            Min {{ item.threshold }}
           </span>
         </div>
 
@@ -43,17 +39,15 @@
           <VMeter
             :value="(item.remaining / item.threshold) * 100"
             :tone="tone[item.status]"
-            :label="$t('dashboard.stock.meter', { name: item.name })"
+            :label="`Stock level for ${item.name}`"
           />
           <p class="flex flex-wrap justify-between gap-x-2 font-mono text-2xs text-mute">
-            <span>{{ $t("dashboard.stock.remaining", { value: $t(`dashboard.unit.${item.unit}`, { n: item.remaining }) }) }}</span>
-            <span>{{ $t(`dashboard.stock.note.${item.note}`) }}: {{ item.noteValue }}</span>
+            <span>Remaining: {{ `${item.remaining} ${item.unit}` }}</span>
+            <span>{{ noteText[item.note] }}: {{ item.noteValue }}</span>
           </p>
         </div>
 
-        <LazyVButton variant="secondary" size="sm" block>{{
-          $t(`dashboard.stock.action.${item.action}`)
-        }}</LazyVButton>
+        <LazyVButton variant="secondary" size="sm" block>{{ actionText[item.action] }}</LazyVButton>
       </li>
     </ul>
   </VPanel>
@@ -61,6 +55,27 @@
 
 <script lang="ts" setup>
 import type { LowStockItem, StockStatus, Tone } from "~/types/admin/dashboard";
+
+const statusText: Record<string, string> = {
+  critical: "Critical reserve",
+  depleting: "Depleting",
+  scheduled: "Scheduled replenish",
+};
+
+const noteText: Record<string, string> = {
+  lead: "Supplier lead",
+  run: "Mill run",
+  edi: "EDI line",
+  priority: "Lab priority",
+};
+
+const actionText: Record<string, string> = {
+  restockLens: "Restock lens PO",
+  restockSubstrate: "Restock substrate",
+  confirmEdi: "Confirm EDI line",
+  emergencySpares: "Emergency spares order",
+};
+
 
 defineProps<{ items?: LowStockItem[] | null }>();
 

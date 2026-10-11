@@ -18,7 +18,7 @@
           : 'max-lg:-translate-x-full max-lg:rtl:translate-x-full'
       "
       :inert="inert ? '' : undefined"
-      :aria-label="$t('admin.nav.label')"
+      aria-label="Main navigation"
       @keydown.esc="close"
     >
       <div
@@ -31,17 +31,17 @@
           size="sm"
           icon="lucide:x"
           class="lg:hidden"
-          :aria-label="$t('admin.header.close')"
+          aria-label="Close navigation"
           @click="close"
         />
       </div>
 
       <nav
         class="flex-1 space-y-5 overflow-y-auto px-3 py-4"
-        :aria-label="$t('admin.nav.label')"
+        aria-label="Main navigation"
       >
-        <div v-for="group in adminNav" :key="group.labelKey">
-          <p class="label-caps px-2 pb-2">{{ $t(group.labelKey) }}</p>
+        <div v-for="group in adminNav" :key="group.label">
+          <p class="label-caps px-2 pb-2">{{ group.label }}</p>
           <ul class="space-y-0.5">
             <li v-for="item in group.items" :key="item.to">
               <NuxtLinkLocale
@@ -49,7 +49,7 @@
                 class="flex items-center gap-2.5 rounded-control px-2.5 py-2 text-sm text-mute transition duration-fast hover:bg-raised hover:text-paper [&.router-link-exact-active]:bg-accent [&.router-link-exact-active]:font-medium [&.router-link-exact-active]:text-onaccent"
               >
                 <Icon :name="item.icon" size="16" aria-hidden="true" />
-                <span class="truncate">{{ $t(item.labelKey) }}</span>
+                <span class="truncate">{{ item.label }}</span>
               </NuxtLinkLocale>
             </li>
           </ul>
@@ -59,11 +59,11 @@
       <div class="shrink-0 border-t border-line p-4">
         <p class="flex items-center gap-2 text-xs font-medium">
           <span class="status-dot" aria-hidden="true" />
-          {{ $t("admin.lab.title") }}
+          Cleanroom lab A
           <span class="ms-auto font-mono text-success">99.98%</span>
         </p>
         <p class="meta mt-1">
-          {{ $t("admin.lab.conditions", { rh: "48.2", temp: "20.4" }) }}
+          RH {{ "48.2" }}% · Temp {{ "20.4" }}°C · D50 calibrated
         </p>
       </div>
     </aside>

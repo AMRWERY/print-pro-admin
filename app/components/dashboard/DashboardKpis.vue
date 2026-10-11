@@ -16,7 +16,7 @@
       <!-- Fiscal gross volume -->
       <article class="card flex flex-col gap-3 p-4 sm:p-5" aria-labelledby="kpi-gross">
         <header class="flex items-start justify-between gap-2">
-          <h3 id="kpi-gross" class="label-caps">{{ $t("dashboard.kpi.gross.label") }}</h3>
+          <h3 id="kpi-gross" class="label-caps">Gross escrow settled</h3>
           <VStatusBadge tone="success" icon="lucide:trending-up">{{
             signedPercent(kpis.gross.delta)
           }}</VStatusBadge>
@@ -25,12 +25,12 @@
           {{ currency(kpis.gross.value) }}
         </p>
         <p class="text-xs text-mute">
-          {{ $t("dashboard.kpi.gross.usd", { usd: currency(kpis.gross.usdEquivalent, { currency: "USD", maximumFractionDigits: 0 }) }) }}
+          ≈ {{ currency(kpis.gross.usdEquivalent, { currency: "USD", maximumFractionDigits: 0 }) }} USD equivalent
         </p>
         <DashboardSparkline :values="kpis.gross.trend" />
         <dl class="grid grid-cols-3 gap-2 border-t border-line pt-3">
           <div v-for="part in kpis.gross.breakdown" :key="part.key">
-            <dt class="label-caps truncate">{{ $t(`dashboard.kpi.gross.${part.key}`) }}</dt>
+            <dt class="label-caps truncate">{{ grossText[part.key] }}</dt>
             <dd class="font-mono text-xs font-semibold tabular-nums">
               {{ compactCurrency(part.value) }}
             </dd>
@@ -41,31 +41,31 @@
       <!-- Studio requisitions -->
       <article class="card flex flex-col gap-3 p-4 sm:p-5" aria-labelledby="kpi-req">
         <header class="flex items-start justify-between gap-2">
-          <h3 id="kpi-req" class="label-caps">{{ $t("dashboard.kpi.requisitions.label") }}</h3>
+          <h3 id="kpi-req" class="label-caps">Requisitions volume</h3>
           <VStatusBadge tone="success" icon="lucide:trending-up">{{
             signedPercent(kpis.requisitions.delta)
           }}</VStatusBadge>
         </header>
         <p class="font-display text-3xl font-bold tabular-nums">
           {{ number(kpis.requisitions.value) }}
-          <span class="text-sm font-medium text-mute">{{ $t("dashboard.kpi.requisitions.unit") }}</span>
+          <span class="text-sm font-medium text-mute">batches</span>
         </p>
         <p class="text-xs text-mute">
-          {{ $t("dashboard.kpi.requisitions.basket", { value: currency(kpis.requisitions.averageBasket) }) }}
+          Average basket {{ currency(kpis.requisitions.averageBasket) }}
         </p>
         <div class="mt-auto space-y-2 border-t border-line pt-3">
           <div class="flex items-center justify-between text-xs">
-            <span class="label-caps">{{ $t("dashboard.kpi.requisitions.clearing") }}</span>
+            <span class="label-caps">Escrow clearing</span>
             <span class="font-mono font-semibold tabular-nums">{{ percent(kpis.requisitions.clearingPct) }}</span>
           </div>
           <VMeter
             :value="kpis.requisitions.clearingPct"
             tone="success"
-            :label="$t('dashboard.kpi.requisitions.clearing')"
+            label="Escrow clearing"
           />
           <p class="flex justify-between font-mono text-2xs text-mute">
-            <span>{{ $t("dashboard.kpi.requisitions.settled", { n: number(kpis.requisitions.settled) }) }}</span>
-            <span class="text-yellow">{{ $t("dashboard.kpi.requisitions.held", { n: number(kpis.requisitions.held) }) }}</span>
+            <span>{{ number(kpis.requisitions.settled) }} settled</span>
+            <span class="text-yellow">{{ number(kpis.requisitions.held) }} QA held</span>
           </p>
         </div>
       </article>
@@ -73,23 +73,23 @@
       <!-- Verified ateliers -->
       <article class="card flex flex-col gap-3 p-4 sm:p-5" aria-labelledby="kpi-ateliers">
         <header class="flex items-start justify-between gap-2">
-          <h3 id="kpi-ateliers" class="label-caps">{{ $t("dashboard.kpi.ateliers.label") }}</h3>
+          <h3 id="kpi-ateliers" class="label-caps">Atelier accounts</h3>
           <VStatusBadge tone="success" icon="lucide:trending-up">{{
             `+${number(kpis.ateliers.delta)}`
           }}</VStatusBadge>
         </header>
         <p class="font-display text-3xl font-bold tabular-nums">
           {{ number(kpis.ateliers.value) }}
-          <span class="text-sm font-medium text-mute">{{ $t("dashboard.kpi.ateliers.unit") }}</span>
+          <span class="text-sm font-medium text-mute">studios</span>
         </p>
         <p class="text-xs text-mute">
-          {{ $t("dashboard.kpi.ateliers.retention", { value: percent(kpis.ateliers.retentionPct) }) }}
+          {{ percent(kpis.ateliers.retentionPct) }} net annual retention
         </p>
         <div class="mt-auto space-y-2 border-t border-line pt-3">
           <div
             class="flex h-1.5 gap-0.5 overflow-hidden rounded-full"
             role="img"
-            :aria-label="$t('dashboard.kpi.ateliers.tiers')"
+            aria-label="Account mix by tier"
           >
             <span
               v-for="(tier, i) in kpis.ateliers.tiers"
@@ -102,12 +102,12 @@
           <ul class="flex flex-wrap gap-x-3 gap-y-1 font-mono text-2xs text-mute">
             <li v-for="(tier, i) in kpis.ateliers.tiers" :key="tier.key" class="flex items-center gap-1">
               <span class="h-2 w-2 rounded-full" :class="tierBar[i]" aria-hidden="true" />
-              {{ $t(`dashboard.kpi.ateliers.${tier.key}`) }} {{ tier.pct }}%
+              {{ ateliersText[tier.key] }} {{ tier.pct }}%
             </li>
           </ul>
           <p class="flex justify-between font-mono text-2xs text-mute">
-            <span>{{ $t("dashboard.kpi.ateliers.contracts", { n: number(kpis.ateliers.activeContracts) }) }}</span>
-            <span class="text-success">{{ $t("dashboard.kpi.ateliers.rating", { value: kpis.ateliers.rating }) }}</span>
+            <span>{{ number(kpis.ateliers.activeContracts) }} active contracts</span>
+            <span class="text-success">Audit {{ kpis.ateliers.rating }}</span>
           </p>
         </div>
       </article>
@@ -115,26 +115,24 @@
       <!-- Depot catalog SKUs -->
       <article class="card flex flex-col gap-3 p-4 sm:p-5" aria-labelledby="kpi-skus">
         <header class="flex items-start justify-between gap-2">
-          <h3 id="kpi-skus" class="label-caps">{{ $t("dashboard.kpi.skus.label") }}</h3>
-          <VStatusBadge tone="accent" icon="lucide:triangle-alert">{{
-            $t("dashboard.kpi.skus.alerts", { n: kpis.skus.alerts })
-          }}</VStatusBadge>
+          <h3 id="kpi-skus" class="label-caps">Inventory SKUs</h3>
+          <VStatusBadge tone="accent" icon="lucide:triangle-alert">{{ kpis.skus.alerts }} low stock</VStatusBadge>
         </header>
         <p class="font-display text-3xl font-bold tabular-nums">
           {{ number(kpis.skus.value) }}
-          <span class="text-sm font-medium text-mute">{{ $t("dashboard.kpi.skus.unit") }}</span>
+          <span class="text-sm font-medium text-mute">live</span>
         </p>
         <p class="text-xs text-mute">
-          {{ $t("dashboard.kpi.skus.divisions", { n: kpis.skus.divisions }) }}
+          {{ kpis.skus.divisions }} technical divisions actively catalogued
         </p>
         <dl class="mt-auto grid grid-cols-5 gap-1 border-t border-line pt-3">
           <div v-for="part in kpis.skus.mix" :key="part.key" class="min-w-0">
-            <dt class="label-caps truncate">{{ $t(`dashboard.kpi.skus.${part.key}`) }}</dt>
+            <dt class="label-caps truncate">{{ skusText[part.key] }}</dt>
             <dd class="font-mono text-xs font-semibold tabular-nums">{{ compact(part.value) }}</dd>
           </div>
         </dl>
         <p class="font-mono text-2xs text-mute">
-          {{ $t("dashboard.kpi.skus.lead", { n: kpis.skus.leadTimeHours }) }}
+          Depot lead time {{ kpis.skus.leadTimeHours }}h
         </p>
       </article>
     </template>
@@ -143,6 +141,27 @@
 
 <script lang="ts" setup>
 import type { DashboardKpis } from "~/types/admin/dashboard";
+
+const grossText: Record<string, string> = {
+  hardware: "Hardware",
+  substrates: "Paper",
+  labRuns: "Lab runs",
+};
+
+const ateliersText: Record<string, string> = {
+  commercial: "Commercial",
+  museums: "Museums",
+  galleries: "Galleries",
+};
+
+const skusText: Record<string, string> = {
+  cameras: "Cameras",
+  printers: "Printers",
+  substrates: "Rag",
+  pigments: "Pigments",
+  accessories: "Acc.",
+};
+
 
 defineProps<{ kpis?: DashboardKpis | null }>();
 
