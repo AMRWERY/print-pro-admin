@@ -171,6 +171,11 @@
     @apply flex items-center justify-between border-t border-line bg-ink px-5 py-3;
   }
 
+  /* Dense uppercase caption. Letter-spacing breaks Arabic joins, so it is off in RTL. */
+  .label-caps {
+    @apply font-mono text-2xs uppercase tracking-wider text-mute rtl:tracking-normal;
+  }
+
   /* Small pieces */
   .pip {
     @apply h-2 w-2 bg-accent;
@@ -216,6 +221,16 @@
   .section-compact {
     @apply !py-12 md:!py-16;
   }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 .page-enter-active,

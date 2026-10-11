@@ -1,0 +1,82 @@
+<template>
+  <VPanel
+    :title="$t('dashboard.stock.title')"
+    :subtitle="$t('dashboard.stock.subtitle')"
+    icon="lucide:triangle-alert"
+  >
+    <template #actions>
+      <LazyVButton size="sm" icon="lucide:package-plus" icon-class="icon-bob">{{
+        $t("dashboard.stock.emergency")
+      }}</LazyVButton>
+    </template>
+
+    <ul class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" :aria-busy="!items || undefined">
+      <template v-if="!items">
+        <li v-for="n in 4" :key="n" class="rounded-card border border-line bg-ink p-4">
+          <LazyVSkeletonLoader variant="line" class="w-1/3" />
+          <LazyVSkeletonLoader class="mt-3 h-10" />
+          <LazyVSkeletonLoader class="mt-3 h-8" />
+        </li>
+      </template>
+
+      <li
+        v-for="item in items ?? []"
+        :key="item.sku"
+        class="flex flex-col gap-3 rounded-card border border-line border-t-2 bg-ink p-4"
+        :class="topBorder[item.status]"
+      >
+        <div class="flex items-center justify-between gap-2">
+          <VStatusBadge :tone="tone[item.status]" :icon="icon[item.status]">{{
+            $t(`dashboard.stock.status.${item.status}`)
+          }}</VStatusBadge>
+          <span class="font-mono text-2xs text-mute tabular-nums">
+            {{ $t("dashboard.stock.min", { n: item.threshold }) }}
+          </span>
+        </div>
+
+        <div class="min-w-0">
+          <h3 class="font-display text-base font-bold leading-snug">{{ item.name }}</h3>
+          <p class="meta mt-0.5 truncate" dir="ltr">{{ item.sku }} · {{ item.spec }}</p>
+        </div>
+
+        <div class="mt-auto space-y-1.5">
+          <VMeter
+            :value="(item.remaining / item.threshold) * 100"
+            :tone="tone[item.status]"
+            :label="$t('dashboard.stock.meter', { name: item.name })"
+          />
+          <p class="flex flex-wrap justify-between gap-x-2 font-mono text-2xs text-mute">
+            <span>{{ $t("dashboard.stock.remaining", { value: $t(`dashboard.unit.${item.unit}`, { n: item.remaining }) }) }}</span>
+            <span>{{ $t(`dashboard.stock.note.${item.note}`) }}: {{ item.noteValue }}</span>
+          </p>
+        </div>
+
+        <LazyVButton variant="secondary" size="sm" block>{{
+          $t(`dashboard.stock.action.${item.action}`)
+        }}</LazyVButton>
+      </li>
+    </ul>
+  </VPanel>
+</template>
+
+<script lang="ts" setup>
+import type { LowStockItem, StockStatus, Tone } from "~/types/admin/dashboard";
+
+defineProps<{ items?: LowStockItem[] | null }>();
+
+const tone: Record<StockStatus, Tone> = {
+  critical: "accent",
+  depleting: "warning",
+  scheduled: "info",
+};
+const icon: Record<StockStatus, string> = {
+  critical: "lucide:circle-alert",
+  depleting: "lucide:triangle-alert",
+  scheduled: "lucide:clock",
+};
+const topBorder: Record<StockStatus, string> = {
+  critical: "border-t-accent",
+  depleting: "border-t-yellow",
+  scheduled: "border-t-cyan",
+};
+</script>

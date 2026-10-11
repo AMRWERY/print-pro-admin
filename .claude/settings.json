@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e ' *)",
+      "Bash(grep -rnE '\\\\$t\\\\\\(|[^.\\\\w]t\\\\\\(|useI18n' layouts components/layouts components/dashboard pages/index.vue)",
+      "Bash(grep -E '\\\\$\\\\{|useI18n|[^$]t\\\\\\(`')"
+    ]
+  }
+}
