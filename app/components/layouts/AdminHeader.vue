@@ -13,6 +13,7 @@
         aria-label="Open navigation"
         @click="emit('openNav')"
       />
+      
       <LazyVBrandMark class="lg:hidden" />
 
       <form
