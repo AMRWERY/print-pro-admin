@@ -1,6 +1,6 @@
 <template>
   <span
-    class="inline-flex items-center gap-1 whitespace-nowrap rounded-tight border px-1.5 py-0.5 font-mono text-2xs font-bold uppercase tracking-wider rtl:tracking-normal"
+    class="inline-flex items-center gap-1 whitespace-nowrap rounded-tight border px-1.5 py-0.5 font-mono text-2xs font-bold tracking-wider rtl:tracking-normal"
     :class="toneClass[tone]"
   >
     <Icon v-if="icon" :name="icon" size="12" aria-hidden="true" />

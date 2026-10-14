@@ -173,7 +173,7 @@
 
   /* Dense uppercase caption. Letter-spacing breaks Arabic joins, so it is off in RTL. */
   .label-caps {
-    @apply font-mono text-2xs uppercase tracking-wider text-mute rtl:tracking-normal;
+    @apply font-mono text-2xs tracking-wider text-mute rtl:tracking-normal;
   }
 
   /* Small pieces */
