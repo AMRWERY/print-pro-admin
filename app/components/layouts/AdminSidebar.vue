@@ -24,7 +24,8 @@
       <div
         class="flex h-16 shrink-0 items-center justify-between gap-2 border-b border-line px-4"
       >
-        <VBrandMark />
+        <LazyVBrandMark />
+
         <LazyVButton
           ref="closeButton"
           variant="icon"
@@ -44,13 +45,13 @@
           <p class="label-caps px-2 pb-2">{{ group.label }}</p>
           <ul class="space-y-0.5">
             <li v-for="item in group.items" :key="item.to">
-              <NuxtLinkLocale
+              <nuxt-link-locale
                 :to="item.to"
                 class="flex items-center gap-2.5 rounded-control px-2.5 py-2 text-sm text-mute transition duration-fast hover:bg-raised hover:text-paper [&.router-link-exact-active]:bg-accent [&.router-link-exact-active]:font-medium [&.router-link-exact-active]:text-onaccent"
               >
                 <Icon :name="item.icon" size="16" aria-hidden="true" />
                 <span class="truncate">{{ item.label }}</span>
-              </NuxtLinkLocale>
+              </nuxt-link-locale>
             </li>
           </ul>
         </div>

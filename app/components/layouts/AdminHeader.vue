@@ -13,14 +13,7 @@
         aria-label="Open navigation"
         @click="emit('openNav')"
       />
-      <VBrandMark class="lg:hidden" />
-
-      <p
-        class="hidden items-center gap-2 font-mono text-xs text-mute xl:flex"
-      >
-        <span class="chip">ISO-5</span>
-        <span class="uppercase">LP-OPS / Archival control / Bench v2.4</span>
-      </p>
+      <LazyVBrandMark class="lg:hidden" />
 
       <form
         role="search"
@@ -50,9 +43,12 @@
           <span class="status-dot" aria-hidden="true" />
           ISO 14644-1 active
         </p>
-        <VThemeToggle />
-        <VLocaleSwitcher />
-        <LazyVButton
+
+        <LazyVThemeToggle />
+
+        <LazyVLocaleSwitcher />
+
+        <LazyLazyVButton
           variant="icon"
           icon="lucide:bell"
           icon-class="icon-wiggle"
@@ -60,7 +56,7 @@
           :aria-label="`Notifications (${unread} unread)`"
         >
           <span class="count-badge" aria-hidden="true">{{ unread }}</span>
-        </LazyVButton>
+        </LazyLazyVButton>
 
         <div
           class="ms-1 flex items-center gap-2.5 border-s border-line ps-3"
