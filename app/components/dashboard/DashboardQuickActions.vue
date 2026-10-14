@@ -41,7 +41,7 @@ const actionsHintText: Record<string, string> = {
 };
 
 const actions = [
-  { key: "gearPo", icon: "lucide:package-plus", to: "/requisitions-escrow" },
+  { key: "gearPo", icon: "lucide:package-plus", to: "/orders" },
   { key: "atelier", icon: "lucide:user-plus", to: "/studio-dossiers" },
   { key: "labRun", icon: "lucide:sliders-horizontal", to: "/print-lab-configurator" },
   { key: "pricing", icon: "lucide:chart-line", to: "/metrology-yield" },

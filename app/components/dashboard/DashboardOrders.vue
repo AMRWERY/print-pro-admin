@@ -6,7 +6,7 @@
     body-class=""
   >
     <template #actions>
-      <LazyVButton variant="tertiary" size="sm" to="/requisitions-escrow" icon-end="lucide:arrow-up-right" icon-end-class="rtl:-scale-x-100">All orders</LazyVButton>
+      <LazyVButton variant="tertiary" size="sm" to="/orders" icon-end="lucide:arrow-up-right" icon-end-class="rtl:-scale-x-100">All orders</LazyVButton>
     </template>
 
     <div v-if="!data" class="space-y-3 p-4 sm:p-5" aria-busy="true">

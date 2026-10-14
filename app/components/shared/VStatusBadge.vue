@@ -15,6 +15,7 @@ import type { Tone } from "~/types/admin/dashboard";
  * Status chip. Colour is never the only signal: pass an icon and always put the
  * status in words in the slot (design.md §22).
  */
+
 withDefaults(defineProps<{ tone?: Tone; icon?: string }>(), {
   tone: "neutral",
 });

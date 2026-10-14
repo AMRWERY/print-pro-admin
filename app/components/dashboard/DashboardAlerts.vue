@@ -19,7 +19,7 @@
         <p class="text-sm font-medium">Escrow clearing & collimation QA queue</p>
         <p class="truncate text-xs text-mute">{{ number(escrowBacklog) }} studio requisitions pending release</p>
       </div>
-      <LazyVButton variant="secondary" size="sm" to="/requisitions-escrow">View batch</LazyVButton>
+      <LazyVButton variant="secondary" size="sm" to="/orders">View batch</LazyVButton>
     </li>
     <li class="flex items-center gap-3 rounded-card border border-accent/40 bg-accent-soft p-3">
       <Icon name="lucide:triangle-alert" size="18" class="shrink-0 text-accent" aria-hidden="true" />

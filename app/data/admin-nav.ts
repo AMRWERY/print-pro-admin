@@ -30,7 +30,7 @@ export const adminNav: AdminNavGroup[] = [
   {
     label: "Workflows & operations",
     items: [
-      { to: "/requisitions-escrow", label: "Requisitions & escrow", icon: "lucide:receipt-text" },
+      { to: "/orders", label: "Orders", icon: "lucide:receipt-text" },
       { to: "/studio-dossiers", label: "Studio dossiers", icon: "lucide:contact-round" },
       { to: "/print-lab-configurator", label: "Print lab configurator", icon: "lucide:sliders-horizontal" },
       { to: "/chain-of-custody", label: "Chain of custody", icon: "lucide:link-2" },
