@@ -337,3 +337,9 @@ html {
     display: none;
   }
 }
+@layer components {
+  /* Rows inside dropdown menus. */
+  .menu-item {
+    @apply flex items-center gap-2.5 px-4 py-2 text-start text-sm transition duration-fast hover:bg-raised focus-visible:bg-raised;
+  }
+}

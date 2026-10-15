@@ -54,33 +54,25 @@
           icon="lucide:bell"
           icon-class="icon-wiggle"
           class="relative"
-          :aria-label="`Notifications (${unread} unread)`"
+          aria-controls="notifications-panel"
+          :aria-label="unread ? `Notifications (${unread} unread)` : 'Notifications'"
+          @click="notificationsOpen = true"
+          :aria-expanded="notificationsOpen"
         >
-          <span class="count-badge" aria-hidden="true">{{ unread }}</span>
+          <span v-if="unread" class="count-badge" aria-hidden="true">{{ unread }}</span>
         </LazyVButton>
 
-        <div
-          class="ms-1 flex items-center gap-2.5 border-s border-line ps-3"
-        >
-          <div class="hidden text-end leading-tight md:block">
-            <p class="text-xs font-semibold">COO · Cleanroom admin</p>
-            <p class="font-mono text-2xs text-success">
-              Station-01 // Secure
-            </p>
-          </div>
-          <span
-            class="grid h-10 w-10 place-items-center rounded-full bg-accent font-mono text-sm font-bold text-onaccent"
-            aria-hidden="true"
-            >CA</span
-          >
+        <div class="ms-1 border-s border-line ps-3">
+          <user-menu />
         </div>
       </div>
     </div>
+
   </header>
 </template>
 
 <script lang="ts" setup>
 const emit = defineEmits<{ openNav: [] }>();
 
-const unread = 3;
+const { unread, open: notificationsOpen } = useNotifications();
 </script>

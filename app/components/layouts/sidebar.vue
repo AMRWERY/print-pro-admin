@@ -11,11 +11,11 @@
 
     <aside
       id="admin-nav"
-      class="fixed inset-y-0 start-0 z-40 flex w-60 flex-col border-e border-line bg-surface transition-transform duration-normal ease-out lg:translate-x-0"
+      class="fixed inset-y-0 start-0 z-40 flex w-60 flex-col border-e border-line bg-surface transition-[transform,visibility] duration-normal ease-out lg:visible lg:translate-x-0"
       :class="
         open
-          ? 'translate-x-0'
-          : 'max-lg:-translate-x-full max-lg:rtl:translate-x-full'
+          ? 'visible translate-x-0'
+          : 'max-lg:invisible max-lg:-translate-x-full max-lg:rtl:translate-x-full'
       "
       :inert="inert ? '' : undefined"
       aria-label="Main navigation"

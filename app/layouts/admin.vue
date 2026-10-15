@@ -6,6 +6,8 @@
       >Skip to content</a
     >
     <sidebar v-model:open="navOpen" />
+    <!-- Outside the sticky header: its backdrop blur would trap a fixed panel inside it. -->
+    <notifications-dialog />
 
     <div class="lg:ps-60">
       <Header @open-nav="navOpen = true" />
