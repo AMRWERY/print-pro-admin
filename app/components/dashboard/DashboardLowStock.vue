@@ -1,11 +1,11 @@
 <template>
   <VPanel
-    title="Critical low-stock matrix"
-    subtitle="Reserve buffers currently below the safe 14-day production velocity threshold"
+    title="Inventory alerts"
+    subtitle="Items below their safe stock level"
     icon="lucide:triangle-alert"
   >
     <template #actions>
-      <LazyVButton size="sm" icon="lucide:package-plus" icon-class="icon-bob">Trigger emergency batch PO</LazyVButton>
+      <LazyVButton variant="tertiary" size="sm" to="/inventory" icon-end="lucide:arrow-up-right" icon-end-class="rtl:-scale-x-100">View inventory</LazyVButton>
     </template>
 
     <ul class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" :aria-busy="!items || undefined">

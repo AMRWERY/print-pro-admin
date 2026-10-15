@@ -49,7 +49,7 @@
 
         <LazyVLocaleSwitcher />
 
-        <LazyLazyVButton
+        <LazyVButton
           variant="icon"
           icon="lucide:bell"
           icon-class="icon-wiggle"
@@ -57,7 +57,7 @@
           :aria-label="`Notifications (${unread} unread)`"
         >
           <span class="count-badge" aria-hidden="true">{{ unread }}</span>
-        </LazyLazyVButton>
+        </LazyVButton>
 
         <div
           class="ms-1 flex items-center gap-2.5 border-s border-line ps-3"

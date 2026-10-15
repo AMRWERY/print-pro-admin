@@ -316,7 +316,9 @@ const inspect = (row: OrderRow) => {
   inspectOpen.value = true;
 };
 
-const createOpen = ref(false);
+// "New order" on the dashboard links here with ?create=1.
+const route = useRoute();
+const createOpen = ref(route.query.create === "1");
 const onCreated = () => {
   // Show the new requisition at the top of the newest-first ledger.
   filters.sort = "newest";

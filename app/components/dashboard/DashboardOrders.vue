@@ -1,7 +1,7 @@
 <template>
   <VPanel
-    title="Recent requisitions & escrow"
-    subtitle="Live stream of verified studio transactions awaiting dispatch or settlement"
+    title="Recent orders"
+    subtitle="Latest orders and where they are in dispatch"
     icon="lucide:receipt-text"
     body-class=""
   >
@@ -53,8 +53,7 @@
       </div>
 
       <p class="flex flex-wrap items-center justify-between gap-2 border-t border-line px-4 py-3 font-mono text-2xs text-mute sm:px-5">
-        <span>Showing {{ data.rows.length }} of {{ number(data.total) }} pending requisitions</span>
-        <span class="text-success">Escrow clearing SLA: {{ percent(data.slaPct, 0) }} on time</span>
+        <span>Showing {{ data.rows.length }} of {{ number(data.total) }} pending orders</span>
       </p>
     </template>
   </VPanel>

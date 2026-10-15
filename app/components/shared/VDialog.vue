@@ -78,6 +78,11 @@ watch(
   { flush: "post" },
 );
 
+// Opened from the start (e.g. via a query string): the watcher above only sees changes.
+onMounted(() => {
+  if (open.value && el.value && !el.value.open) el.value.showModal();
+});
+
 // A click that lands on the <dialog> itself (not its content) hit the backdrop.
 const onBackdropClick = (e: MouseEvent) => {
   if (e.target === el.value) open.value = false;

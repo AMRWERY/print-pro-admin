@@ -9,63 +9,17 @@ import type {
 // server/api/admin/* proxies the real service.
 
 export const dashboardSummary: DashboardSummary = {
-  alerts: { escrowBacklog: 42, lowStock: 7 },
-  topShare: 74.8,
   kpis: {
-    gross: {
+    revenue: {
       value: 482940,
       delta: 14.8,
-      usdEquivalent: 521575.2,
-      breakdown: [
-        { key: "hardware", value: 312000 },
-        { key: "substrates", value: 118000 },
-        { key: "labRuns", value: 52900 },
-      ],
       trend: [38, 41, 40, 46, 44, 52, 49, 58, 63, 61, 70, 78],
     },
-    requisitions: {
-      value: 1284,
-      delta: 8.4,
-      averageBasket: 376.1,
-      clearingPct: 94.2,
-      settled: 1209,
-      held: 75,
-    },
-    ateliers: {
-      value: 3420,
-      delta: 142,
-      retentionPct: 88.4,
-      tiers: [
-        { key: "commercial", pct: 48 },
-        { key: "museums", pct: 32 },
-        { key: "galleries", pct: 20 },
-      ],
-      activeContracts: 1084,
-      rating: "AAA",
-    },
-    skus: {
-      value: 4812,
-      alerts: 7,
-      divisions: 5,
-      leadTimeHours: 48,
-      mix: [
-        { key: "cameras", value: 342 },
-        { key: "printers", value: 128 },
-        { key: "substrates", value: 1800 },
-        { key: "pigments", value: 2100 },
-        { key: "accessories", value: 400 },
-      ],
-    },
-  },
-  fulfillment: {
-    total: 1284,
-    fulfilledPct: 94.2,
-    segments: [
-      { key: "delivered", value: 770 },
-      { key: "transit", value: 321 },
-      { key: "qa", value: 128 },
-      { key: "curing", value: 65 },
-    ],
+    orders: { value: 1284, delta: 8.4 },
+    customers: { value: 3420, delta: 142 },
+    products: { value: 4812 },
+    lowStock: { value: 7 },
+    pendingOrders: { value: 42 },
   },
   lowStock: [
     {
@@ -230,39 +184,11 @@ export const dashboardSummary: DashboardSummary = {
       },
     ],
   },
-  studios: [
-    {
-      initials: "EV",
-      name: "Dr. Elena Vance",
-      location: "Metropolitan Wing · NYC",
-      lifetimeEscrow: 142500,
-      tier: "museumCustody",
-      node: "Node A",
-    },
-    {
-      initials: "MH",
-      name: "Galerie Max Hetzler",
-      location: "Tiergarten · Berlin",
-      lifetimeEscrow: 98400,
-      tier: "galleryPremium",
-      node: "Node B",
-    },
-    {
-      initials: "MP",
-      name: "Magnum Photos",
-      location: "Darkroom Node · Paris",
-      lifetimeEscrow: 76200,
-      tier: "collectiveGuild",
-      node: "Node C",
-    },
-    {
-      initials: "ZK",
-      name: "Zurich Kunsthaus Lab",
-      location: "Conservation · Zurich",
-      lifetimeEscrow: 112800,
-      tier: "institutionalArchive",
-      node: "Node D",
-    },
+  customers: [
+    { initials: "EV", name: "Dr. Elena Vance", location: "Metropolitan Wing · NYC", lifetimeValue: 142500, tier: "museumCustody" },
+    { initials: "MH", name: "Galerie Max Hetzler", location: "Tiergarten · Berlin", lifetimeValue: 98400, tier: "galleryPremium" },
+    { initials: "MP", name: "Magnum Photos", location: "Darkroom Node · Paris", lifetimeValue: 76200, tier: "collectiveGuild" },
+    { initials: "ZK", name: "Zurich Kunsthaus Lab", location: "Conservation · Zurich", lifetimeValue: 112800, tier: "institutionalArchive" },
   ],
 };
 
@@ -280,19 +206,18 @@ const RANGES: Record<
 export const isRangeKey = (value: unknown): value is RangeKey =>
   typeof value === "string" && value in RANGES;
 
-/** Deterministic wave so the chart is stable between reloads. */
+/** Deterministic wave so the charts are stable between reloads. */
 export const revenueSeries = (range: RangeKey): RevenueSeries => {
   const { count, unit, scale } = RANGES[range];
   const points = Array.from({ length: count }, (_, i) => {
     const progress = count > 1 ? i / (count - 1) : 1;
     const wave = Math.sin(i * 1.3) * 0.08 + Math.sin(i * 0.5) * 0.05;
-    const hardware = Math.round(scale * (14000 + progress * 13000) * (1 + wave));
-    const substrates = Math.round(hardware * (0.55 + 0.1 * Math.sin(i * 0.9)));
-    return { hardware, substrates };
+    const revenue = Math.round(scale * (20000 + progress * 16000) * (1 + wave));
+    return { revenue, orders: Math.max(1, Math.round(revenue / 420)) };
   });
   const peakIndex = points.reduce(
-    (best, p, i) => (p.hardware > points[best]!.hardware ? i : best),
+    (best, p, i) => (p.revenue > points[best]!.revenue ? i : best),
     0,
   );
-  return { range, unit, points, peakIndex, marginIndex: 41.8, marginDelta: 2.1 };
+  return { range, unit, points, peakIndex };
 };

@@ -5,8 +5,8 @@ export type RangeKey = "today" | "week" | "month" | "quarter" | "year";
 export type RevenueUnit = "hour" | "day" | "week" | "month";
 
 export interface RevenuePoint {
-  hardware: number;
-  substrates: number;
+  revenue: number;
+  orders: number;
 }
 
 export interface RevenueSeries {
@@ -14,44 +14,15 @@ export interface RevenueSeries {
   unit: RevenueUnit;
   points: RevenuePoint[];
   peakIndex: number;
-  marginIndex: number;
-  marginDelta: number;
 }
 
 export interface DashboardKpis {
-  gross: {
-    value: number;
-    delta: number;
-    usdEquivalent: number;
-    breakdown: { key: "hardware" | "substrates" | "labRuns"; value: number }[];
-    trend: number[];
-  };
-  requisitions: {
-    value: number;
-    delta: number;
-    averageBasket: number;
-    clearingPct: number;
-    settled: number;
-    held: number;
-  };
-  ateliers: {
-    value: number;
-    delta: number;
-    retentionPct: number;
-    tiers: { key: "museums" | "commercial" | "galleries"; pct: number }[];
-    activeContracts: number;
-    rating: string;
-  };
-  skus: {
-    value: number;
-    alerts: number;
-    divisions: number;
-    leadTimeHours: number;
-    mix: {
-      key: "cameras" | "printers" | "substrates" | "pigments" | "accessories";
-      value: number;
-    }[];
-  };
+  revenue: { value: number; delta: number; trend: number[] };
+  orders: { value: number; delta: number };
+  customers: { value: number; delta: number };
+  products: { value: number };
+  lowStock: { value: number };
+  pendingOrders: { value: number };
 }
 
 export type StockStatus = "critical" | "depleting" | "scheduled";
@@ -99,27 +70,18 @@ export interface TopProduct {
   icon: string;
 }
 
-export interface StudioDossier {
+export interface RecentCustomer {
   initials: string;
   name: string;
   location: string;
-  lifetimeEscrow: number;
+  lifetimeValue: number;
   tier: "museumCustody" | "galleryPremium" | "collectiveGuild" | "institutionalArchive";
-  node: string;
-}
-
-export interface FulfillmentSegment {
-  key: "delivered" | "transit" | "qa" | "curing";
-  value: number;
 }
 
 export interface DashboardSummary {
-  alerts: { escrowBacklog: number; lowStock: number };
   kpis: DashboardKpis;
-  fulfillment: { total: number; fulfilledPct: number; segments: FulfillmentSegment[] };
   lowStock: LowStockItem[];
   topProducts: TopProduct[];
   orders: { rows: RequisitionRow[]; total: number; slaPct: number };
-  studios: StudioDossier[];
-  topShare: number;
+  customers: RecentCustomer[];
 }

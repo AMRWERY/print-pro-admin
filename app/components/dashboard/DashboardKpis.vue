@@ -1,172 +1,80 @@
 <template>
-  <div
-    class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
-    :aria-busy="!kpis || undefined"
-  >
+  <ul class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6" :aria-busy="!kpis || undefined">
     <template v-if="!kpis">
-      <div v-for="n in 4" :key="n" class="card space-y-4 p-4 sm:p-5">
+      <li v-for="n in 6" :key="n" class="card space-y-3 p-4">
         <LazyVSkeletonLoader variant="line" class="w-1/2" />
-        <LazyVSkeletonLoader class="h-9 w-2/3" />
-        <LazyVSkeletonLoader class="h-10" />
-        <LazyVSkeletonLoader variant="text" :lines="2" />
-      </div>
+        <LazyVSkeletonLoader class="h-8 w-2/3" />
+        <LazyVSkeletonLoader variant="line" class="w-1/3" />
+      </li>
     </template>
 
     <template v-else>
-      <!-- Fiscal gross volume -->
-      <article class="card flex flex-col gap-3 p-4 sm:p-5" aria-labelledby="kpi-gross">
-        <header class="flex items-start justify-between gap-2">
-          <h3 id="kpi-gross" class="label-caps">Gross escrow settled</h3>
-          <VStatusBadge tone="success" icon="lucide:trending-up">{{
-            signedPercent(kpis.gross.delta)
-          }}</VStatusBadge>
-        </header>
-        <p class="font-display text-3xl font-bold tabular-nums">
-          {{ currency(kpis.gross.value) }}
+      <li class="card flex flex-col gap-2 p-4">
+        <p class="flex items-center justify-between gap-2">
+          <span class="label-caps">Revenue</span>
+          <Icon name="lucide:banknote" size="16" class="text-mute" aria-hidden="true" />
         </p>
-        <p class="text-xs text-mute">
-          ≈ {{ currency(kpis.gross.usdEquivalent, { currency: "USD", maximumFractionDigits: 0 }) }} USD equivalent
-        </p>
-        <DashboardSparkline :values="kpis.gross.trend" />
-        <dl class="grid grid-cols-3 gap-2 border-t border-line pt-3">
-          <div v-for="part in kpis.gross.breakdown" :key="part.key">
-            <dt class="label-caps truncate">{{ grossText[part.key] }}</dt>
-            <dd class="font-mono text-xs font-semibold tabular-nums">
-              {{ compactCurrency(part.value) }}
-            </dd>
-          </div>
-        </dl>
-      </article>
+        <p class="font-display text-2xl font-bold tabular-nums">{{ currency(kpis.revenue.value, { maximumFractionDigits: 0 }) }}</p>
+        <VStatusBadge class="self-start" tone="success" icon="lucide:trending-up">{{ signedPercent(kpis.revenue.delta) }}</VStatusBadge>
+        <DashboardSparkline :values="kpis.revenue.trend" />
+      </li>
 
-      <!-- Studio requisitions -->
-      <article class="card flex flex-col gap-3 p-4 sm:p-5" aria-labelledby="kpi-req">
-        <header class="flex items-start justify-between gap-2">
-          <h3 id="kpi-req" class="label-caps">Requisitions volume</h3>
-          <VStatusBadge tone="success" icon="lucide:trending-up">{{
-            signedPercent(kpis.requisitions.delta)
-          }}</VStatusBadge>
-        </header>
-        <p class="font-display text-3xl font-bold tabular-nums">
-          {{ number(kpis.requisitions.value) }}
-          <span class="text-sm font-medium text-mute">batches</span>
+      <li class="card flex flex-col gap-2 p-4">
+        <p class="flex items-center justify-between gap-2">
+          <span class="label-caps">Orders</span>
+          <Icon name="lucide:receipt-text" size="16" class="text-mute" aria-hidden="true" />
         </p>
-        <p class="text-xs text-mute">
-          Average basket {{ currency(kpis.requisitions.averageBasket) }}
-        </p>
-        <div class="mt-auto space-y-2 border-t border-line pt-3">
-          <div class="flex items-center justify-between text-xs">
-            <span class="label-caps">Escrow clearing</span>
-            <span class="font-mono font-semibold tabular-nums">{{ percent(kpis.requisitions.clearingPct) }}</span>
-          </div>
-          <VMeter
-            :value="kpis.requisitions.clearingPct"
-            tone="success"
-            label="Escrow clearing"
-          />
-          <p class="flex justify-between font-mono text-2xs text-mute">
-            <span>{{ number(kpis.requisitions.settled) }} settled</span>
-            <span class="text-yellow">{{ number(kpis.requisitions.held) }} QA held</span>
-          </p>
-        </div>
-      </article>
+        <p class="font-display text-2xl font-bold tabular-nums">{{ number(kpis.orders.value) }}</p>
+        <VStatusBadge class="self-start" tone="success" icon="lucide:trending-up">{{ signedPercent(kpis.orders.delta) }}</VStatusBadge>
+      </li>
 
-      <!-- Verified ateliers -->
-      <article class="card flex flex-col gap-3 p-4 sm:p-5" aria-labelledby="kpi-ateliers">
-        <header class="flex items-start justify-between gap-2">
-          <h3 id="kpi-ateliers" class="label-caps">Atelier accounts</h3>
-          <VStatusBadge tone="success" icon="lucide:trending-up">{{
-            `+${number(kpis.ateliers.delta)}`
-          }}</VStatusBadge>
-        </header>
-        <p class="font-display text-3xl font-bold tabular-nums">
-          {{ number(kpis.ateliers.value) }}
-          <span class="text-sm font-medium text-mute">studios</span>
+      <li class="card flex flex-col gap-2 p-4">
+        <p class="flex items-center justify-between gap-2">
+          <span class="label-caps">Customers</span>
+          <Icon name="lucide:users" size="16" class="text-mute" aria-hidden="true" />
         </p>
-        <p class="text-xs text-mute">
-          {{ percent(kpis.ateliers.retentionPct) }} net annual retention
-        </p>
-        <div class="mt-auto space-y-2 border-t border-line pt-3">
-          <div
-            class="flex h-1.5 gap-0.5 overflow-hidden rounded-full"
-            role="img"
-            aria-label="Account mix by tier"
-          >
-            <span
-              v-for="(tier, i) in kpis.ateliers.tiers"
-              :key="tier.key"
-              class="h-full"
-              :class="tierBar[i]"
-              :style="{ width: `${tier.pct}%` }"
-            />
-          </div>
-          <ul class="flex flex-wrap gap-x-3 gap-y-1 font-mono text-2xs text-mute">
-            <li v-for="(tier, i) in kpis.ateliers.tiers" :key="tier.key" class="flex items-center gap-1">
-              <span class="h-2 w-2 rounded-full" :class="tierBar[i]" aria-hidden="true" />
-              {{ ateliersText[tier.key] }} {{ tier.pct }}%
-            </li>
-          </ul>
-          <p class="flex justify-between font-mono text-2xs text-mute">
-            <span>{{ number(kpis.ateliers.activeContracts) }} active contracts</span>
-            <span class="text-success">Audit {{ kpis.ateliers.rating }}</span>
-          </p>
-        </div>
-      </article>
+        <p class="font-display text-2xl font-bold tabular-nums">{{ number(kpis.customers.value) }}</p>
+        <VStatusBadge class="self-start" tone="success" icon="lucide:trending-up">+{{ number(kpis.customers.delta) }} new</VStatusBadge>
+      </li>
 
-      <!-- Depot catalog SKUs -->
-      <article class="card flex flex-col gap-3 p-4 sm:p-5" aria-labelledby="kpi-skus">
-        <header class="flex items-start justify-between gap-2">
-          <h3 id="kpi-skus" class="label-caps">Inventory SKUs</h3>
-          <VStatusBadge tone="accent" icon="lucide:triangle-alert">{{ kpis.skus.alerts }} low stock</VStatusBadge>
-        </header>
-        <p class="font-display text-3xl font-bold tabular-nums">
-          {{ number(kpis.skus.value) }}
-          <span class="text-sm font-medium text-mute">live</span>
+      <li class="card flex flex-col gap-2 p-4">
+        <p class="flex items-center justify-between gap-2">
+          <span class="label-caps">Products</span>
+          <Icon name="lucide:package" size="16" class="text-mute" aria-hidden="true" />
         </p>
-        <p class="text-xs text-mute">
-          {{ kpis.skus.divisions }} technical divisions actively catalogued
-        </p>
-        <dl class="mt-auto grid grid-cols-5 gap-1 border-t border-line pt-3">
-          <div v-for="part in kpis.skus.mix" :key="part.key" class="min-w-0">
-            <dt class="label-caps truncate">{{ skusText[part.key] }}</dt>
-            <dd class="font-mono text-xs font-semibold tabular-nums">{{ compact(part.value) }}</dd>
-          </div>
-        </dl>
-        <p class="font-mono text-2xs text-mute">
-          Depot lead time {{ kpis.skus.leadTimeHours }}h
-        </p>
-      </article>
+        <p class="font-display text-2xl font-bold tabular-nums">{{ number(kpis.products.value) }}</p>
+        <p class="text-xs text-mute">in catalog</p>
+      </li>
+
+      <li class="card border-s-2 border-s-accent">
+        <NuxtLinkLocale to="/inventory" class="flex h-full flex-col gap-2 p-4 transition duration-fast hover:bg-raised">
+          <span class="flex items-center justify-between gap-2">
+            <span class="label-caps">Low-stock alerts</span>
+            <Icon name="lucide:triangle-alert" size="16" class="text-accent" aria-hidden="true" />
+          </span>
+          <span class="font-display text-2xl font-bold tabular-nums text-accent">{{ number(kpis.lowStock.value) }}</span>
+          <span class="text-xs text-mute">Review inventory</span>
+        </NuxtLinkLocale>
+      </li>
+
+      <li class="card border-s-2 border-s-yellow">
+        <NuxtLinkLocale to="/orders" class="flex h-full flex-col gap-2 p-4 transition duration-fast hover:bg-raised">
+          <span class="flex items-center justify-between gap-2">
+            <span class="label-caps">Pending orders</span>
+            <Icon name="lucide:clock" size="16" class="text-yellow" aria-hidden="true" />
+          </span>
+          <span class="font-display text-2xl font-bold tabular-nums text-yellow">{{ number(kpis.pendingOrders.value) }}</span>
+          <span class="text-xs text-mute">Awaiting release</span>
+        </NuxtLinkLocale>
+      </li>
     </template>
-  </div>
+  </ul>
 </template>
 
 <script lang="ts" setup>
 import type { DashboardKpis } from "~/types/admin/dashboard";
 
-const grossText: Record<string, string> = {
-  hardware: "Hardware",
-  substrates: "Paper",
-  labRuns: "Lab runs",
-};
-
-const ateliersText: Record<string, string> = {
-  commercial: "Commercial",
-  museums: "Museums",
-  galleries: "Galleries",
-};
-
-const skusText: Record<string, string> = {
-  cameras: "Cameras",
-  printers: "Printers",
-  substrates: "Rag",
-  pigments: "Pigments",
-  accessories: "Acc.",
-};
-
-
 defineProps<{ kpis?: DashboardKpis | null }>();
 
-const { number, currency, compactCurrency, compact, percent, signedPercent } =
-  useFormatters();
-
-const tierBar = ["bg-accent", "bg-yellow", "bg-cyan"];
+const { number, currency, signedPercent } = useFormatters();
 </script>

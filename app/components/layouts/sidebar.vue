@@ -37,36 +37,20 @@
         />
       </div>
 
-      <nav
-        class="flex-1 space-y-5 overflow-y-auto px-3 py-4"
-        aria-label="Main navigation"
-      >
-        <div v-for="group in adminNav" :key="group.label">
-          <p class="label-caps px-2 pb-2">{{ group.label }}</p>
-          <ul class="space-y-0.5">
-            <li v-for="item in group.items" :key="item.to">
-              <nuxt-link-locale
-                :to="item.to"
-                class="flex items-center gap-2.5 rounded-control px-2.5 py-2 text-sm text-mute transition duration-fast hover:bg-raised hover:text-paper [&.router-link-exact-active]:bg-accent [&.router-link-exact-active]:font-medium [&.router-link-exact-active]:text-onaccent"
-              >
-                <Icon :name="item.icon" size="16" aria-hidden="true" />
-                <span class="truncate">{{ item.label }}</span>
-              </nuxt-link-locale>
-            </li>
-          </ul>
-        </div>
+      <nav class="flex-1 overflow-y-auto px-3 py-4" aria-label="Main navigation">
+        <ul class="space-y-0.5">
+          <li v-for="item in adminNav" :key="item.to">
+            <nuxt-link-locale
+              :to="item.to"
+              class="flex items-center gap-2.5 rounded-control px-2.5 py-2 text-sm text-mute transition duration-fast hover:bg-raised hover:text-paper [&.router-link-exact-active]:bg-accent [&.router-link-exact-active]:font-medium [&.router-link-exact-active]:text-onaccent"
+            >
+              <Icon :name="item.icon" size="16" aria-hidden="true" />
+              <span class="truncate">{{ item.label }}</span>
+            </nuxt-link-locale>
+          </li>
+        </ul>
       </nav>
 
-      <div class="shrink-0 border-t border-line p-4">
-        <p class="flex items-center gap-2 text-xs font-medium">
-          <span class="status-dot" aria-hidden="true" />
-          Cleanroom lab A
-          <span class="ms-auto font-mono text-success">99.98%</span>
-        </p>
-        <p class="meta mt-1">
-          RH {{ "48.2" }}% · Temp {{ "20.4" }}°C · D50 calibrated
-        </p>
-      </div>
     </aside>
   </div>
 </template>
