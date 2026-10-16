@@ -24,7 +24,7 @@
         :class="topBorder[item.status]"
       >
         <div class="flex items-center justify-between gap-2">
-          <VStatusBadge :tone="tone[item.status]" :icon="icon[item.status]">{{ statusText[item.status] }}</VStatusBadge>
+          <LazyVStatusBadge :tone="tone[item.status]" :icon="icon[item.status]">{{ statusText[item.status] }}</LazyVStatusBadge>
           <span class="font-mono text-2xs text-mute tabular-nums">
             Min {{ item.threshold }}
           </span>

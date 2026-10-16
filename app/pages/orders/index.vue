@@ -1,87 +1,51 @@
 <template>
   <div class="space-y-5">
-    <!-- Title block -->
-    <header class="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
-      <div class="min-w-0 max-w-2xl space-y-2">
-        <nav aria-label="Breadcrumb">
-          <ol
-            class="flex flex-wrap items-center gap-1.5 font-mono text-xs uppercase text-mute"
-          >
-            <li>Archival control</li>
-            <li aria-hidden="true">/</li>
-            <li>Core terminal</li>
-            <li aria-hidden="true">/</li>
-            <li class="text-accent" aria-current="page">
-              Order operations &amp; escrow
-            </li>
-          </ol>
-        </nav>
-        <h1
-          class="font-display text-2xl font-bold tracking-tight sm:text-3xl xl:text-4xl"
-        >
-          Order Requisition &amp; Escrow Ledger
-        </h1>
+    <LazyVPageHeader
+      title="Order Requisition & Escrow Ledger"
+      description="Authorized chain-of-custody transaction clearing house for optical systems, master-grade piezo print engines, and archival cotton substrates. Dual-signatory escrow protocols active."
+      :breadcrumb="[{ label: 'Dashboard', to: '/' }, { label: 'Orders' }]"
+    >
+      <template #meta>
         <p class="chip" dir="ltr">STATION ID // CAL-902</p>
-        <p class="text-sm text-mute">
-          Authorized chain-of-custody transaction clearing house for optical
-          systems, master-grade piezo print engines, and archival cotton
-          substrates. Dual-signatory escrow protocols active.
-        </p>
-      </div>
+      </template>
 
-      <div class="flex flex-wrap items-start gap-3">
-        <div ref="exportMenu" class="relative">
-          <LazyVButton
-            variant="secondary"
-            icon="lucide:download"
-            icon-end="lucide:chevron-down"
-            aria-haspopup="menu"
-            :aria-expanded="exportOpen"
-            @click="exportOpen = !exportOpen"
-            >Export manifest</LazyVButton
-          >
-          <Transition name="fade">
-            <ul
-              v-if="exportOpen"
-              role="menu"
-              class="absolute end-0 z-20 mt-2 w-56 overflow-hidden rounded-card border border-line bg-surface py-1 shadow-xl shadow-black/40"
-              @keydown.esc="exportOpen = false"
+      <template #actions>
+        <LazyVMenu label="Export manifest">
+          <template #trigger="{ attrs, toggle }">
+            <LazyVButton
+              v-bind="attrs"
+              variant="secondary"
+              icon="lucide:download"
+              icon-end="lucide:chevron-down"
+              @click="toggle"
+              >Export manifest</LazyVButton
             >
-              <li role="none">
-                <button
-                  type="button"
-                  role="menuitem"
-                  class="flex w-full items-center gap-2 px-3 py-2 text-start text-sm hover:bg-raised"
-                  @click="exportRows(rows, 'csv')"
-                >
-                  <Icon
-                    name="lucide:file-spreadsheet"
-                    size="16"
-                    aria-hidden="true"
-                  />
-                  CSV · this page
-                </button>
-              </li>
-              <li role="none">
-                <button
-                  type="button"
-                  role="menuitem"
-                  class="flex w-full items-center gap-2 px-3 py-2 text-start text-sm hover:bg-raised"
-                  @click="exportRows(rows, 'json')"
-                >
-                  <Icon name="lucide:file-json" size="16" aria-hidden="true" />
-                  JSON · this page
-                </button>
-              </li>
-            </ul>
-          </Transition>
-        </div>
+          </template>
+          <button
+            type="button"
+            role="menuitem"
+            class="menu-item w-full"
+            @click="exportRows(rows, 'csv')"
+          >
+            <Icon name="lucide:file-spreadsheet" size="16" aria-hidden="true" />
+            CSV · this page
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            class="menu-item w-full"
+            @click="exportRows(rows, 'json')"
+          >
+            <Icon name="lucide:file-json" size="16" aria-hidden="true" />
+            JSON · this page
+          </button>
+        </LazyVMenu>
 
         <LazyVButton icon="lucide:circle-plus" @click="createOpen = true"
           >Create manual requisition</LazyVButton
         >
-      </div>
-    </header>
+      </template>
+    </LazyVPageHeader>
 
     <orders-kpis :data="data" />
 
@@ -224,14 +188,6 @@ import type {
 } from "~/types/admin/orders";
 import type { ClientTier, EscrowMode, OrderStage } from "~/types/admin/orders";
 
-definePageMeta({ layout: "admin" });
-
-useSeoMeta({
-  title: "PrintPro — Order Requisition & Escrow Ledger",
-  description:
-    "Chain-of-custody clearing house for optical systems, piezo print engines and archival substrates.",
-});
-
 const toast = useToast();
 
 const filters = reactive({
@@ -242,6 +198,7 @@ const filters = reactive({
   range: "all" as OrderRange,
   sort: "newest" as OrderSort,
 });
+
 const view = ref<"table" | "kanban">("table");
 const page = ref(1);
 const perPage = ref(10);
@@ -318,7 +275,9 @@ const inspect = (row: OrderRow) => {
 
 // "New order" on the dashboard links here with ?create=1.
 const route = useRoute();
+
 const createOpen = ref(route.query.create === "1");
+
 const onCreated = () => {
   // Show the new requisition at the top of the newest-first ledger.
   filters.sort = "newest";
@@ -328,23 +287,7 @@ const onCreated = () => {
 };
 
 // --- Export ---
-const exportMenu = ref<HTMLElement | null>(null);
-const exportOpen = ref(false);
-onClickOutside(exportMenu, () => {
-  exportOpen.value = false;
-});
-
-const download = (name: string, content: string, type: string) => {
-  const url = URL.createObjectURL(new Blob([content], { type }));
-  Object.assign(document.createElement("a"), {
-    href: url,
-    download: name,
-  }).click();
-  URL.revokeObjectURL(url);
-};
-
 const exportRows = (list: OrderRow[], format: "csv" | "json") => {
-  exportOpen.value = false;
   if (!list.length) {
     toast.warning("Nothing to export", {
       description: "There are no requisitions on this page.",
@@ -353,39 +296,47 @@ const exportRows = (list: OrderRow[], format: "csv" | "json") => {
   }
   const stamp = new Date().toISOString().slice(0, 10);
   if (format === "json") {
-    download(
+    downloadFile(
       `requisitions-${stamp}.json`,
       JSON.stringify(list, null, 2),
       "application/json",
     );
   } else {
-    const cell = (v: string | number) => `"${String(v).replaceAll('"', '""')}"`;
-    const csv = [
-      [
-        "id",
-        "placed_at_utc",
-        "customer",
-        "atelier",
-        "allocation",
-        "escrow_eur",
-        "stage",
-      ],
-      ...list.map((r) => [
-        r.id,
-        r.placedAt,
-        r.customer.name,
-        r.customer.org,
-        r.allocation.title,
-        r.amount,
-        r.stage,
+    downloadFile(
+      `requisitions-${stamp}.csv`,
+      toCsv([
+        [
+          "id",
+          "placed_at_utc",
+          "customer",
+          "atelier",
+          "allocation",
+          "escrow_eur",
+          "stage",
+        ],
+        ...list.map((r) => [
+          r.id,
+          r.placedAt,
+          r.customer.name,
+          r.customer.org,
+          r.allocation.title,
+          r.amount,
+          r.stage,
+        ]),
       ]),
-    ]
-      .map((line) => line.map(cell).join(","))
-      .join("\r\n");
-    download(`requisitions-${stamp}.csv`, "﻿" + csv, "text/csv;charset=utf-8");
+      "text/csv;charset=utf-8",
+    );
   }
   toast.success(
     `Exported ${list.length} requisition${list.length > 1 ? "s" : ""}`,
   );
 };
+
+definePageMeta({ layout: "admin" });
+
+useSeoMeta({
+  title: "PrintPro — Order Requisition & Escrow Ledger",
+  description:
+    "Chain-of-custody clearing house for optical systems, piezo print engines and archival substrates.",
+});
 </script>

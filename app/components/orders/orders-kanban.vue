@@ -29,7 +29,7 @@
           >
             <span class="flex items-center justify-between gap-2">
               <span class="font-mono text-xs font-semibold text-accent" dir="ltr">{{ row.id }}</span>
-              <VStatusBadge :tone="priorityMeta[row.priority].tone">{{ priorityMeta[row.priority].label }}</VStatusBadge>
+              <LazyVStatusBadge :tone="priorityMeta[row.priority].tone">{{ priorityMeta[row.priority].label }}</LazyVStatusBadge>
             </span>
             <span class="block text-sm font-medium">{{ row.customer.name }}</span>
             <span class="block text-xs leading-snug text-mute">{{ row.allocation.title }}</span>

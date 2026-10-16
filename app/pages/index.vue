@@ -1,29 +1,32 @@
 <template>
   <div class="space-y-5">
-    <header class="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
-      <div>
-        <h1 class="font-display text-2xl font-bold tracking-tight sm:text-3xl">Dashboard</h1>
-        <p class="mt-1 text-sm text-mute">Sales, customers and stock at a glance.</p>
-      </div>
-      <VSegmented v-model="range" :options="rangeOptions" label="Reporting period" />
-    </header>
+    <LazyVPageHeader
+      title="Dashboard"
+      description="Sales, customers and stock at a glance."
+    >
+      <template #actions>
+        <LazyVSegmented
+          v-model="range"
+          :options="rangeOptions"
+          label="Reporting period"
+        />
+      </template>
+    </LazyVPageHeader>
 
     <!-- A failed summary only replaces the sections it feeds, with a way to retry. -->
-    <div v-if="summaryError" class="callout-accent" role="alert">
-      <Icon name="lucide:circle-alert" size="16" class="bullet-icon" aria-hidden="true" />
-      <div class="space-y-2">
-        <p>The dashboard data could not be loaded. Check your connection and try again.</p>
-        <LazyVButton size="sm" variant="secondary" icon="lucide:refresh-cw" @click="() => refreshSummary()">Retry</LazyVButton>
-      </div>
-    </div>
+    <LazyVErrorBanner
+      v-if="summaryError"
+      message="The dashboard data could not be loaded. Check your connection and try again."
+      @retry="() => refreshSummary()"
+    />
 
     <template v-else>
       <!-- Revenue, orders, customers, product count, low-stock alerts, pending orders -->
-      <DashboardKpis :kpis="summary?.kpis" />
+      <dashboard-kpis :kpis="summary?.kpis" />
     </template>
 
     <div class="grid gap-4 xl:grid-cols-2">
-      <DashboardChart
+      <dashboard-chart
         title="Revenue"
         subtitle="Gross sales over the selected period"
         icon="lucide:chart-line"
@@ -35,7 +38,8 @@
         :error="!!seriesError"
         @retry="() => refreshSeries()"
       />
-      <DashboardChart
+
+      <dashboard-chart
         title="Orders"
         subtitle="Orders placed over the selected period"
         icon="lucide:receipt-text"
@@ -51,15 +55,17 @@
 
     <template v-if="!summaryError">
       <div class="grid gap-4 xl:grid-cols-2">
-        <DashboardTopProducts :items="summary?.topProducts" />
-        <DashboardCustomers :items="summary?.customers" />
+        <dashboard-top-products :items="summary?.topProducts" />
+
+        <dashboard-customers :items="summary?.customers" />
       </div>
 
-      <DashboardOrders :data="summary?.orders" />
-      <DashboardLowStock :items="summary?.lowStock" />
+      <dashboard-orders :data="summary?.orders" />
+
+      <dashboard-low-stock :items="summary?.lowStock" />
     </template>
 
-    <DashboardQuickActions />
+    <dashboard-quick-actions />
   </div>
 </template>
 
@@ -69,8 +75,6 @@ import type {
   RangeKey,
   RevenueSeries,
 } from "~/types/admin/dashboard";
-
-definePageMeta({ layout: "admin" });
 
 const { number, compactCurrency } = useFormatters();
 
@@ -106,4 +110,12 @@ const rangeOptions: { value: RangeKey; label: string }[] = [
   { value: "quarter", label: "Quarter" },
   { value: "year", label: "Year" },
 ];
+
+definePageMeta({ layout: "admin" });
+
+useSeoMeta({
+  title: "PrintPro",
+  description:
+    "Chain-of-custody clearing house for optical systems, piezo print engines and archival substrates.",
+});
 </script>

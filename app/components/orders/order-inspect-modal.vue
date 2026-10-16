@@ -30,9 +30,9 @@
           <dd class="font-medium">{{ row.customer.name }}</dd>
           <dd class="meta">{{ row.customer.org }}</dd>
           <dd class="mt-1">
-            <VStatusBadge :tone="tierMeta[row.customer.tier].tone">{{
+            <LazyVStatusBadge :tone="tierMeta[row.customer.tier].tone">{{
               tierMeta[row.customer.tier].label
-            }}</VStatusBadge>
+            }}</LazyVStatusBadge>
           </dd>
         </div>
         <div>

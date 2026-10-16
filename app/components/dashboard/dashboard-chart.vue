@@ -2,13 +2,11 @@
   <VPanel :title="title" :subtitle="subtitle" :icon="icon">
     <LazyVSkeletonLoader v-if="loading || (!series && !error)" class="h-64" />
 
-    <div v-else-if="error || !series" class="callout-accent" role="alert">
-      <Icon name="lucide:circle-alert" size="16" class="bullet-icon" aria-hidden="true" />
-      <div class="space-y-2">
-        <p>The {{ title.toLowerCase() }} could not be loaded.</p>
-        <LazyVButton size="sm" variant="secondary" icon="lucide:refresh-cw" @click="emit('retry')">Retry</LazyVButton>
-      </div>
-    </div>
+    <LazyVErrorBanner
+      v-else-if="error || !series"
+      :message="`The ${title.toLowerCase()} could not be loaded.`"
+      @retry="emit('retry')"
+    />
 
     <div v-else class="space-y-3">
       <!-- The time axis always runs left to right, even in Arabic. -->
@@ -98,6 +96,7 @@ import type { RevenueSeries } from "~/types/admin/dashboard";
  * One chart component for both dashboard charts: `kind="line"` for revenue,
  * `kind="bar"` for orders. Hover, touch or arrow keys inspect each point.
  */
+
 const props = defineProps<{
   title: string;
   subtitle?: string;

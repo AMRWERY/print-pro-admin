@@ -32,7 +32,7 @@
 // The last item is always the current page (accent colour, not a link).
 // `to` is locale-aware, so pass plain paths like "/products".
 
-import type { BreadcrumbItem } from "~/types/VBreadcrumb";
+import type { BreadcrumbItem } from "~/types/shared/VBreadcrumb";
 
 defineProps<{ items: BreadcrumbItem[] }>();
 </script>

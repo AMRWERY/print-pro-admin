@@ -42,7 +42,7 @@
             <td class="col-span-2 row-start-3 text-xs text-mute md:hidden md:px-3 md:py-3 2xl:table-cell">{{ row.allocation }}</td>
             <td class="row-start-1 justify-self-end font-mono text-sm font-semibold tabular-nums md:table-cell md:px-3 md:py-3 md:text-end">{{ currency(row.amount) }}</td>
             <td class="col-span-2 row-start-4 md:table-cell md:px-3 md:py-3">
-              <VStatusBadge :tone="status[row.status].tone" :icon="status[row.status].icon">{{ statusText[row.status] }}</VStatusBadge>
+              <LazyVStatusBadge :tone="status[row.status].tone" :icon="status[row.status].icon">{{ statusText[row.status] }}</LazyVStatusBadge>
             </td>
             <td class="col-span-2 row-start-5 md:table-cell md:px-5 md:py-3 md:text-end">
               <LazyVButton variant="tertiary" size="sm">{{ actionText[row.action] }}<span class="sr-only"> — {{ row.id }}</span></LazyVButton>

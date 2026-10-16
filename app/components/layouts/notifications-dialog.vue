@@ -46,19 +46,15 @@
 
         <ul v-else class="space-y-1">
           <li v-for="n in items" :key="n.id">
-            <NuxtLinkLocale
+            <nuxt-link-locale
               :to="n.to"
               class="flex items-start gap-3 rounded-card p-2.5 transition duration-fast hover:bg-raised"
               @click="onOpen(n.id)"
             >
-              <span
-                class="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-control border"
-                :class="tone[n.kind].box"
-                aria-hidden="true"
-              >
-                <Icon :name="tone[n.kind].icon" size="16" />
-              </span>
-              <span class="min-w-0 flex-1">
+            
+            <LazyVIconTile class="mt-0.5" :icon="tone[n.kind].icon" :tone="tone[n.kind].tone" size="sm" />
+            
+            <span class="min-w-0 flex-1">
                 <span class="flex items-center gap-2">
                   <span class="truncate text-sm" :class="n.read ? 'font-medium text-mute' : 'font-semibold'">{{ n.title }}</span>
                   <span v-if="!n.read" class="h-2 w-2 shrink-0 rounded-full bg-accent" aria-hidden="true" />
@@ -67,13 +63,14 @@
                 <span class="block text-xs text-mute">{{ n.body }}</span>
                 <span class="meta">{{ n.ago }}</span>
               </span>
-            </NuxtLinkLocale>
+            </nuxt-link-locale>
           </li>
         </ul>
       </div>
 
       <footer v-if="items.length" class="flex shrink-0 items-center justify-between gap-2 border-t border-line px-4 py-3">
         <LazyVButton variant="tertiary" size="sm" @click="clear">Clear all</LazyVButton>
+       
         <LazyVButton variant="secondary" size="sm" icon="lucide:check-check" :disabled="!unread" @click="markAllRead">Mark all as read</LazyVButton>
       </footer>
     </aside>
@@ -82,6 +79,7 @@
 
 <script lang="ts" setup>
 import type { NotificationKind } from "~/composables/useNotifications";
+import type { Tone } from "~/types/admin/dashboard";
 
 const { items, unread, open, markRead, markAllRead, clear } = useNotifications();
 
@@ -93,11 +91,11 @@ const close = () => {
   open.value = false;
 };
 
-const tone: Record<NotificationKind, { icon: string; box: string }> = {
-  order: { icon: "lucide:receipt-text", box: "border-accent/40 bg-accent-soft text-accent" },
-  stock: { icon: "lucide:triangle-alert", box: "border-yellow/40 bg-yellow-soft text-yellow" },
-  customer: { icon: "lucide:user-plus", box: "border-cyan/40 bg-cyan-soft text-cyan" },
-  payment: { icon: "lucide:banknote", box: "border-success/40 bg-success-soft text-success" },
+const tone: Record<NotificationKind, { icon: string; tone: Tone }> = {
+  order: { icon: "lucide:receipt-text", tone: "accent" },
+  stock: { icon: "lucide:triangle-alert", tone: "warning" },
+  customer: { icon: "lucide:user-plus", tone: "info" },
+  payment: { icon: "lucide:banknote", tone: "success" },
 };
 
 const onOpen = (id: number) => {
