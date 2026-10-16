@@ -49,30 +49,32 @@
             <LazyVButton
               v-bind="attrs"
               variant="secondary"
-              icon="lucide:printer"
+              icon="lucide:download"
               icon-end="lucide:chevron-down"
               :disabled="!detail"
               @click="toggle"
-              >Print invoice & CoA</LazyVButton
+              >Download invoice</LazyVButton
             >
           </template>
           <button
             type="button"
             role="menuitem"
             class="menu-item w-full"
-            @click="printPage"
+            :disabled="exporting"
+            @click="exportAs('pdf')"
           >
-            <Icon name="lucide:printer" size="16" aria-hidden="true" /> Print
-            this page
+            <Icon name="lucide:file-text" size="16" aria-hidden="true" />
+            Download PDF
           </button>
           <button
             type="button"
             role="menuitem"
             class="menu-item w-full"
-            @click="exportJson"
+            :disabled="exporting"
+            @click="exportAs('excel')"
           >
-            <Icon name="lucide:file-json" size="16" aria-hidden="true" />
-            Download invoice data (JSON)
+            <Icon name="lucide:file-spreadsheet" size="16" aria-hidden="true" />
+            Download Excel
           </button>
         </LazyVMenu>
 
@@ -307,22 +309,26 @@ const addNote = async (payload: { text: string; urgent: boolean }) => {
   }
 };
 
-// --- Print / export ---
-const printPage = () => window.print();
+// --- Download invoice (PDF / Excel) ---
+const exporting = ref(false);
 
-const exportJson = () => {
-  if (!detail.value) return;
-  const { row, lines, pricing } = detail.value;
-  downloadFile(
-    `invoice-${row.id.slice(1)}.json`,
-    JSON.stringify(
-      { id: row.id, customer: row.customer, lines, pricing },
-      null,
-      2,
-    ),
-    "application/json",
-  );
-  toast.success("Invoice data downloaded");
+const exportAs = async (format: "pdf" | "excel") => {
+  if (!detail.value || exporting.value) return;
+  exporting.value = true;
+  try {
+    await (format === "pdf" ? downloadOrderPdf : downloadOrderExcel)(
+      detail.value,
+    );
+    toast.success(
+      format === "pdf" ? "PDF downloaded" : "Excel file downloaded",
+    );
+  } catch {
+    toast.error("Couldn't create the file", {
+      description: "Try again in a moment.",
+    });
+  } finally {
+    exporting.value = false;
+  }
 };
 
 definePageMeta({ layout: "admin" });
