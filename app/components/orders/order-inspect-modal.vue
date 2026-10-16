@@ -78,6 +78,14 @@
 
     <template #footer>
       <LazyVButton variant="secondary" @click="open = false">Close</LazyVButton>
+
+      <LazyVButton
+        v-if="row"
+        :to="`/orders/${row.id.slice(1)}`"
+        icon-end="lucide:arrow-up-right"
+        icon-end-class="rtl:-scale-x-100"
+        >Open full details</LazyVButton
+      >
     </template>
   </LazyVDialog>
 </template>

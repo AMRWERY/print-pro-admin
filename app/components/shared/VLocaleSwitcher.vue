@@ -25,10 +25,11 @@ defineProps<{ compact?: boolean }>();
 const { run } = useViewTransition();
 
 // Cross-fade between the two languages (and their text directions).
+// Not returning the promise keeps VButton from showing its loading spinner.
 const switchTo = () => {
   if (!target.value) return;
   const path = switchLocalePath(target.value.code);
-  return run(
+  run(
     async () => {
       await navigateTo(path);
     },

@@ -26,8 +26,9 @@
  * Single-choice pill group built on native radios, so arrow keys, focus and
  * screen-reader semantics come for free.
  *
- *   <VSegmented v-model="range" label="Period" :options="[{ value: 'week', label: '7d' }]" />
+ *   <LazyVSegmented v-model="range" label="Period" :options="[{ value: 'week', label: '7d' }]" />
  */
+
 defineProps<{
   modelValue: T;
   options: { value: T; label: string }[];

@@ -53,10 +53,18 @@
             <td class="px-3 py-4">
               <LazyVSkeletonLoader variant="line" class="w-28" />
             </td>
-            <td class="px-3 py-4"><LazyVSkeletonLoader class="h-9 w-44" /></td>
-            <td class="px-3 py-4"><LazyVSkeletonLoader class="h-9 w-56" /></td>
-            <td class="px-3 py-4"><LazyVSkeletonLoader class="h-9 w-28" /></td>
-            <td class="px-3 py-4"><LazyVSkeletonLoader class="h-9 w-28" /></td>
+            <td class="px-3 py-4">
+              <LazyVSkeletonLoader class="h-9 w-44" />
+            </td>
+            <td class="px-3 py-4">
+              <LazyVSkeletonLoader class="h-9 w-56" />
+            </td>
+            <td class="px-3 py-4">
+              <LazyVSkeletonLoader class="h-9 w-28" />
+            </td>
+            <td class="px-3 py-4">
+              <LazyVSkeletonLoader class="h-9 w-28" />
+            </td>
             <td class="px-4 py-4">
               <LazyVSkeletonLoader variant="button" class="w-16" />
             </td>
@@ -90,6 +98,7 @@
                 >
                   {{ row.id }}<span class="sr-only"> — inspect</span>
                 </button>
+
                 <LazyVStatusBadge :tone="priorityMeta[row.priority].tone">{{
                   priorityMeta[row.priority].label
                 }}</LazyVStatusBadge>
@@ -112,6 +121,7 @@
                 <div class="min-w-0">
                   <p class="font-medium">{{ row.customer.name }}</p>
                   <p class="meta">{{ row.customer.org }}</p>
+
                   <LazyVStatusBadge
                     class="mt-1"
                     :tone="tierMeta[row.customer.tier].tone"
@@ -123,6 +133,7 @@
             <td class="px-3 py-3.5">
               <div class="flex items-start gap-2.5">
                 <LazyVIconTile :icon="row.allocation.icon" />
+
                 <div class="min-w-0">
                   <p class="font-medium leading-snug">
                     {{ row.allocation.title }}
@@ -139,6 +150,7 @@
               <p class="font-mono text-sm font-semibold tabular-nums">
                 {{ currency(row.amount, { maximumFractionDigits: 0 }) }}
               </p>
+
               <LazyVStatusBadge
                 class="mt-1"
                 :tone="stageMeta[row.stage].escrowTone"
@@ -264,6 +276,7 @@ const props = defineProps<{
   loading?: boolean;
   perPage: number;
 }>();
+
 const emit = defineEmits<{ inspect: [row: OrderRow] }>();
 
 const selected = defineModel<string[]>("selected", { default: () => [] });

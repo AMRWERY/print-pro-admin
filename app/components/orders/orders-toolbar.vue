@@ -2,7 +2,11 @@
   <div class="space-y-4">
     <!-- Stage tabs + view switch -->
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <div role="group" aria-label="Filter by custody stage" class="-mx-1 flex max-w-full gap-1.5 overflow-x-auto px-1 pb-1">
+      <div
+        role="group"
+        aria-label="Filter by custody stage"
+        class="-mx-1 flex max-w-full gap-1.5 overflow-x-auto px-1 pb-1"
+      >
         <button
           v-for="tab in tabs"
           :key="tab.value"
@@ -17,16 +21,22 @@
           @click="stage = tab.value"
         >
           {{ tab.label }}
-          <span class="tabular-nums">({{ counts ? number(counts[tab.value]) : "…" }})</span>
+          <span class="tabular-nums"
+            >({{ counts ? number(counts[tab.value]) : "…" }})</span
+          >
         </button>
       </div>
 
-      <VSegmented v-model="view" label="Layout" :options="viewOptions" />
+      <LazyVSegmented v-model="view" label="Layout" :options="viewOptions" />
     </div>
 
     <!-- Filters -->
     <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
-      <form role="search" class="relative sm:col-span-2 lg:col-span-2" @submit.prevent>
+      <form
+        role="search"
+        class="relative sm:col-span-2 lg:col-span-2"
+        @submit.prevent
+      >
         <LazyVInput
           v-model="q"
           name="orderSearch"
@@ -38,14 +48,46 @@
           placeholder="Search order ID, client, atelier, equipment…"
         />
       </form>
-      <LazyVSelectInput v-model="range" name="orderRange" label="Date range" hide-label :options="rangeOptions" />
-      <LazyVSelectInput v-model="escrow" name="orderEscrow" label="Escrow mode" hide-label :options="escrowOptions" />
-      <LazyVSelectInput v-model="stage" name="orderStage" label="Custody stage" hide-label :options="stageSelect" />
-      <LazyVSelectInput v-model="tier" name="orderTier" label="Client tier" hide-label :options="tierOptions" />
+
+      <LazyVSelectInput
+        v-model="range"
+        name="orderRange"
+        label="Date range"
+        hide-label
+        :options="rangeOptions"
+      />
+
+      <LazyVSelectInput
+        v-model="escrow"
+        name="orderEscrow"
+        label="Escrow mode"
+        hide-label
+        :options="escrowOptions"
+      />
+
+      <LazyVSelectInput
+        v-model="stage"
+        name="orderStage"
+        label="Custody stage"
+        hide-label
+        :options="stageSelect"
+      />
+
+      <LazyVSelectInput
+        v-model="tier"
+        name="orderTier"
+        label="Client tier"
+        hide-label
+        :options="tierOptions"
+      />
     </div>
 
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <ul v-if="active.length" class="flex flex-wrap items-center gap-2" aria-label="Active filters">
+      <ul
+        v-if="active.length"
+        class="flex flex-wrap items-center gap-2"
+        aria-label="Active filters"
+      >
         <li v-for="chip in active" :key="chip.key">
           <button
             type="button"
@@ -58,7 +100,9 @@
           </button>
         </li>
         <li>
-          <LazyVButton variant="tertiary" size="sm" @click="clearAll">Clear all</LazyVButton>
+          <LazyVButton variant="tertiary" size="sm" @click="clearAll"
+            >Clear all</LazyVButton
+          >
         </li>
       </ul>
       <span v-else />
@@ -129,15 +173,36 @@ const stageSelect = computed(() => [
 // Every filter that is not at its default shows up as a removable chip.
 const active = computed(() => {
   const chips: { key: string; label: string; clear: () => void }[] = [];
-  if (q.value) chips.push({ key: "q", label: `“${q.value}”`, clear: () => (q.value = "") });
+  if (q.value)
+    chips.push({
+      key: "q",
+      label: `“${q.value}”`,
+      clear: () => (q.value = ""),
+    });
   if (range.value !== "all")
-    chips.push({ key: "range", label: rangeOptions.find((o) => o.value === range.value)!.label, clear: () => (range.value = "all") });
+    chips.push({
+      key: "range",
+      label: rangeOptions.find((o) => o.value === range.value)!.label,
+      clear: () => (range.value = "all"),
+    });
   if (escrow.value !== "all")
-    chips.push({ key: "escrow", label: escrowOptions.find((o) => o.value === escrow.value)!.label, clear: () => (escrow.value = "all") });
+    chips.push({
+      key: "escrow",
+      label: escrowOptions.find((o) => o.value === escrow.value)!.label,
+      clear: () => (escrow.value = "all"),
+    });
   if (stage.value !== "all")
-    chips.push({ key: "stage", label: stageMeta[stage.value].tab, clear: () => (stage.value = "all") });
+    chips.push({
+      key: "stage",
+      label: stageMeta[stage.value].tab,
+      clear: () => (stage.value = "all"),
+    });
   if (tier.value !== "all")
-    chips.push({ key: "tier", label: tierMeta[tier.value].label, clear: () => (tier.value = "all") });
+    chips.push({
+      key: "tier",
+      label: tierMeta[tier.value].label,
+      clear: () => (tier.value = "all"),
+    });
   return chips;
 });
 

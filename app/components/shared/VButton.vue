@@ -50,6 +50,7 @@
  *
  *   <LazyVButton @click="async () => { await save(); }">Save</LazyVButton>
  */
+
 defineOptions({ inheritAttrs: false });
 
 const props = withDefaults(
