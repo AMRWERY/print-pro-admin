@@ -6,12 +6,36 @@
       :breadcrumb="[{ label: 'Dashboard', to: '/' }, { label: 'Products' }]"
     >
       <template #actions>
-        <LazyVButton
-          variant="secondary"
-          icon="lucide:download"
-          @click="exportCsv(rows)"
-          >Export ledger (CSV)</LazyVButton
-        >
+        <LazyVMenu label="Export ledger">
+          <template #trigger="{ attrs, toggle }">
+            <LazyVButton
+              v-bind="attrs"
+              variant="secondary"
+              icon="lucide:download"
+              icon-end="lucide:chevron-down"
+              @click="toggle"
+              >Export ledger</LazyVButton
+            >
+          </template>
+          <button
+            type="button"
+            role="menuitem"
+            class="menu-item w-full"
+            @click="exportRows(rows, 'pdf')"
+          >
+            <Icon name="lucide:file-text" size="16" aria-hidden="true" /> PDF ·
+            this page
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            class="menu-item w-full"
+            @click="exportRows(rows, 'excel')"
+          >
+            <Icon name="lucide:file-spreadsheet" size="16" aria-hidden="true" />
+            Excel · this page
+          </button>
+        </LazyVMenu>
 
         <LazyVButton icon="lucide:circle-plus" @click="openForm('create')"
           >Add new product / SKU</LazyVButton
@@ -115,9 +139,16 @@
     <LazyVBulkBar :count="selected.length" @clear="selected = []">
       <LazyVButton
         size="sm"
-        icon="lucide:download"
-        @click="exportCsv(selectedRows)"
-        >Export selected (CSV)</LazyVButton
+        icon="lucide:file-text"
+        @click="exportRows(selectedRows, 'pdf')"
+        >Export PDF</LazyVButton
+      >
+      <LazyVButton
+        size="sm"
+        variant="secondary"
+        icon="lucide:file-spreadsheet"
+        @click="exportRows(selectedRows, 'excel')"
+        >Export Excel</LazyVButton
       >
 
       <LazyVButton
@@ -175,6 +206,7 @@
 </template>
 
 <script lang="ts" setup>
+import { categoryMeta, statusMeta } from "~/data/product-meta";
 import type {
   Product,
   ProductCategory,
@@ -335,48 +367,59 @@ const confirmDelete = async () => {
 };
 
 // --- Export ---
-const exportCsv = (list: Product[]) => {
+const exportRows = async (list: Product[], format: "pdf" | "excel") => {
   if (!list.length) {
     toast.warning("Nothing to export", {
       description: "There are no products on this page.",
     });
     return;
   }
-  downloadFile(
-    `product-ledger-${new Date().toISOString().slice(0, 10)}.csv`,
-    toCsv([
-      [
-        "sku",
-        "ean",
-        "name",
-        "category",
-        "brand",
-        "price_eur",
-        "stock",
-        "reorder_at",
-        "status",
+  try {
+    await downloadTable(format, {
+      title: "Product ledger",
+      subtitle: `${list.length} product${list.length > 1 ? "s" : ""}`,
+      fileName: `product-ledger-${new Date().toISOString().slice(0, 10)}`,
+      head: [
+        "SKU",
+        "EAN",
+        "Name",
+        "Category",
+        "Brand",
+        "Price (EUR)",
+        "Stock",
+        "Reorder at",
+        "Status",
       ],
-      ...list.map((p) => [
+      body: list.map((p) => [
         p.sku,
         p.ean,
         p.name,
-        p.category,
+        categoryMeta[p.category].label,
         p.brand,
         p.price,
         p.stock,
         p.min,
-        p.status,
+        statusMeta[p.status].label,
       ]),
-    ]),
-    "text/csv;charset=utf-8",
-  );
-  toast.success(`Exported ${list.length} product${list.length > 1 ? "s" : ""}`);
+      moneyCols: [5],
+      numberCols: [6, 7],
+    });
+    toast.success(
+      `Exported ${list.length} product${list.length > 1 ? "s" : ""}`,
+    );
+  } catch {
+    toast.error("Couldn't create the file", {
+      description: "Try again in a moment.",
+    });
+  }
 };
 
-definePageMeta({ layout: "admin" });
+definePageMeta({
+  layout: "admin",
+});
 
 useSeoMeta({
-  title: "PrintPro — Products",
+  title: "Products",
   description:
     "Catalog, stock levels and metrology status for cameras, lenses, printers and print supplies.",
 });

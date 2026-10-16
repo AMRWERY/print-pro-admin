@@ -111,7 +111,9 @@ const rangeOptions: { value: RangeKey; label: string }[] = [
   { value: "year", label: "Year" },
 ];
 
-definePageMeta({ layout: "admin" });
+definePageMeta({
+  layout: "admin",
+});
 
 useSeoMeta({
   title: "PrintPro",

@@ -5,10 +5,12 @@
 </template>
 
 <script lang="ts" setup>
-definePageMeta({ layout: "admin" });
+definePageMeta({
+  layout: "admin",
+});
 
 useSeoMeta({
-  title: 'PrintPro — Settings',
+  title: 'Settings',
   description: 'Store and account settings.',
 })
 </script>

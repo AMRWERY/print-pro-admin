@@ -331,10 +331,12 @@ const exportAs = async (format: "pdf" | "excel") => {
   }
 };
 
-definePageMeta({ layout: "admin" });
+definePageMeta({
+  layout: "admin",
+});
 
 useSeoMeta({
-  title: () => `PrintPro — Requisition ${orderId.value}`,
+  title: () => `Requisition ${orderId.value}`,
   description:
     "Custody pipeline, allocated equipment, shipment telemetry and escrow ledger for a requisition.",
 });

@@ -5,10 +5,12 @@
 </template>
 
 <script lang="ts" setup>
-definePageMeta({ layout: "admin" });
+definePageMeta({
+  layout: "admin",
+});
 
 useSeoMeta({
-  title: 'PrintPro — Inventory',
+  title: 'Inventory',
   description: 'Stock levels, reorder points and low-stock alerts.',
 })
 </script>

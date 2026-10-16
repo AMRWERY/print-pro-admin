@@ -25,19 +25,19 @@
             type="button"
             role="menuitem"
             class="menu-item w-full"
-            @click="exportRows(rows, 'csv')"
+            @click="exportRows(rows, 'pdf')"
           >
-            <Icon name="lucide:file-spreadsheet" size="16" aria-hidden="true" />
-            CSV · this page
+            <Icon name="lucide:file-text" size="16" aria-hidden="true" />
+            PDF · this page
           </button>
           <button
             type="button"
             role="menuitem"
             class="menu-item w-full"
-            @click="exportRows(rows, 'json')"
+            @click="exportRows(rows, 'excel')"
           >
-            <Icon name="lucide:file-json" size="16" aria-hidden="true" />
-            JSON · this page
+            <Icon name="lucide:file-spreadsheet" size="16" aria-hidden="true" />
+            Excel · this page
           </button>
         </LazyVMenu>
 
@@ -170,9 +170,16 @@
     <LazyVBulkBar :count="selected.length" @clear="selected = []">
       <LazyVButton
         size="sm"
-        icon="lucide:download"
-        @click="exportRows(selectedRows, 'csv')"
-        >Export selected (CSV)</LazyVButton
+        icon="lucide:file-text"
+        @click="exportRows(selectedRows, 'pdf')"
+        >Export PDF</LazyVButton
+      >
+      <LazyVButton
+        size="sm"
+        variant="secondary"
+        icon="lucide:file-spreadsheet"
+        @click="exportRows(selectedRows, 'excel')"
+        >Export Excel</LazyVButton
       >
     </LazyVBulkBar>
 
@@ -183,6 +190,8 @@
 </template>
 
 <script lang="ts" setup>
+import { stageMeta } from "~/data/order-meta";
+
 import type {
   OrderRow,
   OrderRange,
@@ -290,55 +299,54 @@ const onCreated = () => {
 };
 
 // --- Export ---
-const exportRows = (list: OrderRow[], format: "csv" | "json") => {
+const exportRows = async (list: OrderRow[], format: "pdf" | "excel") => {
   if (!list.length) {
     toast.warning("Nothing to export", {
       description: "There are no requisitions on this page.",
     });
     return;
   }
-  const stamp = new Date().toISOString().slice(0, 10);
-  if (format === "json") {
-    downloadFile(
-      `requisitions-${stamp}.json`,
-      JSON.stringify(list, null, 2),
-      "application/json",
-    );
-  } else {
-    downloadFile(
-      `requisitions-${stamp}.csv`,
-      toCsv([
-        [
-          "id",
-          "placed_at_utc",
-          "customer",
-          "atelier",
-          "allocation",
-          "escrow_eur",
-          "stage",
-        ],
-        ...list.map((r) => [
-          r.id,
-          r.placedAt,
-          r.customer.name,
-          r.customer.org,
-          r.allocation.title,
-          r.amount,
-          r.stage,
-        ]),
+  try {
+    await downloadTable(format, {
+      title: "Requisition ledger",
+      subtitle: `${list.length} requisition${list.length > 1 ? "s" : ""}`,
+      fileName: `requisitions-${new Date().toISOString().slice(0, 10)}`,
+      head: [
+        "Requisition",
+        "Placed (UTC)",
+        "Customer",
+        "Atelier",
+        "Allocation",
+        "Escrow (EUR)",
+        "Stage",
+      ],
+      body: list.map((r) => [
+        r.id,
+        r.placedAt.slice(0, 16).replace("T", " "),
+        r.customer.name,
+        r.customer.org,
+        r.allocation.title,
+        r.amount,
+        stageMeta[r.stage].tab,
       ]),
-      "text/csv;charset=utf-8",
+      moneyCols: [5],
+    });
+    toast.success(
+      `Exported ${list.length} requisition${list.length > 1 ? "s" : ""}`,
     );
+  } catch {
+    toast.error("Couldn't create the file", {
+      description: "Try again in a moment.",
+    });
   }
-  toast.success(
-    `Exported ${list.length} requisition${list.length > 1 ? "s" : ""}`,
-  );
 };
 
-definePageMeta({ layout: "admin" });
+definePageMeta({
+  layout: "admin",
+});
 
 useSeoMeta({
-  title: "PrintPro — Order Requisition & Escrow Ledger",
+  title: "Order Requisition & Escrow Ledger",
   description:
     "Chain-of-custody clearing house for optical systems, piezo print engines and archival substrates.",
 });
