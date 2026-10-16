@@ -51,6 +51,22 @@
         </ul>
       </nav>
 
+      <div class="shrink-0 border-t border-line p-3">
+        <button
+          type="button"
+          class="flex w-full items-center gap-2.5 rounded-control px-2.5 py-2 text-sm text-accent transition duration-fast hover:bg-accent-soft"
+          @click="signOut"
+        >
+          <Icon
+            name="lucide:log-out"
+            size="16"
+            class="icon-nudge rtl:-scale-x-100"
+            aria-hidden="true"
+          />
+          Sign out
+        </button>
+      </div>
+
     </aside>
   </div>
 </template>
@@ -62,6 +78,9 @@ import { adminNav } from "~/data/admin-nav";
 const open = defineModel<boolean>("open", { default: false });
 
 const route = useRoute();
+const auth = useAuthStore();
+const localePath = useLocalePath();
+const toast = useToast();
 const isDesktop = useMediaQuery("(min-width: 1024px)");
 const mounted = useMounted();
 
@@ -70,6 +89,13 @@ const inert = computed(() => mounted.value && !isDesktop.value && !open.value);
 
 const close = () => {
   open.value = false;
+};
+
+const signOut = async () => {
+  auth.logout();
+  close();
+  toast.success("Signed out");
+  await navigateTo(localePath("/auth"));
 };
 
 const closeButton = ref<{ focus: () => void } | null>(null);

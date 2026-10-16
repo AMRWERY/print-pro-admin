@@ -1,5 +1,17 @@
 import type {
+  Backorder,
+  Packaging,
   Product,
+  ProductDetail,
+  ProductExtras,
+  ProductFormValues,
+  ProductMedia,
+  ProductRevision,
+  ProductSpec,
+  ProductVariant,
+  Publication,
+  VariantAxis,
+  VariantStatus,
   ProductCategory,
   ProductInput,
   ProductSort,
@@ -10,6 +22,7 @@ import type {
   Template
 } from "~/types/admin/products";
 import { categoryMeta, stockStateOf } from "~/data/product-meta";
+import { buildVariants } from "~/utils/product-variants";
 
 // Demo catalog for the products screen. When the app has a backend this file goes away and
 // server/api/admin/products/* proxies the real service.
@@ -219,3 +232,199 @@ export const deleteProducts = (ids: string[]): number => {
 };
 
 export const findProduct = (id: string) => store.find((p) => p.id === id);
+
+// ---------------------------------------------------------------------------
+// Product editor
+// ---------------------------------------------------------------------------
+
+const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+
+const HS_CODES: Record<ProductCategory, string> = {
+  cameras: "9006.30.00",
+  glass: "9002.11.00",
+  printers: "8443.32.10",
+  rag: "4911.10.00",
+  pigments: "3215.19.00",
+  metrology: "9027.30.00",
+};
+
+const SPECS: Record<ProductCategory, [string, string][]> = {
+  cameras: [["Sensor", "43.8 × 32.9 mm medium format BSI CMOS"], ["Resolution", "100 MP (11656 × 8742)"], ["Dynamic range", "15 stops, 16-bit colour"], ["Stabilization", "5-axis IBIS, 7 stops"]],
+  glass: [["Focal length", "55 mm"], ["Aperture", "f/2.5 – f/32"], ["Shutter", "Leaf, sync to 1/2000 s"], ["Construction", "9 elements in 8 groups"]],
+  printers: [["Max roll width", "44 inch"], ["Resolution", "2400 × 1200 dpi"], ["Ink", "UltraChrome PRO12, 12 colours"], ["Spectro unit", "Integrated ILS30 spectrophotometer"]],
+  rag: [["Substrate", "100% cotton rag"], ["Weight", "308 gsm"], ["Dmax", "2.4"], ["Archival rating", "ISO 9706, acid-free"]],
+  pigments: [["Formulation", "Mineral pigment suspension"], ["Volume", "700 ml"], ["Density", "Dmax 2.9 on baryta"], ["Shelf life", "24 months sealed"]],
+  metrology: [["Measurement", "Spectral, M0 / M1 / M2 / M3"], ["Aperture", "8 mm polarized"], ["Interface", "USB-C"], ["Calibration", "NIST traceable certificate"]],
+};
+
+const defaultExtras = (p: Product): ProductExtras => {
+  const axes: VariantAxis[] =
+    p.category === "cameras"
+      ? [
+          { name: "Finish", values: ["Earth Explorer", "Titanium Graphite"] },
+          { name: "Storage", values: ["1TB", "2TB"] },
+        ]
+      : [{ name: "Edition", values: ["Standard", "Studio"] }];
+  const variants = buildVariants(axes, p.price).map((v, i) => ({
+    ...v,
+    price: Math.round(p.price * (1 + i * 0.05)),
+    stock: Math.max(0, Math.floor(p.stock / 2) - i),
+  }));
+  return {
+    slug: slugify(p.name),
+    description: `The ${p.name} sets the standard in its class. ${p.spec}.\n\nEvery unit is bench-verified in the ISO 5 cleanroom and ships with its calibration report.`,
+    excerpt: `${p.name}: ${p.spec}. Bench-certified and calibrated.`,
+    media: [
+      { name: `${p.sku}_primary.tif`, size: 18_600_000 },
+      { name: `${p.sku}_angle.tif`, size: 9_400_000 },
+    ],
+    compareAt: Math.round(p.price * 1.08),
+    cost: Math.round(p.price * 0.62),
+    taxExempt: false,
+    backorder: "notify",
+    axes,
+    variants,
+    specs: SPECS[p.category].map(([key, value]) => ({ key, value })),
+    massKg: 2.4,
+    dims: { l: 148, w: 182, h: 7 },
+    hsCode: HS_CODES[p.category],
+    packaging: "climate",
+    seoTitle: `${p.name} | Lumen & Press`.slice(0, 70),
+    seoDescription: `${p.name}. ${p.spec}. Certified and benched before dispatch.`.slice(0, 160),
+    publication: p.status === "draft" ? "draft" : "published",
+    channels: ["storefront", "institutional"],
+    subType: categoryMeta[p.category].label,
+    collections: ["Master Fine Art Print 2026"],
+    tags: [`#${slugify(p.brand).replace(/-/g, "")}`],
+    bundled: [],
+  };
+};
+
+const extrasStore = new Map<string, ProductExtras>();
+const revisionStore = new Map<string, ProductRevision[]>();
+
+export const getProductDetail = (id: string): ProductDetail | null => {
+  const p = findProduct(id);
+  if (!p) return null;
+  return {
+    ...p,
+    ...(extrasStore.get(id) ?? defaultExtras(p)),
+    revisions: revisionStore.get(id) ?? [
+      { rev: "1.0", at: "2026-10-01T09:00:00.000Z", by: "System", note: "Registered in the catalog" },
+    ],
+  };
+};
+
+// -- Validation: trims, clamps and filters rather than trusting the browser --
+
+const str = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
+const strList = (v: unknown, maxItems: number, maxLen: number) =>
+  Array.isArray(v) ? v.filter((x): x is string => typeof x === "string").map((x) => x.trim().slice(0, maxLen)).filter(Boolean).slice(0, maxItems) : [];
+const numOrNull = (v: unknown, max = 1_000_000) => {
+  if (v === null || v === undefined || v === "") return null;
+  const n = Number(v);
+  return Number.isFinite(n) && n >= 0 && n <= max ? n : null;
+};
+
+export const CHANNELS = ["storefront", "institutional", "printLab", "depot", "vip"] as const;
+
+export const validateProductForm = (body: unknown): ProductFormValues | null => {
+  const base = validateProductInput(body);
+  if (!base) return null;
+  const b = (body ?? {}) as Record<string, any>;
+  const dims = (b.dims ?? {}) as Record<string, unknown>;
+
+  const axes: VariantAxis[] = (Array.isArray(b.axes) ? b.axes : [])
+    .slice(0, 2)
+    .map((a: any) => ({ name: str(a?.name, 40), values: strList(a?.values, 6, 40) }))
+    .filter((a: VariantAxis) => a.name && a.values.length);
+
+  const variants: ProductVariant[] = (Array.isArray(b.variants) ? b.variants : [])
+    .slice(0, 40)
+    .map((v: any) => ({
+      key: str(v?.key, 200),
+      label: str(v?.label, 200),
+      skuExt: str(v?.skuExt, 30).toUpperCase(),
+      price: numOrNull(v?.price) ?? 0,
+      stock: Math.round(numOrNull(v?.stock, 100_000) ?? 0),
+      status: pick<VariantStatus>(v?.status, ["active", "preorder", "hidden"], "active"),
+    }))
+    .filter((v: ProductVariant) => v.key);
+
+  return {
+    ...base,
+    slug: slugify(str(b.slug, 120)) || slugify(base.name),
+    description: str(b.description, 4000),
+    excerpt: str(b.excerpt, 300),
+    media: (Array.isArray(b.media) ? b.media : [])
+      .slice(0, 12)
+      .map((m: any) => ({ name: str(m?.name, 120), size: numOrNull(m?.size, 2e9) ?? 0 }))
+      .filter((m: ProductMedia) => m.name),
+    compareAt: numOrNull(b.compareAt),
+    cost: numOrNull(b.cost),
+    taxExempt: b.taxExempt === true,
+    backorder: pick<Backorder>(b.backorder, ["block", "notify", "allow"], "notify"),
+    axes,
+    variants,
+    specs: (Array.isArray(b.specs) ? b.specs : [])
+      .slice(0, 30)
+      .map((s: any) => ({ key: str(s?.key, 60), value: str(s?.value, 200) }))
+      .filter((s: ProductSpec) => s.key && s.value),
+    massKg: numOrNull(b.massKg, 100_000),
+    dims: { l: numOrNull(dims.l, 100_000), w: numOrNull(dims.w, 100_000), h: numOrNull(dims.h, 100_000) },
+    hsCode: str(b.hsCode, 20),
+    packaging: pick<Packaging>(b.packaging, ["climate", "standard"], "climate"),
+    seoTitle: str(b.seoTitle, 70),
+    seoDescription: str(b.seoDescription, 160),
+    publication: pick<Publication>(b.publication, ["draft", "published", "archived"], "draft"),
+    channels: strList(b.channels, 5, 20).filter((c) => (CHANNELS as readonly string[]).includes(c)),
+    subType: str(b.subType, 80),
+    collections: strList(b.collections, 10, 60),
+    tags: strList(b.tags, 15, 40),
+    bundled: strList(b.bundled, 20, 40).filter((id) => store.some((p) => p.id === id)),
+  };
+};
+
+const nextRevision = (id: string) => {
+  const list = revisionStore.get(id) ?? [{ rev: "1.0", at: "2026-10-01T09:00:00.000Z", by: "System", note: "Registered in the catalog" }];
+  const [major, minor] = list[0]!.rev.split(".").map(Number);
+  return `${major}.${(minor ?? 0) + 1}`;
+};
+
+const pushRevision = (id: string, note: string) => {
+  const list = revisionStore.get(id) ?? [{ rev: "1.0", at: "2026-10-01T09:00:00.000Z", by: "System", note: "Registered in the catalog" }];
+  revisionStore.set(id, [
+    { rev: nextRevision(id), at: new Date(DEMO_NOW_ISO).toISOString(), by: "COO Admin (Station-01)", note },
+    ...list,
+  ]);
+};
+
+// The register has a fixed "now" so the audit trail is stable between reloads.
+const DEMO_NOW_ISO = Date.UTC(2026, 9, 31, 15, 0, 0);
+
+const splitForm = (v: ProductFormValues) => {
+  const { name, sku, category, brand, price, stock, min, status, ...extras } = v;
+  return { base: { name, sku, category, brand, price, stock, min, status } as ProductInput, extras: extras as ProductExtras };
+};
+
+export const createProductFromForm = (values: ProductFormValues): Product => {
+  const { base, extras } = splitForm(values);
+  const product = createProduct(base);
+  extrasStore.set(product.id, extras);
+  pushRevision(product.id, "Registered from the product editor");
+  return product;
+};
+
+export const updateProductFromForm = (id: string, values: ProductFormValues): Product | null => {
+  const { base, extras } = splitForm(values);
+  const product = updateProduct(id, base);
+  if (!product) return null;
+  extrasStore.set(id, extras);
+  pushRevision(id, values.publication === "published" ? "Published from the product editor" : "Saved from the product editor");
+  return product;
+};

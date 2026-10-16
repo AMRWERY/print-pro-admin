@@ -90,3 +90,77 @@ export interface Template {
   unit: "unit" | "roll";
   min: number;
 }
+
+// ---------------------------------------------------------------------------
+// Product editor (create / edit)
+// ---------------------------------------------------------------------------
+
+export type Publication = "draft" | "published" | "archived";
+export type Backorder = "block" | "notify" | "allow";
+export type Packaging = "climate" | "standard";
+export type VariantStatus = "active" | "preorder" | "hidden";
+
+export interface ProductMedia {
+  name: string;
+  size: number;
+}
+
+export interface VariantAxis {
+  name: string;
+  values: string[];
+}
+
+export interface ProductVariant {
+  /** Stable key: the axis values joined with "|". */
+  key: string;
+  label: string;
+  skuExt: string;
+  price: number;
+  stock: number;
+  status: VariantStatus;
+}
+
+export interface ProductSpec {
+  key: string;
+  value: string;
+}
+
+export interface ProductRevision {
+  rev: string;
+  at: string;
+  by: string;
+  note: string;
+}
+
+/** Everything the editor holds beyond the register's basic columns. */
+export interface ProductExtras {
+  slug: string;
+  description: string;
+  excerpt: string;
+  media: ProductMedia[];
+  compareAt: number | null;
+  cost: number | null;
+  taxExempt: boolean;
+  backorder: Backorder;
+  axes: VariantAxis[];
+  variants: ProductVariant[];
+  specs: ProductSpec[];
+  massKg: number | null;
+  dims: { l: number | null; w: number | null; h: number | null };
+  hsCode: string;
+  packaging: Packaging;
+  seoTitle: string;
+  seoDescription: string;
+  publication: Publication;
+  channels: string[];
+  subType: string;
+  collections: string[];
+  tags: string[];
+  bundled: string[];
+}
+
+export type ProductFormValues = ProductInput & ProductExtras;
+
+export interface ProductDetail extends Product, ProductExtras {
+  revisions: ProductRevision[];
+}

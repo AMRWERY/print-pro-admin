@@ -35,19 +35,11 @@
         <Icon name="lucide:settings" size="16" aria-hidden="true" /> Settings
       </nuxt-link-locale>
     </div>
-
-    <div class="border-t border-line py-1">
-      <button type="button" role="menuitem" class="menu-item w-full text-accent" @click="signOut">
-        <Icon name="lucide:log-out" size="16" aria-hidden="true" /> Sign out
-      </button>
-    </div>
   </LazyVMenu>
 </template>
 
 <script lang="ts" setup>
 const auth = useAuthStore();
-const localePath = useLocalePath();
-const toast = useToast();
 
 const name = computed(() => auth.user?.name ?? "Admin");
 const email = computed(() => auth.user?.email ?? "Not signed in");
@@ -60,9 +52,4 @@ const initials = computed(() =>
     .toUpperCase(),
 );
 
-const signOut = async () => {
-  auth.logout();
-  toast.success("Signed out");
-  await navigateTo(localePath("/auth"));
-};
 </script>

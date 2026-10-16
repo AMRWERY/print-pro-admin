@@ -37,7 +37,7 @@
           </button>
         </LazyVMenu>
 
-        <LazyVButton icon="lucide:circle-plus" @click="openForm('create')"
+        <LazyVButton icon="lucide:circle-plus" to="/products/new"
           >Add new product / SKU</LazyVButton
         >
       </template>
@@ -100,7 +100,7 @@
             eyebrow="REGISTER :: EMPTY"
             tag="0 SKUS"
           >
-            <LazyVButton icon="lucide:circle-plus" @click="openForm('create')"
+            <LazyVButton icon="lucide:circle-plus" to="/products/new"
               >Add new product / SKU</LazyVButton
             >
           </LazyVEmptyState>
@@ -113,8 +113,8 @@
           :loading="pending"
           :per-page="perPage"
           :view="view"
-          @edit="(p) => openForm('edit', p)"
-          @duplicate="(p) => openForm('duplicate', p)"
+          @edit="(p) => navigateTo(localePath(`/products/${p.id}`))"
+          @duplicate="(p) => navigateTo(localePath({ path: '/products/new', query: { from: p.id } }))"
           @remove="(p) => askDelete([p.id], p.name)"
           @stock="adjustStock"
         />
@@ -161,14 +161,7 @@
       >
     </LazyVBulkBar>
 
-    <product-form-dialog
-      v-model:open="formOpen"
-      :product="formProduct"
-      :mode="formMode"
-      @saved="onSaved"
-    />
-
-    <LazyVDialog
+        <LazyVDialog
       v-model:open="deleteOpen"
       title="Delete from the register?"
       :description="
@@ -217,6 +210,7 @@ import type {
 } from "~/types/admin/products";
 
 const toast = useToast();
+const localePath = useLocalePath();
 
 const filters = reactive({
   q: "",
@@ -291,29 +285,6 @@ watch([page, query], () => {
 const selectedRows = computed(() =>
   rows.value.filter((r) => selected.value.includes(r.id)),
 );
-
-// --- Add / edit / duplicate ---
-const formOpen = ref(false);
-const formMode = ref<"create" | "edit" | "duplicate">("create");
-const formProduct = ref<Product | null>(null);
-
-const openForm = (
-  mode: "create" | "edit" | "duplicate",
-  product: Product | null = null,
-) => {
-  formMode.value = mode;
-  formProduct.value = product;
-  formOpen.value = true;
-};
-
-const onSaved = (_: Product, mode: "create" | "edit" | "duplicate") => {
-  if (mode !== "edit") {
-    // New SKUs register at the top of the newest-first list.
-    filters.sort = "newest";
-    page.value = 1;
-  }
-  refresh();
-};
 
 // --- Quick stock adjustment (the + / − on cards) ---
 // Updates the row at once and rolls back if the save fails. The KPI cards catch up on the next load.
