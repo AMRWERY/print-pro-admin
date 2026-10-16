@@ -167,11 +167,14 @@
       </li>
     </ul>
 
-    <orders-bulk-bar
-      :count="selected.length"
-      @export="exportRows(selectedRows, 'csv')"
-      @clear="selected = []"
-    />
+    <LazyVBulkBar :count="selected.length" @clear="selected = []">
+      <LazyVButton
+        size="sm"
+        icon="lucide:download"
+        @click="exportRows(selectedRows, 'csv')"
+        >Export selected (CSV)</LazyVButton
+      >
+    </LazyVBulkBar>
 
     <order-inspect-modal v-model:open="inspectOpen" :row="inspected" />
 

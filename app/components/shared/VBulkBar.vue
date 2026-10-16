@@ -12,10 +12,7 @@
         <p class="font-mono text-xs" aria-live="polite">
           <span class="font-bold tabular-nums">{{ count }}</span> selected
         </p>
-        <LazyVButton size="sm" icon="lucide:download" @click="emit('export')"
-          >Export selected (CSV)</LazyVButton
-        >
-
+        <slot />
         <LazyVButton size="sm" variant="tertiary" @click="emit('clear')"
           >Clear selection</LazyVButton
         >
@@ -25,7 +22,14 @@
 </template>
 
 <script lang="ts" setup>
+/**
+ * Floating bar shown while rows are selected. Put the bulk actions in the default slot.
+ *
+ *   <LazyVBulkBar :count="selected.length" @clear="selected = []">
+ *     <LazyVButton size="sm" @click="exportSelected">Export</LazyVButton>
+ *   </LazyVBulkBar>
+ */
 defineProps<{ count: number }>();
 
-const emit = defineEmits<{ export: []; clear: [] }>();
+const emit = defineEmits<{ clear: [] }>();
 </script>
