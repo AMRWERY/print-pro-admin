@@ -220,7 +220,7 @@ const expandAll = () => {
 };
 
 // --- Inspector (side panel on wide screens, dialog below) ---
-const isWide = useMediaQuery("(min-width: 1280px)");
+const isWide = useWideScreen();
 
 const selectedId = ref<string | null>(null);
 const creating = ref<{ parentId: string | null } | null>(null);
