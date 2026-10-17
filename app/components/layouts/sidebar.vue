@@ -37,12 +37,21 @@
         />
       </div>
 
-      <nav class="flex-1 overflow-y-auto px-3 py-4" aria-label="Main navigation">
+      <nav
+        class="flex-1 overflow-y-auto px-3 py-4"
+        aria-label="Main navigation"
+      >
         <ul class="space-y-0.5">
           <li v-for="item in adminNav" :key="item.to">
             <nuxt-link-locale
               :to="item.to"
-              class="flex items-center gap-2.5 rounded-control px-2.5 py-2 text-sm text-mute transition duration-fast hover:bg-raised hover:text-paper [&.router-link-exact-active]:bg-accent [&.router-link-exact-active]:font-medium [&.router-link-exact-active]:text-onaccent"
+              class="flex items-center gap-2.5 rounded-control px-2.5 py-2 text-sm transition duration-fast"
+              :class="
+                isActive(item.to)
+                  ? 'bg-accent font-medium text-onaccent'
+                  : 'text-mute hover:bg-raised hover:text-paper'
+              "
+              :aria-current="isActive(item.to) ? 'page' : undefined"
             >
               <Icon :name="item.icon" size="16" aria-hidden="true" />
               <span class="truncate">{{ item.label }}</span>
@@ -66,7 +75,6 @@
           Sign out
         </button>
       </div>
-
     </aside>
   </div>
 </template>
@@ -98,6 +106,15 @@ const signOut = async () => {
   await navigateTo(localePath("/auth"));
 };
 
+// A link stays highlighted on its own pages and the pages under it
+// (Orders also covers /orders/LP-948201). The dashboard only matches itself.
+const trim = (path: string) => path.replace(/\/+$/, "") || "/";
+const isActive = (to: string) => {
+  const base = trim(localePath(to));
+  const current = trim(route.path);
+  return to === "/" ? current === base : current === base || current.startsWith(`${base}/`);
+};
+
 const closeButton = ref<{ focus: () => void } | null>(null);
 
 watch(() => route.fullPath, close);
@@ -110,6 +127,7 @@ watch(open, async (isOpen) => {
 
 // A drawer on top of the page shouldn't let the page scroll underneath.
 const scrollLock = useScrollLock(import.meta.client ? document.body : null);
+
 watch([open, isDesktop], ([isOpen, desktop]) => {
   scrollLock.value = isOpen && !desktop;
 });

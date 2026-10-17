@@ -140,7 +140,7 @@
         </p>
         <ul class="space-y-2">
           <li v-for="o in detail.recentOrders" :key="o.id">
-            <NuxtLinkLocale
+            <nuxt-link-locale
               :to="`/orders/${o.id.slice(1)}`"
               class="block rounded-card border border-line bg-ink p-3 text-sm transition duration-fast hover:border-accent/60"
             >
@@ -158,7 +158,7 @@
               <span class="meta block"
                 >{{ o.stageLabel }} · {{ o.placedAt.slice(0, 10) }}</span
               >
-            </NuxtLinkLocale>
+            </nuxt-link-locale>
           </li>
         </ul>
       </section>
