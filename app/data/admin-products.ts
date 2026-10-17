@@ -428,3 +428,6 @@ export const updateProductFromForm = (id: string, values: ProductFormValues): Pr
   pushRevision(id, values.publication === "published" ? "Published from the product editor" : "Saved from the product editor");
   return product;
 };
+
+/** The whole register, for the inventory ledger to read and summarise. */
+export const allProducts = () => store;
