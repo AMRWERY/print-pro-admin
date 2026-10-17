@@ -34,8 +34,10 @@
         </div>
 
         <div class="flex flex-wrap gap-3">
-          <LazyVButton variant="primary" :to="redirect || '/account'">Continue</LazyVButton>
-          <LazyVButton variant="secondary" to="/account" icon="lucide:layout-dashboard">Atelier Dashboard</LazyVButton>
+          <LazyVButton variant="primary" :to="redirect || '/profile'">Continue</LazyVButton>
+         
+          <LazyVButton variant="secondary" to="/profile" icon="lucide:layout-dashboard">Atelier Dashboard</LazyVButton>
+        
           <LazyVButton
             variant="secondary"
             icon="lucide:log-out"
