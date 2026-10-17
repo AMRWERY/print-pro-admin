@@ -10,5 +10,6 @@ export const adminNav: AdminNavItem[] = [
   { to: "/customers", label: "Customers", icon: "lucide:contact-round" },
   { to: "/products", label: "Products", icon: "lucide:package" },
   { to: "/categories", label: "Categories", icon: "lucide:folder-tree" },
+  { to: "/coupons", label: "Coupons", icon: "lucide:ticket-percent" },
   { to: "/inventory", label: "Inventory", icon: "lucide:warehouse" },
 ];
