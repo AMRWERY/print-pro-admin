@@ -240,6 +240,7 @@ const { data, pending, error, refresh } = useFetch<ProductsResponse>(
   "/api/admin/products",
   {
     lazy: true,
+    deep: true,
     query,
   },
 );
