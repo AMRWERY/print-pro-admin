@@ -397,7 +397,7 @@ definePageMeta({
 });
 
 useSeoMeta({
-  title: "PrintPro — Categories",
+  title: "Categories",
   description: "Organise the catalog into categories and sub-categories.",
 });
 </script>
