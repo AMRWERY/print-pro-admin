@@ -72,7 +72,6 @@ export interface OrdersResponse {
     totalRequisitions: number;
     historicalDelta: number;
     volumeEur: number;
-    volumeUsd: number;
     pendingEscrowEur: number;
     quarantineHold: number;
   };

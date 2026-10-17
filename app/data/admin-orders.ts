@@ -456,7 +456,6 @@ export const queryOrders = (query: OrdersQuery): OrdersResponse => {
       totalRequisitions: everything.length,
       historicalDelta: 4.2,
       volumeEur: 482940,
-      volumeUsd: 521575,
       pendingEscrowEur: 74210,
       quarantineHold: 9,
     },
@@ -613,7 +612,7 @@ export const orderDetail = (slug: string): OrderDetail | null => {
       id: 2,
       author: "Escrow Officer M. Klein",
       ago: "4 hours ago",
-      text: `Wire transfer of €${row.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })} confirmed via Deutsche Bank Trust. Escrow vault lock established.`,
+      text: `Wire transfer of EGP ${row.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })} confirmed via Deutsche Bank Trust. Escrow vault lock established.`,
       urgent: false,
     },
   ];

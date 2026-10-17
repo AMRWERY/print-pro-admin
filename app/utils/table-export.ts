@@ -8,14 +8,14 @@ export interface TableExport {
   fileName: string;
   head: string[];
   body: (string | number)[][];
-  /** Column indexes holding money in EUR: formatted in the PDF, kept as numbers in Excel. */
+  /** Column indexes holding money in EGP: formatted in the PDF, kept as numbers in Excel. */
   moneyCols?: number[];
   /** Column indexes holding other numbers (right-aligned in the PDF). */
   numberCols?: number[];
 }
 
-const eur = (n: number) =>
-  `EUR ${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const egp = (n: number) =>
+  `EGP ${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 export const downloadTablePdf = async (t: TableExport) => {
   const [{ jsPDF }, { autoTable }] = await Promise.all([
@@ -44,7 +44,7 @@ export const downloadTablePdf = async (t: TableExport) => {
     margin: { left: margin, right: margin, bottom: 36 },
     head: [t.head],
     body: t.body.map((row) =>
-      row.map((cell, i) => (money.has(i) && typeof cell === "number" ? eur(cell) : String(cell))),
+      row.map((cell, i) => (money.has(i) && typeof cell === "number" ? egp(cell) : String(cell))),
     ),
     headStyles: { fillColor: [196, 36, 18] },
     styles: { fontSize: 8, cellPadding: 4, overflow: "linebreak" },

@@ -35,19 +35,7 @@
             })
           "
           hint="Stock on hand at unit price"
-        >
-          <p class="font-mono text-2xs text-mute">
-            ≈
-            {{
-              currency(data.kpis.valuationEur * USD_RATE, {
-                currency: "USD",
-                maximumFractionDigits: 0,
-                notation: "compact",
-              })
-            }}
-            USD
-          </p>
-        </LazyVStatCard>
+        />
       </li>
       <li>
         <LazyVStatCard
@@ -82,7 +70,6 @@
 </template>
 
 <script lang="ts" setup>
-import { USD_RATE } from "~/data/product-meta";
 import type { ProductsResponse } from "~/types/admin/products";
 
 defineProps<{ data?: ProductsResponse | null }>();

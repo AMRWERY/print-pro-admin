@@ -31,7 +31,7 @@ export interface Product {
   serial: string;
   category: ProductCategory;
   brand: string;
-  /** Unit price in EUR. */
+  /** Unit price in EGP. */
   price: number;
   stock: number;
   /** Reorder point: at or below this the product is low on stock. */

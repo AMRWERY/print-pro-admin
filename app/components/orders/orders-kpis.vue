@@ -38,18 +38,7 @@
           icon="lucide:landmark"
           :value="currency(data.kpis.volumeEur, { maximumFractionDigits: 0 })"
           hint="Rolling 30-day custodial value"
-        >
-          <p class="font-mono text-2xs text-mute">
-            ≈
-            {{
-              currency(data.kpis.volumeUsd, {
-                currency: "USD",
-                maximumFractionDigits: 0,
-              })
-            }}
-            USD
-          </p>
-        </LazyVStatCard>
+        />
       </li>
 
       <li>

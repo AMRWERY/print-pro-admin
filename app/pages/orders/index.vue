@@ -317,7 +317,7 @@ const exportRows = async (list: OrderRow[], format: "pdf" | "excel") => {
         "Customer",
         "Atelier",
         "Allocation",
-        "Escrow (EUR)",
+        "Escrow (EGP)",
         "Stage",
       ],
       body: list.map((r) => [

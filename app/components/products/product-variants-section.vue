@@ -91,7 +91,7 @@
               scope="col"
               class="label-caps px-3 py-2.5 text-start font-normal"
             >
-              Price (EUR)
+              Price (EGP)
             </th>
             <th
               scope="col"

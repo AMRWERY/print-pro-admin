@@ -6,7 +6,7 @@
     class="scroll-mt-24"
   >
     <template #actions>
-      <span class="chip">Currency: EUR</span>
+      <span class="chip">Currency: EGP</span>
     </template>
 
     <div class="grid gap-4 sm:grid-cols-3">
@@ -14,7 +14,7 @@
         v-model="form.price"
         name="price"
         type="number"
-        label="Listing price (EUR)"
+        label="Listing price (EGP)"
         required
         rules="required|min_value:0"
         min="0"

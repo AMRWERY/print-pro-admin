@@ -30,7 +30,7 @@
               Category &amp; make
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-end font-normal">
-              Unit price (EUR / USD)
+              Unit price (EGP)
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
               Stock reserves
@@ -127,16 +127,6 @@
             <td class="px-3 py-3.5 text-end">
               <p class="font-mono text-sm font-semibold tabular-nums">
                 {{ currency(p.price, { maximumFractionDigits: 0 }) }}
-              </p>
-              <p class="font-mono text-2xs text-mute tabular-nums">
-                ≈
-                {{
-                  currency(p.price * USD_RATE, {
-                    currency: "USD",
-                    maximumFractionDigits: 0,
-                  })
-                }}
-                USD
               </p>
             </td>
             <td class="w-44 px-3 py-3.5">
@@ -249,7 +239,6 @@ import {
   stockMeta,
   stockStateOf,
   statusMeta,
-  USD_RATE,
 } from "~/data/product-meta";
 import type { Product } from "~/types/admin/products";
 

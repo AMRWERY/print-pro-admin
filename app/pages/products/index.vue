@@ -356,7 +356,7 @@ const exportRows = async (list: Product[], format: "pdf" | "excel") => {
         "Name",
         "Category",
         "Brand",
-        "Price (EUR)",
+        "Price (EGP)",
         "Stock",
         "Reorder at",
         "Status",

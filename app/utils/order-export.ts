@@ -4,7 +4,7 @@ import type { OrderDetail } from "~/types/admin/orders";
 // only load when someone actually exports. Client only.
 
 const money = (n: number) =>
-  `EUR ${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  `EGP ${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 const fileName = (d: OrderDetail, ext: string) =>
   `invoice-${d.row.id.slice(1).toLowerCase()}.${ext}`;
@@ -151,12 +151,12 @@ export const downloadOrderExcel = async (d: OrderDetail) => {
       ["Stage", d.row.stage],
       ["Waybill", d.shipment.waybill],
       [],
-      ["Subtotal (EUR)", p.subtotal],
-      ["Cleanroom QA fee (EUR)", p.qaFee],
-      ["Armored courier (EUR)", p.courier],
-      ["Institutional discount (EUR)", -p.discount],
-      ["VAT 19% (EUR)", p.vat],
-      ["Total escrow value (EUR)", p.total],
+      ["Subtotal (EGP)", p.subtotal],
+      ["Cleanroom QA fee (EGP)", p.qaFee],
+      ["Armored courier (EGP)", p.courier],
+      ["Institutional discount (EGP)", -p.discount],
+      ["VAT 19% (EGP)", p.vat],
+      ["Total escrow value (EGP)", p.total],
     ],
     [30, 44],
   );
@@ -164,7 +164,7 @@ export const downloadOrderExcel = async (d: OrderDetail) => {
   add(
     "Line items",
     [
-      ["SKU", "Item", "Spec", "Qty", "Unit", "Unit price (EUR)", "Total (EUR)"],
+      ["SKU", "Item", "Spec", "Qty", "Unit", "Unit price (EGP)", "Total (EGP)"],
       ...d.lines.map((l) => [
         l.sku,
         l.title,

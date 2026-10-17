@@ -72,7 +72,6 @@
     "kpi": {
       "gross": {
         "label": "Gross escrow settled",
-        "usd": "≈ {usd} USD equivalent",
         "hardware": "Hardware",
         "substrates": "Paper",
         "labRuns": "Lab runs"

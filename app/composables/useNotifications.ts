@@ -12,9 +12,9 @@ export interface AdminNotification {
 
 // Demo feed. When the app has a backend this seed goes away and the list comes from the API.
 const seed = (): AdminNotification[] => [
-  { id: 1, kind: "order", title: "New order #LP-948202", body: "Dr. Elena Vance placed a €14,290 requisition.", ago: "5 min ago", read: false, to: "/orders" },
+  { id: 1, kind: "order", title: "New order #LP-948202", body: "Dr. Elena Vance placed a EGP 14,290 requisition.", ago: "5 min ago", read: false, to: "/orders" },
   { id: 2, kind: "stock", title: "Low stock: Hasselblad XCD 55mm", body: "2 units left, below the minimum of 5.", ago: "42 min ago", read: false, to: "/inventory" },
-  { id: 3, kind: "payment", title: "Escrow released", body: "Zurich Kunsthaus Lab settled €8,190.", ago: "2 h ago", read: false, to: "/orders" },
+  { id: 3, kind: "payment", title: "Escrow released", body: "Zurich Kunsthaus Lab settled EGP 8,190.", ago: "2 h ago", read: false, to: "/orders" },
   { id: 4, kind: "customer", title: "New customer", body: "Galerie Max Hetzler verified their account.", ago: "Yesterday", read: true, to: "/customers" },
   { id: 5, kind: "stock", title: "Restock arrived", body: "12 rolls of Hahnemühle Photo Rag are in the depot.", ago: "Yesterday", read: true, to: "/inventory" },
 ];

@@ -65,6 +65,3 @@ export const sortOptions: { value: ProductSort; label: string }[] = [
 
 export const stockStateOf = (p: { stock: number; min: number }): StockState =>
   p.stock <= 0 ? "out" : p.stock <= p.min ? "low" : "ok";
-
-/** EUR to USD display rate for the ledger. */
-export const USD_RATE = 1.082;
