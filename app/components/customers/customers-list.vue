@@ -67,7 +67,7 @@
                 <span class="meta block truncate">{{ c.role }}</span>
               </span>
             </span>
-            <span class="min-w-0 pl-0 font-mono text-xs sm:pt-0.5">
+            <span class="min-w-0 ps-0 font-mono text-xs sm:pt-0.5">
               <span class="block truncate" dir="ltr">{{ c.email }}</span>
               <span class="block text-mute" dir="ltr">{{ c.phone }}</span>
               <span class="mt-0.5 flex flex-wrap items-center gap-1.5">
