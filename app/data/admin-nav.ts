@@ -1,8 +1,4 @@
-export interface AdminNavItem {
-  to: string;
-  label: string;
-  icon: string;
-}
+import type { AdminNavItem } from "~/types/admin/admin-nav";
 
 export const adminNav: AdminNavItem[] = [
   { to: "/", label: "Dashboard", icon: "lucide:layout-dashboard" },
@@ -14,5 +10,9 @@ export const adminNav: AdminNavItem[] = [
   { to: "/content", label: "Content", icon: "lucide:panels-top-left" },
   { to: "/users", label: "Users & Roles", icon: "lucide:shield-user" },
   { to: "/inventory", label: "Inventory", icon: "lucide:warehouse" },
-  { to: "/analytics", label: "Analytics", icon: "lucide:chart-no-axes-combined" },
+  {
+    to: "/analytics",
+    label: "Analytics",
+    icon: "lucide:chart-no-axes-combined",
+  },
 ];
