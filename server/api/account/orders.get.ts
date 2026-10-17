@@ -1,4 +1,4 @@
-import { demoOrderHistory } from "../../../app/data/account-orders";
+import { demoOrderHistory } from "~/data/account-orders";
 
 export default defineEventHandler(async () => {
   await simulateLatency();
