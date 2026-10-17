@@ -89,6 +89,12 @@
               </span>
             </span>
           </button>
+          <LazyVRowActions
+            class="mt-1.5"
+            :label="`Actions for ${c.name}`"
+            @edit="emit('edit', c)"
+            @remove="emit('remove', c)"
+          />
         </li>
       </ul>
     </template>
@@ -106,7 +112,11 @@ const props = defineProps<{
   selectedId: string | null;
 }>();
 
-const emit = defineEmits<{ select: [id: string] }>();
+const emit = defineEmits<{
+  select: [id: string];
+  edit: [customer: Customer];
+  remove: [customer: Customer];
+}>();
 
 const selected = defineModel<string[]>("selected", { default: () => [] });
 

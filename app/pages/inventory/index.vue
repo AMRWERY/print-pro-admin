@@ -107,6 +107,7 @@
             :per-page="perPage"
             @adjust="openAdjust"
             @edit="openItem"
+            @duplicate="(i) => openItem(i, true)"
             @remove="askDelete"
           />
         </div>
@@ -143,6 +144,7 @@
     <inventory-item-dialog
       v-model:open="itemOpen"
       :item="editItem"
+      :copy="copyItem"
       @done="onItemSaved"
     />
 
@@ -261,9 +263,11 @@ const onChanged = () => {
 // --- Add, edit and delete ---
 const itemOpen = ref(false);
 const editItem = ref<InventoryItem | null>(null);
+const copyItem = ref(false);
 
-const openItem = (item: InventoryItem | null) => {
+const openItem = (item: InventoryItem | null, copy = false) => {
   editItem.value = item;
+  copyItem.value = copy;
   itemOpen.value = true;
 };
 

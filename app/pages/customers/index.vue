@@ -112,6 +112,8 @@
             :per-page="perPage"
             :selected-id="selectedId"
             @select="openInspector"
+            @edit="openForm"
+            @remove="(c) => askDelete([c.id], c.name)"
           />
         </div>
 
@@ -150,8 +152,8 @@
           v-else
           bare
           icon="lucide:mouse-pointer-click"
-          title="Select a client"
-          description="Choose a client to open their dossier, or register a new one."
+          title="Select a customer"
+          description="Choose a customer to open their dossier, or register a new one."
         />
       </aside>
     </div>

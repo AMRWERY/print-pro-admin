@@ -12,7 +12,7 @@
       <li
         v-for="root in roots"
         :key="root.id"
-        class="overflow-hidden rounded-card border bg-ink transition-colors duration-fast"
+        class="rounded-card border bg-ink transition-colors duration-fast"
         :class="[
           selectedId === root.id ? 'border-accent' : 'border-line',
           dropClass(root),
@@ -94,36 +94,21 @@
               @update:model-value="(on) => emit('visibility', root, on)"
             />
 
-            <LazyVButton
-              variant="icon"
-              size="sm"
-              icon="lucide:folder-plus"
-              :aria-label="`Add a sub-category to ${root.name}`"
-              @click="emit('addChild', root.id)"
-            />
-
-            <LazyVButton
-              variant="secondary"
-              size="sm"
-              icon="lucide:pencil"
-              @click="emit('select', root.id)"
-              >Edit<span class="sr-only"> {{ root.name }}</span></LazyVButton
+            <LazyVRowActions
+              :label="`Actions for ${root.name}`"
+              @edit="emit('select', root.id)"
+              @remove="emit('remove', root)"
             >
-
-            <LazyVButton
-              variant="icon"
-              size="sm"
-              icon="lucide:trash-2"
-              :aria-label="`Delete ${root.name}`"
-              class="hover:!border-accent hover:!text-accent"
-              @click="emit('remove', root)"
-            />
+              <button type="button" role="menuitem" class="menu-item w-full" @click="emit('addChild', root.id)">
+                <Icon name="lucide:folder-plus" size="16" aria-hidden="true" /> Add sub-category
+              </button>
+            </LazyVRowActions>
           </div>
         </div>
 
         <ul
           v-if="isOpen(root.id) && childrenOf(root.id).length"
-          class="space-y-1.5 border-t border-line bg-surface/40 p-3 ps-12"
+          class="space-y-1.5 rounded-b-card border-t border-line bg-surface/40 p-3 ps-12"
         >
           <li
             v-for="child in childrenOf(root.id)"
@@ -184,21 +169,10 @@
                 />
               </template>
 
-              <LazyVButton
-                variant="icon"
-                size="sm"
-                icon="lucide:pencil"
-                :aria-label="`Edit ${child.name}`"
-                @click="emit('select', child.id)"
-              />
-
-              <LazyVButton
-                variant="icon"
-                size="sm"
-                icon="lucide:trash-2"
-                :aria-label="`Delete ${child.name}`"
-                class="hover:!border-accent hover:!text-accent"
-                @click="emit('remove', child)"
+              <LazyVRowActions
+                :label="`Actions for ${child.name}`"
+                @edit="emit('select', child.id)"
+                @remove="emit('remove', child)"
               />
             </div>
           </li>
@@ -269,21 +243,11 @@
               >
             </td>
             <td class="px-4 py-3 text-end">
-              <div class="flex justify-end gap-1.5">
-                <LazyVButton
-                  variant="icon"
-                  size="sm"
-                  icon="lucide:pencil"
-                  :aria-label="`Edit ${c.name}`"
-                  @click="emit('select', c.id)"
-                />
-                <LazyVButton
-                  variant="icon"
-                  size="sm"
-                  icon="lucide:trash-2"
-                  :aria-label="`Delete ${c.name}`"
-                  class="hover:!border-accent hover:!text-accent"
-                  @click="emit('remove', c)"
+              <div class="flex justify-end">
+                <LazyVRowActions
+                  :label="`Actions for ${c.name}`"
+                  @edit="emit('select', c.id)"
+                  @remove="emit('remove', c)"
                 />
               </div>
             </td>

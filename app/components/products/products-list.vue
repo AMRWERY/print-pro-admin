@@ -160,45 +160,13 @@
               >
             </td>
             <td class="px-4 py-3.5 text-end">
-              <LazyVMenu :label="`Actions for ${p.name}`" width="w-44">
-                <template #trigger="{ attrs, toggle: open }">
-                  <LazyVButton
-                    v-bind="attrs"
-                    variant="icon"
-                    size="sm"
-                    icon="lucide:ellipsis"
-                    :aria-label="`Actions for ${p.name}`"
-                    @click="open"
-                  />
-                </template>
-                <button
-                  type="button"
-                  role="menuitem"
-                  class="menu-item w-full"
-                  @click="emit('edit', p)"
-                >
-                  <Icon name="lucide:pencil" size="16" aria-hidden="true" />
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  role="menuitem"
-                  class="menu-item w-full"
-                  @click="emit('duplicate', p)"
-                >
-                  <Icon name="lucide:copy" size="16" aria-hidden="true" />
-                  Duplicate
-                </button>
-                <button
-                  type="button"
-                  role="menuitem"
-                  class="menu-item w-full text-accent"
-                  @click="emit('remove', p)"
-                >
-                  <Icon name="lucide:trash-2" size="16" aria-hidden="true" />
-                  Delete
-                </button>
-              </LazyVMenu>
+              <LazyVRowActions
+                :label="`Actions for ${p.name}`"
+                duplicate
+                @edit="emit('edit', p)"
+                @duplicate="emit('duplicate', p)"
+                @remove="emit('remove', p)"
+              />
             </td>
           </tr>
         </tbody>

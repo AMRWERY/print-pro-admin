@@ -1,9 +1,9 @@
 <template>
   <LazyVDialog
     v-model:open="open"
-    :title="item ? 'Edit inventory item' : 'Add inventory item'"
+    :title="editing ? 'Edit inventory item' : copy ? 'Duplicate inventory item' : 'Add inventory item'"
     :description="
-      item
+      editing
         ? 'Changes to the count and the location are written to the movement ledger.'
         : 'Registers a new SKU and books its starting stock into a vault.'
     "
@@ -123,7 +123,7 @@
         form="item-form"
         :loading="loading"
         icon="lucide:check"
-        >{{ item ? "Save changes" : "Add item" }}</LazyVButton
+        >{{ editing ? "Save changes" : "Add item" }}</LazyVButton
       >
     </template>
   </LazyVDialog>
@@ -135,7 +135,13 @@ import { categoryMeta } from "~/data/product-meta";
 import type { InventoryItem, ItemInput, Vault } from "~/types/admin/inventory";
 import type { ProductCategory } from "~/types/admin/products";
 
-const props = defineProps<{ item: InventoryItem | null }>();
+const props = defineProps<{
+  item: InventoryItem | null;
+  /** Start from `item` but register it as a new SKU. */
+  copy?: boolean;
+}>();
+
+const editing = computed(() => !!props.item && !props.copy);
 const emit = defineEmits<{
   done: [item: InventoryItem, mode: "create" | "edit"];
 }>();
@@ -181,8 +187,8 @@ watch(open, (isOpen) => {
     form,
     i
       ? {
-          name: i.name,
-          sku: i.sku,
+          name: props.copy ? `${i.name} (copy)` : i.name,
+          sku: props.copy ? `${i.sku}-COPY` : i.sku,
           category: i.category,
           brand: i.brand,
           price: i.price,
@@ -209,18 +215,14 @@ const submit = async () => {
 
   loading.value = true;
   error.value = "";
-  const editing = props.item;
+  const target = editing.value ? props.item : null;
   try {
     const saved = await $fetch<InventoryItem>(
-      editing
-        ? `/api/admin/inventory/items/${editing.id}`
-        : "/api/admin/inventory/items",
-      { method: editing ? "PATCH" : "POST", body: { ...form } },
+      target ? `/api/admin/inventory/items/${target.id}` : "/api/admin/inventory/items",
+      { method: target ? "PATCH" : "POST", body: { ...form } },
     );
-    toast.success(editing ? "Item updated" : "Item added", {
-      description: saved.name,
-    });
-    emit("done", saved, editing ? "edit" : "create");
+    toast.success(target ? "Item updated" : "Item added", { description: saved.name });
+    emit("done", saved, target ? "edit" : "create");
     open.value = false;
   } catch (e) {
     const status = (e as { statusCode?: number }).statusCode;

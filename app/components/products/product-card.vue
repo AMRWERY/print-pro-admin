@@ -44,6 +44,7 @@
       <p class="font-mono text-base font-semibold tabular-nums">
         {{ currency(product.price, { maximumFractionDigits: 0 }) }}
       </p>
+
       <LazyVStatusBadge
         :tone="stockMeta[state].tone"
         :icon="stockMeta[state].icon"
@@ -83,32 +84,14 @@
           @click="emit('stock', product.stock + 1)"
         />
       </div>
-      <div class="flex items-center gap-1">
-        <LazyVButton
-          variant="icon"
-          size="sm"
-          icon="lucide:pencil"
-          :aria-label="`Edit ${product.name}`"
-          @click="emit('edit')"
-        />
 
-        <LazyVButton
-          variant="icon"
-          size="sm"
-          icon="lucide:copy"
-          :aria-label="`Duplicate ${product.name}`"
-          @click="emit('duplicate')"
-        />
-
-        <LazyVButton
-          variant="icon"
-          size="sm"
-          icon="lucide:trash-2"
-          :aria-label="`Delete ${product.name}`"
-          class="hover:!border-accent hover:!text-accent"
-          @click="emit('remove')"
-        />
-      </div>
+      <LazyVRowActions
+        :label="`Actions for ${product.name}`"
+        duplicate
+        @edit="emit('edit')"
+        @duplicate="emit('duplicate')"
+        @remove="emit('remove')"
+      />
     </div>
   </article>
 </template>
