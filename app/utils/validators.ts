@@ -1,16 +1,15 @@
+import type { PasswordCheck, Rule } from "~/types/validators";
+
 // vee-validate rule functions: return `true` when valid, otherwise a message that says
 // what is wrong and how to fix it (design.md §14). Use them as `:rules="..."` on VInput.
-
-type Rule = (value: unknown) => true | string;
-
 const text = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 const digits = (v: unknown) => String(v ?? "").replace(/\D/g, "");
 
 /** A required text field with your own message. */
 export const requiredText =
   (message: string): Rule =>
-  (v) =>
-    text(v) ? true : message;
+    (v) =>
+      text(v) ? true : message;
 
 export const emailRule: Rule = (v) => {
   const s = text(v);
@@ -27,8 +26,8 @@ export const phoneRule: Rule = (v) =>
 
 export const minLengthText =
   (min: number, message: string): Rule =>
-  (v) =>
-    text(v).length >= min ? true : message;
+    (v) =>
+      text(v).length >= min ? true : message;
 
 // Luhn check: catches most mistyped card numbers before they go anywhere.
 const luhn = (num: string) => {
@@ -70,8 +69,8 @@ export const cardCvcRule: Rule = (v) =>
 
 export const mustAccept =
   (message: string): Rule =>
-  (v) =>
-    v ? true : message;
+    (v) =>
+      v ? true : message;
 
 export const formatCardNumber = (v: string) =>
   digits(v)
@@ -83,14 +82,8 @@ export const formatExpiry = (v: string) => {
   const d = digits(v).slice(0, 4);
   return d.length > 2 ? `${d.slice(0, 2)}/${d.slice(2)}` : d;
 };
+
 // ---- passwords ----
-
-export interface PasswordCheck {
-  key: string;
-  label: string;
-  passed: boolean;
-}
-
 /** The rules a new password has to meet. Used for both the checklist and the rule. */
 export const passwordChecks = (v: unknown): PasswordCheck[] => {
   const s = String(v ?? "");
@@ -111,5 +104,5 @@ export const strongPasswordRule: Rule = (v) => {
 /** Must equal another field's value (read lazily, so it follows what the user types). */
 export const matchesRule =
   (other: () => unknown, message = "The two passwords don't match."): Rule =>
-  (v) =>
-    !!v && v === other() ? true : message;
+    (v) =>
+      !!v && v === other() ? true : message;

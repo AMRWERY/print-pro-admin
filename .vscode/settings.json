@@ -2,5 +2,8 @@
     "i18n-ally.localesPaths": [
         "app/config/i18n",
         "app/config/i18n/locales"
+    ],
+    "cSpell.words": [
+        "dach"
     ]
 }

@@ -130,3 +130,11 @@ export interface SettingsResponse {
   /** DNS records for outgoing mail, checked by the platform. */
   dns: { type: string; host: string; target: string; ok: boolean }[];
 }
+
+export interface SettingsSectionMeta {
+  id: string;
+  label: string;
+  /** The part of the settings object this section edits, used for the unsaved markers. */
+  key: SettingsKey;
+  group: string;
+}

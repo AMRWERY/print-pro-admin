@@ -129,3 +129,13 @@ export interface TopProductsResponse {
   totalUnits: number;
   totalRevenue: number;
 }
+
+export interface TopQuery {
+  q: string;
+  category: "all" | ProductCategory;
+  page: number;
+  perPage: number;
+  range: AnalyticsRange;
+  from: string;
+  to: string;
+}

@@ -85,3 +85,10 @@ export interface OperatorsResponse {
     sessions: number;
   };
 }
+
+export interface PermissionModule {
+  id: string;
+  label: string;
+  icon: string;
+  privileges: { id: string; label: string; hint: string; sensitive?: boolean }[];
+}

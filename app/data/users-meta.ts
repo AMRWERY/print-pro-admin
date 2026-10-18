@@ -1,16 +1,8 @@
 import type { Tone } from "~/types/admin/dashboard";
-import type { OperatorStatus } from "~/types/admin/users";
+import type { OperatorStatus, PermissionModule } from "~/types/admin/users";
 
 // Modules and privileges for the Users & Roles screen (no Tailwind classes, see order-meta.ts).
 // The server uses the same list to check what a role may hold.
-
-export interface PermissionModule {
-  id: string;
-  label: string;
-  icon: string;
-  privileges: { id: string; label: string; hint: string; sensitive?: boolean }[];
-}
-
 export const permissionModules: PermissionModule[] = [
   {
     id: "products",

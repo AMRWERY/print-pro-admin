@@ -14,6 +14,7 @@ import type {
   TopProductRow,
   TopProductsResponse,
   VelocityStatus,
+  TopQuery
 } from "~/types/admin/analytics";
 import type { ProductCategory } from "~/types/admin/products";
 
@@ -155,11 +156,11 @@ const buildSeries = (
     );
     prior.push(
       DAILY_BASE *
-        factor *
-        perPoint *
-        (0.72 + 0.3 * t) *
-        (1 + 0.1 * Math.sin(i * 0.9 + 1)) *
-        shape,
+      factor *
+      perPoint *
+      (0.72 + 0.3 * t) *
+      (1 + 0.1 * Math.sin(i * 0.9 + 1)) *
+      shape,
     );
   }
 
@@ -185,12 +186,12 @@ const CATEGORY_ROWS: {
   yoy: number;
   margin: number;
 }[] = [
-  { category: "cameras", share: 37.0, yoy: 21.4, margin: 34.2 },
-  { category: "printers", share: 30.7, yoy: 14.8, margin: 29.8 },
-  { category: "glass", share: 16.7, yoy: 28.6, margin: 42.1 },
-  { category: "rag", share: 10.7, yoy: 8.2, margin: 52.4 },
-  { category: "pigments", share: 4.9, yoy: 5.1, margin: 48.0 },
-];
+    { category: "cameras", share: 37.0, yoy: 21.4, margin: 34.2 },
+    { category: "printers", share: 30.7, yoy: 14.8, margin: 29.8 },
+    { category: "glass", share: 16.7, yoy: 28.6, margin: 42.1 },
+    { category: "rag", share: 10.7, yoy: 8.2, margin: 52.4 },
+    { category: "pigments", share: 4.9, yoy: 5.1, margin: 48.0 },
+  ];
 
 const REGIONS: { key: RegionRow["key"]; share: number }[] = [
   { key: "dach", share: 36.9 },
@@ -362,16 +363,6 @@ const statusOf = (daysLeft: number): VelocityStatus =>
       : daysLeft <= 35
         ? "optimal"
         : "healthy";
-
-export interface TopQuery {
-  q: string;
-  category: "all" | ProductCategory;
-  page: number;
-  perPage: number;
-  range: AnalyticsRange;
-  from: string;
-  to: string;
-}
 
 export const parseTopQuery = (raw: Record<string, unknown>): TopQuery => {
   const base = parseAnalyticsQuery(raw);

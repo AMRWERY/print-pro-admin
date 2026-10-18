@@ -4,18 +4,10 @@ import type {
   EscortTier,
   RoundingMode,
   SettingsKey,
+  SettingsSectionMeta
 } from "~/types/admin/settings";
 
 // Labels and the section map for the settings screen (no Tailwind classes, see order-meta.ts).
-
-export interface SettingsSectionMeta {
-  id: string;
-  label: string;
-  /** The part of the settings object this section edits, used for the unsaved markers. */
-  key: SettingsKey;
-  group: string;
-}
-
 export const sectionList: SettingsSectionMeta[] = [
   { id: "store", label: "Store information", key: "store", group: "Store & brand" },
   { id: "contact", label: "Contact & escrow desk", key: "contact", group: "Store & brand" },

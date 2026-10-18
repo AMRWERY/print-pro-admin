@@ -1,19 +1,7 @@
+import type { TableExport } from "~/types/table-export";
+
 // Download a list of rows as a PDF or an Excel file. The libraries load on demand, so they
 // only cost anything when someone exports. Client only.
-
-export interface TableExport {
-  title: string;
-  subtitle?: string;
-  /** File name without extension. */
-  fileName: string;
-  head: string[];
-  body: (string | number)[][];
-  /** Column indexes holding money in EGP: formatted in the PDF, kept as numbers in Excel. */
-  moneyCols?: number[];
-  /** Column indexes holding other numbers (right-aligned in the PDF). */
-  numberCols?: number[];
-}
-
 const egp = (n: number) =>
   `EGP ${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
