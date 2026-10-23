@@ -12,12 +12,13 @@ const norm = (email: string) => email.trim().toLowerCase();
  * but a real deployment needs a server for accounts, sessions and password-reset emails.
  */
 export const useAuthStore = defineStore("auth", () => {
-  // initOnMounted keeps SSR and the first client render identical (both signed out).
-  const users = useLocalStorage<Account[]>("auth-users", [], { initOnMounted: true });
-  const tokens = useLocalStorage<ResetToken[]>("auth-reset-tokens", [], { initOnMounted: true });
+  // Read synchronously: the app is client-rendered, and the route guard needs the session
+  // before the first page mounts.
+  const users = useLocalStorage<Account[]>("auth-users", []);
+  const tokens = useLocalStorage<ResetToken[]>("auth-reset-tokens", []);
   /** "Remember this terminal" lives in localStorage, otherwise the session ends with the tab. */
-  const remembered = useLocalStorage<string | null>("auth-session", null, { initOnMounted: true });
-  const tabSession = useSessionStorage<string | null>("auth-session", null, { initOnMounted: true });
+  const remembered = useLocalStorage<string | null>("auth-session", null);
+  const tabSession = useSessionStorage<string | null>("auth-session", null);
 
   const sessionEmail = computed(() => remembered.value ?? tabSession.value);
   const user = computed(() => users.value.find((u) => u.email === sessionEmail.value) ?? null);

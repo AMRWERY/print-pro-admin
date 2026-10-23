@@ -15,154 +15,120 @@
     </template>
 
     <section class="card space-y-5 p-6 sm:p-8" aria-labelledby="login-title">
-      <!-- Already signed in on this browser -->
-      <template v-if="ready && auth.isSignedIn">
-        <div class="space-y-2">
-          <p class="eyebrow flex items-center gap-2 text-success">
-            <Icon
-              name="lucide:circle-check"
-              size="14"
-              aria-hidden="true"
-            />Signed in
-          </p>
-          <h1 id="login-title" class="font-display text-3xl">
-            Welcome back, {{ auth.user?.name.split(" ")[0] }}.
-          </h1>
-          <p class="text-sm text-mute">
-            You're signed in as {{ auth.user?.email }}.
-          </p>
-        </div>
+      <div class="space-y-2">
+        <p class="eyebrow flex items-center gap-2">
+          <span class="pip" aria-hidden="true" />Admin account
+        </p>
+        <h1 id="login-title" class="font-display text-3xl sm:text-4xl">
+          Sign in
+        </h1>
+        <p class="text-sm text-mute">
+          Access your equipment orders, saved registry and delivery tracking.
+        </p>
+      </div>
 
-        <div class="flex flex-wrap gap-3">
-          <LazyVButton variant="primary" :to="redirect || '/profile'">Continue</LazyVButton>
-         
-          <LazyVButton variant="secondary" to="/profile" icon="lucide:layout-dashboard">Dashboard</LazyVButton>
-        
-          <LazyVButton
-            variant="secondary"
-            icon="lucide:log-out"
-            @click="auth.logout()"
-            >Sign out</LazyVButton
+      <p
+        v-if="notice"
+        class="flex items-start gap-2 rounded-card border border-success/40 bg-success-soft p-3 text-sm"
+        role="status"
+      >
+        <Icon
+          name="lucide:circle-check"
+          size="16"
+          class="mt-0.5 shrink-0 text-success"
+          aria-hidden="true"
+        />{{ notice }}
+      </p>
+
+      <form class="space-y-4" novalidate @submit.prevent="submit">
+        <LazyVInput
+          ref="emailField"
+          v-model="email"
+          name="email"
+          type="email"
+          label="Email"
+          required
+          rules="required|email"
+          autocomplete="email"
+          inputmode="email"
+          icon="lucide:mail"
+        />
+
+        <LazyVInput
+          ref="passwordField"
+          v-model="password"
+          name="password"
+          type="password"
+          label="Password"
+          required
+          revealable
+          :rules="requiredText('Enter your password.')"
+          autocomplete="current-password"
+          icon="lucide:key-round"
+        />
+
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <LazyVCheckboxImput
+            v-model="remember"
+            label-class="items-center"
+            >Remember this device</LazyVCheckboxImput
           >
-        </div>
-      </template>
 
-      <template v-else>
-        <div class="space-y-2">
-          <p class="eyebrow flex items-center gap-2">
-            <span class="pip" aria-hidden="true" />Admin account
-          </p>
-          <h1 id="login-title" class="font-display text-3xl sm:text-4xl">
-            Sign in
-          </h1>
-          <p class="text-sm text-mute">
-            Access your equipment orders, saved registry and delivery tracking.
-          </p>
+          <LazyVButton variant="tertiary" to="/auth/forgot-password" size="sm"
+            >Forgot password?</LazyVButton
+          >
         </div>
 
         <p
-          v-if="notice"
-          class="flex items-start gap-2 rounded-card border border-success/40 bg-success-soft p-3 text-sm"
-          role="status"
+          v-if="error"
+          class="callout-accent"
+          role="alert"
         >
           <Icon
-            name="lucide:circle-check"
+            name="lucide:circle-alert"
             size="16"
-            class="mt-0.5 shrink-0 text-success"
+            class="bullet-icon"
             aria-hidden="true"
-          />{{ notice }}
+          />{{ error }}
         </p>
 
-        <form class="space-y-4" novalidate @submit.prevent="submit">
-          <LazyVInput
-            ref="emailField"
-            v-model="email"
-            name="email"
-            type="email"
-            label="Email"
-            required
-            rules="required|email"
-            autocomplete="email"
-            inputmode="email"
-            icon="lucide:mail"
-          />
-
-          <LazyVInput
-            ref="passwordField"
-            v-model="password"
-            name="password"
-            type="password"
-            label="Password"
-            required
-            revealable
-            :rules="requiredText('Enter your password.')"
-            autocomplete="current-password"
-            icon="lucide:key-round"
-          />
-
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <LazyVCheckboxImput
-              v-model="remember"
-              label-class="items-center"
-              >Remember this device</LazyVCheckboxImput
-            >
-
-            <LazyVButton variant="tertiary" to="/auth/forgot-password" size="sm"
-              >Forgot password?</LazyVButton
-            >
-          </div>
-
-          <p
-            v-if="error"
-            class="callout-accent"
-            role="alert"
-          >
-            <Icon
-              name="lucide:circle-alert"
-              size="16"
-              class="bullet-icon"
-              aria-hidden="true"
-            />{{ error }}
-          </p>
-
-          <LazyVButton
-            type="submit"
-            variant="primary"
-            size="lg"
-            block
-            :loading="loading"
-            :disabled="lockedFor > 0"
-            icon-end="lucide:arrow-right"
-            icon-end-class="icon-nudge rtl:-scale-x-100"
-          >
-            {{ lockedFor > 0 ? `Try again in ${lockedFor}s` : "Sign in" }}
-          </LazyVButton>
-        </form>
-
-        <p class="text-center text-sm text-mute">
-          New to PrintPro?
-          <LazyVButton
-            variant="tertiary"
-            to="/auth/register"
-            class="!text-accent"
-            >Create an account</LazyVButton
-          >
-        </p>
-
-        <p
-          class="callout"
-          role="note"
+        <LazyVButton
+          type="submit"
+          variant="primary"
+          size="lg"
+          block
+          :loading="loading"
+          :disabled="lockedFor > 0"
+          icon-end="lucide:arrow-right"
+          icon-end-class="icon-nudge rtl:-scale-x-100"
         >
-          <Icon
-            name="lucide:info"
-            size="14"
-            class="mt-0.5 shrink-0"
-            aria-hidden="true"
-          />
-          Demo accounts: sign-in works against accounts created in this browser
-          only. Passwords are salted and hashed, never stored as typed.
-        </p>
-      </template>
+          {{ lockedFor > 0 ? `Try again in ${lockedFor}s` : "Sign in" }}
+        </LazyVButton>
+      </form>
+
+      <p class="text-center text-sm text-mute">
+        New to PrintPro?
+        <LazyVButton
+          variant="tertiary"
+          to="/auth/register"
+          class="!text-accent"
+          >Create an account</LazyVButton
+        >
+      </p>
+
+      <p
+        class="callout"
+        role="note"
+      >
+        <Icon
+          name="lucide:info"
+          size="14"
+          class="mt-0.5 shrink-0"
+          aria-hidden="true"
+        />
+        Demo accounts: sign-in works against accounts created in this browser
+        only. Passwords are salted and hashed, never stored as typed.
+      </p>
     </section>
   </auth-shell>
 </template>
@@ -173,13 +139,6 @@ import type { Validatable } from "~/types/auth";
 const auth = useAuthStore();
 const route = useRoute();
 const localePath = useLocalePath();
-
-const ready = ref(false);
-
-onMounted(async () => {
-  await nextTick(); // let the store read this browser's saved session
-  ready.value = true;
-});
 
 const redirect = computed(() => safeRedirect(route.query.redirect));
 
@@ -221,11 +180,16 @@ const submit = async () => {
   loading.value = true;
   error.value = "";
   const result = await auth.login(email.value, password.value, remember.value);
-  loading.value = false;
 
   if (result.ok) {
+    // Keep the button busy until the dashboard takes over.
     await navigateTo(localePath(redirect.value));
-  } else if (result.reason === "locked") {
+    loading.value = false;
+    return;
+  }
+
+  loading.value = false;
+  if (result.reason === "locked") {
     lockedFor.value = result.retryInSeconds;
     resume();
     error.value = "Too many attempts. Wait a moment before trying again.";

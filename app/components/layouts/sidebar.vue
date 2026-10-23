@@ -88,7 +88,6 @@ const open = defineModel<boolean>("open", { default: false });
 const route = useRoute();
 const auth = useAuthStore();
 const localePath = useLocalePath();
-const toast = useToast();
 const isDesktop = useMediaQuery("(min-width: 1024px)");
 const mounted = useMounted();
 
@@ -102,7 +101,6 @@ const close = () => {
 const signOut = async () => {
   auth.logout();
   close();
-  toast.success("Signed out");
   await navigateTo(localePath("/auth"));
 };
 

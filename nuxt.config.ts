@@ -8,6 +8,9 @@ export default defineNuxtConfig({
     "@nuxt/icon",
   ],
   compatibilityDate: "2025-07-15",
+  // The session is kept in browser storage, so the server can't know who is signed in.
+  // Rendering on the client keeps protected pages from flashing before the auth guard runs.
+  ssr: false,
   devtools: { enabled: true },
   postcss: {
     plugins: {

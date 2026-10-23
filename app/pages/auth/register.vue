@@ -27,12 +27,12 @@
       />
     </template>
 
-    <section class="card space-y-5 p-6 sm:p-8" aria-labelledby="register-title">
-      <div class="space-y-2">
+    <section class="card space-y-4 p-5 sm:p-6" aria-labelledby="register-title">
+      <div class="space-y-1.5">
         <p class="eyebrow flex items-center gap-2">
           <span class="pip" aria-hidden="true" />Create account
         </p>
-        <h1 id="register-title" class="font-display text-3xl sm:text-4xl">
+        <h1 id="register-title" class="font-display text-3xl sm:text-3xl">
           Create your account
         </h1>
         <p class="text-sm text-mute">
@@ -40,9 +40,9 @@
         </p>
       </div>
 
-      <form class="space-y-6" novalidate @submit.prevent="submit">
-        <fieldset class="grid gap-4 sm:grid-cols-2">
-          <legend class="eyebrow mb-3 sm:col-span-2">
+      <form class="space-y-4" novalidate @submit.prevent="submit">
+        <fieldset class="grid gap-3 sm:grid-cols-2">
+          <legend class="eyebrow mb-1 sm:col-span-2">
             01 · Identity &amp; organisation
           </legend>
           
@@ -80,7 +80,7 @@
           />
         </fieldset>
 
-        <fieldset class="space-y-3">
+        <fieldset class="space-y-2">
           <legend class="eyebrow mb-1">Account type</legend>
           <div class="grid gap-2 sm:grid-cols-3">
             <LazyVRadioInput
@@ -96,15 +96,15 @@
               <span class="block">
                 <span class="eyebrow block">{{ t.tag }}</span>
                 <span class="label">{{ t.title }}</span>
-                <span class="block text-xs text-mute">{{ t.body }}</span>
+                <span class="block line-clamp-2 text-xs text-mute">{{ t.body }}</span>
               </span>
             </LazyVRadioInput>
           </div>
         </fieldset>
 
-        <fieldset class="space-y-4">
-          <legend class="eyebrow mb-3">02 · Security credentials</legend>
-          <div class="grid gap-4 sm:grid-cols-2">
+        <fieldset class="space-y-3">
+          <legend class="eyebrow mb-1">02 · Security credentials</legend>
+          <div class="grid gap-3 sm:grid-cols-2">
             <LazyVInput
               v-model="form.password"
               name="password"
@@ -131,7 +131,7 @@
           <password-strength :password="form.password" />
         </fieldset>
 
-        <fieldset class="space-y-3">
+        <fieldset class="space-y-2">
           <legend class="eyebrow mb-1">03 · Agreements</legend>
           <LazyVCheckboxImput
             v-model="form.terms"

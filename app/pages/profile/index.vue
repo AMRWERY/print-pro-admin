@@ -103,7 +103,6 @@ import { tiers } from "~/data/auth";
 
 const auth = useAuthStore();
 const localePath = useLocalePath();
-const toast = useToast();
 
 // useMounted keeps the first render the same on the server and in the browser.
 const mounted = useMounted();
@@ -134,7 +133,6 @@ const memberSince = computed(() =>
 
 const signOut = async () => {
   auth.logout();
-  toast.success("Signed out");
   await navigateTo(localePath("/auth"));
 };
 
