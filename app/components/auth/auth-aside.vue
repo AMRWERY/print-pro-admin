@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative flex h-full min-h-[32rem] flex-col justify-between overflow-hidden card p-6"
+    class="relative flex h-full min-h-[32rem] flex-col justify-center gap-6 overflow-hidden card p-6"
   >
     <div
       class="pointer-events-none absolute inset-0 [background:radial-gradient(70%_60%_at_20%_20%,rgb(var(--c-accent)/0.16),transparent_70%)]"

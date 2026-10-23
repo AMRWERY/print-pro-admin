@@ -40,10 +40,44 @@
         </p>
       </div>
 
+      <ol class="flex items-center gap-3" aria-label="Progress">
+        <li
+          v-for="(label, i) in stepLabels"
+          :key="label"
+          class="flex flex-1 items-center gap-2"
+          :aria-current="step === i + 1 ? 'step' : undefined"
+        >
+          <span
+            class="grid h-6 w-6 shrink-0 place-items-center rounded-full border font-mono text-2xs transition-colors duration-200"
+            :class="
+              step > i + 1
+                ? 'border-success bg-success text-onprimary'
+                : step === i + 1
+                  ? 'border-accent bg-accent text-onaccent'
+                  : 'border-line text-mute'
+            "
+          >
+            <Icon v-if="step > i + 1" name="lucide:check" size="12" aria-hidden="true" />
+            <template v-else>{{ i + 1 }}</template>
+          </span>
+          <span
+            class="text-sm"
+            :class="step === i + 1 ? 'font-medium' : 'text-mute'"
+            >{{ label }}</span
+          >
+          <span
+            v-if="i < stepLabels.length - 1"
+            class="h-px flex-1 bg-line"
+            aria-hidden="true"
+          />
+        </li>
+      </ol>
+
       <form class="space-y-4" novalidate @submit.prevent="submit">
-        <fieldset class="grid gap-3 sm:grid-cols-2">
+        <!-- Step 1. v-show (not v-if) keeps every field registered for the final validation. -->
+        <fieldset v-show="step === 1" class="grid gap-3 sm:grid-cols-2">
           <legend class="eyebrow mb-1 sm:col-span-2">
-            01 · Identity &amp; organisation
+            Identity &amp; organisation
           </legend>
           
           <LazyVInput
@@ -80,7 +114,7 @@
           />
         </fieldset>
 
-        <fieldset class="space-y-2">
+        <fieldset v-show="step === 1" class="space-y-2">
           <legend class="eyebrow mb-1">Account type</legend>
           <div class="grid gap-2 sm:grid-cols-3">
             <LazyVRadioInput
@@ -102,8 +136,8 @@
           </div>
         </fieldset>
 
-        <fieldset class="space-y-3">
-          <legend class="eyebrow mb-1">02 · Security credentials</legend>
+        <fieldset v-show="step === 2" class="space-y-3">
+          <legend class="eyebrow mb-1">Security credentials</legend>
           <div class="grid gap-3 sm:grid-cols-2">
             <LazyVInput
               v-model="form.password"
@@ -131,8 +165,8 @@
           <password-strength :password="form.password" />
         </fieldset>
 
-        <fieldset class="space-y-2">
-          <legend class="eyebrow mb-1">03 · Agreements</legend>
+        <fieldset v-show="step === 2" class="space-y-2">
+          <legend class="eyebrow mb-1">Agreements</legend>
           <LazyVCheckboxImput
             v-model="form.terms"
             name="terms"
@@ -174,16 +208,40 @@
           >
         </p>
 
-        <LazyVButton
-          type="submit"
-          variant="primary"
-          size="lg"
-          block
-          :loading="loading"
-          icon-end="lucide:arrow-right"
-          icon-end-class="icon-nudge rtl:-scale-x-100"
-          >Create account</LazyVButton
-        >
+        <div v-if="step === 1">
+          <LazyVButton
+            type="submit"
+            variant="primary"
+            size="lg"
+            block
+            icon-end="lucide:arrow-right"
+            icon-end-class="icon-nudge rtl:-scale-x-100"
+            >Continue</LazyVButton
+          >
+        </div>
+
+        <div v-else class="flex gap-3">
+          <LazyVButton
+            type="button"
+            variant="secondary"
+            size="lg"
+            icon="lucide:arrow-left"
+            icon-class="rtl:-scale-x-100"
+            :disabled="loading"
+            @click="step = 1"
+            >Back</LazyVButton
+          >
+          <LazyVButton
+            type="submit"
+            variant="primary"
+            size="lg"
+            class="flex-1"
+            :loading="loading"
+            icon-end="lucide:arrow-right"
+            icon-end-class="icon-nudge rtl:-scale-x-100"
+            >Create account</LazyVButton
+          >
+        </div>
       </form>
 
       <p class="text-center text-sm text-mute">
@@ -191,20 +249,6 @@
         <LazyVButton variant="tertiary" to="/auth" class="!text-accent"
           >Sign in</LazyVButton
         >
-      </p>
-
-      <p
-        class="callout"
-        role="note"
-      >
-        <Icon
-          name="lucide:info"
-          size="14"
-          class="mt-0.5 shrink-0"
-          aria-hidden="true"
-        />
-        Demo accounts are saved in this browser only. Passwords are salted and
-        hashed, never stored as typed.
       </p>
     </section>
   </auth-shell>
@@ -229,13 +273,31 @@ const form = reactive({
 });
 
 // Cross-field rules need every field registered with one form.
-const { validate } = useForm();
+const { validate, validateField } = useForm();
+
+const stepLabels = ["Account details", "Security"];
+const step = ref(1);
 
 const loading = ref(false);
 const error = ref("");
 const exists = ref(false);
 
+// Step 1 only checks its own fields; the rest are validated on submit.
+const nextStep = async () => {
+  const checks = await Promise.all(
+    ["name", "studio", "email"].map((field) => validateField(field)),
+  );
+  if (checks.every((c) => c.valid)) {
+    step.value = 2;
+    return;
+  }
+  await nextTick();
+  document.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+};
+
 const submit = async () => {
+  if (step.value === 1) return nextStep();
+
   const result = await validate();
   if (!result.valid) {
     await nextTick();

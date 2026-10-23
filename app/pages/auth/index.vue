@@ -115,20 +115,6 @@
           >Create an account</LazyVButton
         >
       </p>
-
-      <p
-        class="callout"
-        role="note"
-      >
-        <Icon
-          name="lucide:info"
-          size="14"
-          class="mt-0.5 shrink-0"
-          aria-hidden="true"
-        />
-        Demo accounts: sign-in works against accounts created in this browser
-        only. Passwords are salted and hashed, never stored as typed.
-      </p>
     </section>
   </auth-shell>
 </template>
