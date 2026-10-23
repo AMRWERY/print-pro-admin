@@ -1,7 +1,7 @@
 <template>
   <LazyVPanel
     id="dimensions"
-    title="07 // Dimensions & escrow crating"
+    title="07 // Dimensions & packaging"
     icon="lucide:package"
     class="scroll-mt-24"
   >
@@ -62,15 +62,15 @@
     </fieldset>
 
     <fieldset class="mt-4">
-      <legend class="label">Custody & packaging protocol</legend>
+      <legend class="label">Packaging</legend>
       <div class="mt-1.5 grid gap-3 sm:grid-cols-2">
         <LazyVRadioInput
           v-model="form.packaging"
           name="packaging"
-          value="climate"
+          value="pallet"
           boxed
-          label="Climate-controlled crate"
-          description="Shock-absorbing timber flight crate with humidity control. Required for optics."
+          label="Pallet and crate"
+          description="Strapped pallet with a protective crate. Required for photocopiers and large-format printers."
         />
 
         <LazyVRadioInput
@@ -79,7 +79,7 @@
           value="standard"
           boxed
           label="Standard retail protection"
-          description="Double-walled carton with foam inserts. Not for lenses or sensors."
+          description="Double-walled carton with foam inserts. Suitable for desktop printers and supplies."
         />
       </div>
     </fieldset>

@@ -17,8 +17,8 @@
             Recovery link sent
           </h1>
           <p class="text-sm text-mute">
-            If <span class="text-paper">{{ email }}</span> belongs to a studio
-            account, you'll receive a one-time link valid for 15 minutes. Check
+            If <span class="text-paper">{{ email }}</span> belongs to an account,
+            you'll receive a one-time link valid for 15 minutes. Check
             your spam folder if it doesn't arrive.
           </p>
         </div>
@@ -67,7 +67,7 @@
             Reset your password
           </h1>
           <p class="text-sm text-mute">
-            Enter your studio email. We'll send a one-time link, valid for 15
+            Enter your account email. We'll send a one-time link, valid for 15
             minutes, to set a new password.
           </p>
         </div>
@@ -78,7 +78,7 @@
             v-model="email"
             name="email"
             type="email"
-            label="Studio email"
+            label="Email"
             required
             rules="required|email"
             autocomplete="email"
@@ -147,7 +147,7 @@ const submit = async () => {
 
 useSeoMeta({
   title: "Reset Password",
-  description: "Reset your studio account password.",
+  description: "Reset your account password.",
   robots: "noindex",
 });
 </script>

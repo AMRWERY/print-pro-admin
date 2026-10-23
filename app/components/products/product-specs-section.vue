@@ -1,7 +1,7 @@
 <template>
   <LazyVPanel
     id="specs"
-    title="06 // Optical bench specifications"
+    title="06 // Specifications"
     icon="lucide:gauge"
     class="scroll-mt-24"
   >
@@ -12,7 +12,7 @@
         icon="lucide:plus"
         :disabled="form.specs.length >= 30"
         @click="add"
-        >Add metrology parameter</LazyVButton
+        >Add specification</LazyVButton
       >
     </template>
 

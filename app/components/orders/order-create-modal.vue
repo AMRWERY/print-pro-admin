@@ -1,11 +1,11 @@
 <template>
   <LazyVDialog
     v-model:open="open"
-    title="Create manual requisition"
-    description="Opens an escrow-clearing requisition for an existing atelier."
+    title="Create manual order"
+    description="Opens an order awaiting payment for an existing customer."
   >
     <form
-      id="create-requisition"
+      id="create-order"
       class="space-y-4"
       novalidate
       @submit.prevent="submit"
@@ -13,19 +13,19 @@
       <LazyVSelectInput
         v-model="form.customerId"
         name="customerId"
-        label="Client atelier"
+        label="Customer"
         required
         rules="required"
         :options="customerOptions"
       />
 
       <LazyVSelectInput
-        v-model="form.apparatusId"
-        name="apparatusId"
-        label="Apparatus or media"
+        v-model="form.productId"
+        name="productId"
+        label="Product"
         required
         rules="required"
-        :options="apparatusOptions"
+        :options="productOptions"
       />
 
       <div class="grid gap-4 sm:grid-cols-2">
@@ -56,7 +56,7 @@
           aria-hidden="true"
         />
         <span>
-          Escrow value (incl. QA, courier and VAT)
+          Order value (incl. setup, courier and VAT)
           <strong class="font-mono text-paper tabular-nums">{{
             currency(total, { maximumFractionDigits: 0 })
           }}</strong>
@@ -82,17 +82,17 @@
 
       <LazyVButton
         type="submit"
-        form="create-requisition"
+        form="create-order"
         :loading="loading"
         icon="lucide:circle-plus"
-        >Create requisition</LazyVButton
+        >Create order</LazyVButton
       >
     </template>
   </LazyVDialog>
 </template>
 
 <script lang="ts" setup>
-import { apparatus, customers } from "~/data/admin-orders";
+import { orderProducts, customers } from "~/data/admin-orders";
 import { orderPricing } from "~/data/order-pricing";
 import { priorityMeta } from "~/data/order-meta";
 import type { OrderPriority, OrderRow } from "~/types/admin/orders";
@@ -105,13 +105,13 @@ const { currency } = useFormatters();
 const toast = useToast();
 
 const customerOptions = [
-  { value: "", label: "Select an atelier…" },
+  { value: "", label: "Select a customer…" },
   ...customers.map((c, value) => ({ value, label: `${c.name} · ${c.org}` })),
 ];
 
-const apparatusOptions = [
+const productOptions = [
   { value: "", label: "Select equipment or media…" },
-  ...apparatus.map((a, value) => ({ value, label: a.title })),
+  ...orderProducts.map((a, value) => ({ value, label: a.title })),
 ];
 
 const priorityOptions = (Object.keys(priorityMeta) as OrderPriority[]).map(
@@ -123,7 +123,7 @@ const priorityOptions = (Object.keys(priorityMeta) as OrderPriority[]).map(
 
 const blank = () => ({
   customerId: "" as number | "",
-  apparatusId: "" as number | "",
+  productId: "" as number | "",
   quantity: 1 as number | null,
   priority: "standard" as OrderPriority,
 });
@@ -140,12 +140,12 @@ watch(open, (isOpen) => {
 
 // Same pricing rule as the ledger: QA, courier, institutional discount and VAT included.
 const total = computed(() =>
-  form.apparatusId === "" || form.customerId === ""
+  form.productId === "" || form.customerId === ""
     ? 0
     : orderPricing(
         [
           {
-            unitPrice: apparatus[form.apparatusId]!.price,
+            unitPrice: orderProducts[form.productId]!.price,
             quantity: Number(form.quantity) || 0,
           },
         ],
@@ -173,14 +173,14 @@ const submit = async () => {
       method: "POST",
       body: { ...form },
     });
-    toast.success(`Requisition ${row.id} created`, {
-      description: "Escrow clearing has started.",
+    toast.success(`Order ${row.id} created`, {
+      description: "The order is waiting for payment.",
     });
     emit("created", row);
     open.value = false;
   } catch {
     error.value =
-      "The requisition could not be created. Check the details and try again.";
+      "The order could not be created. Check the details and try again.";
   } finally {
     loading.value = false;
   }

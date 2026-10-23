@@ -10,12 +10,9 @@ import type { Tone } from "~/types/admin/dashboard";
 // Labels, tones and icons for the products screen (no Tailwind classes, see order-meta.ts).
 
 export const categoryMeta: Record<ProductCategory, { label: string; icon: string }> = {
-  cameras: { label: "Medium format", icon: "lucide:camera" },
-  glass: { label: "Cine & prime glass", icon: "lucide:clapperboard" },
-  printers: { label: "Large-format printers", icon: "lucide:printer" },
-  rag: { label: "Cotton rag substrates", icon: "lucide:layers" },
-  pigments: { label: "Mineral pigments", icon: "lucide:flask-conical" },
-  metrology: { label: "Metrology & colour", icon: "lucide:gauge" },
+  printers: { label: "Printers", icon: "lucide:printer" },
+  copiers: { label: "Photocopiers", icon: "lucide:copy" },
+  "inks-toner": { label: "Inks & Toner", icon: "lucide:droplets" },
 };
 
 export const categoryOptions: { value: "all" | ProductCategory; label: string }[] = [
@@ -41,9 +38,9 @@ export const stockOptions: { value: StockFilter; label: string }[] = [
 ];
 
 export const statusMeta: Record<ProductStatus, { label: string; tone: Tone; icon: string }> = {
-  active: { label: "Active · certified", tone: "success", icon: "lucide:shield-check" },
-  bench: { label: "Bench metrology", tone: "info", icon: "lucide:microscope" },
-  quarantine: { label: "Quarantined", tone: "accent", icon: "lucide:shield-alert" },
+  active: { label: "Active · listed", tone: "success", icon: "lucide:shield-check" },
+  testing: { label: "In testing", tone: "info", icon: "lucide:flask-conical" },
+  hold: { label: "On hold", tone: "accent", icon: "lucide:shield-alert" },
   draft: { label: "Draft", tone: "neutral", icon: "lucide:file-text" },
 };
 

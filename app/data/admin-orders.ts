@@ -1,7 +1,7 @@
 import type {
-  ClientTier,
+  AccountTier,
   CreateOrderInput,
-  EscrowMode,
+  PaymentState,
   OrderCounts,
   OrderPriority,
   LedgerEvent,
@@ -16,191 +16,59 @@ import type {
 } from "~/types/admin/orders";
 import { orderPricing } from "~/data/order-pricing";
 
-// Demo ledger for the orders screen. When the app has a backend this file goes away and
+// Demo orders for the orders screen. When the app has a backend this file goes away and
 // server/api/admin/orders.* proxies the real service.
 
 export const customers: {
   name: string;
   org: string;
   initials: string;
-  tier: ClientTier;
+  tier: AccountTier;
 }[] = [
-  {
-    name: "Dr. Elena Vance",
-    org: "Metropolitan Archival Wing",
-    initials: "EV",
-    tier: "museumCustody",
-  },
-  {
-    name: "Jean-Luc Hébert",
-    org: "Fondation Lumière Paris",
-    initials: "JH",
-    tier: "galleryPremium",
-  },
-  {
-    name: "Kenji Takahashi",
-    org: "Kyoto Museum of Photography",
-    initials: "KT",
-    tier: "institutionalArchive",
-  },
-  {
-    name: "Astrid Weber",
-    org: "Bauhaus Archive Berlin",
-    initials: "AW",
-    tier: "museumCustody",
-  },
-  {
-    name: "Vincent van Boeg",
-    org: "Rijksmuseum Restoration Lab",
-    initials: "VB",
-    tier: "institutionalArchive",
-  },
-  {
-    name: "Sora Moriyama",
-    org: "Ginza Master Print Guild",
-    initials: "SM",
-    tier: "collectiveGuild",
-  },
-  {
-    name: "Marcella Hauer",
-    org: "Alps Alpine Metrology Lab",
-    initials: "MH",
-    tier: "museumCustody",
-  },
-  {
-    name: "Marcus Thorne",
-    org: "Thorne Fine Graphic Atelier",
-    initials: "MT",
-    tier: "galleryPremium",
-  },
-  {
-    name: "Sophie Laurent",
-    org: "Bibliothèque Nationale Restorations",
-    initials: "SL",
-    tier: "institutionalArchive",
-  },
-  {
-    name: "Amira Al-Zahrani",
-    org: "Louvre Abu Dhabi Conservation Unit",
-    initials: "AZ",
-    tier: "museumCustody",
-  },
-  {
-    name: "Julien Weber",
-    org: "Studio Monochrome Berlin",
-    initials: "JW",
-    tier: "collectiveGuild",
-  },
-  {
-    name: "Tariq Gibran",
-    org: "Gibran Gallery of Modern Cyanotypes",
-    initials: "TG",
-    tier: "galleryPremium",
-  },
+  { name: "Dr. Amal Fahmy", org: "Delta Architects", initials: "AF", tier: "enterprise" },
+  { name: "Karim Mansour", org: "Nile Print House", initials: "KM", tier: "printShop" },
+  { name: "Hala Youssef", org: "Cairo Language School", initials: "HY", tier: "business" },
+  { name: "Omar Sherif", org: "Sherif Accounting Group", initials: "OS", tier: "enterprise" },
+  { name: "Mariam Adel", org: "Alexandria University Press", initials: "MA", tier: "business" },
+  { name: "Tarek Nabil", org: "Nabil Home Office", initials: "TN", tier: "home" },
+  { name: "Dina Hassan", org: "Hassan Medical Clinics", initials: "DH", tier: "enterprise" },
+  { name: "Youssef Gamal", org: "Gamal Engineering Consultants", initials: "YG", tier: "business" },
+  { name: "Salma Rashed", org: "Rashed Law Offices", initials: "SR", tier: "business" },
+  { name: "Ahmed Al-Zahrani", org: "Riyadh Education Group", initials: "AZ", tier: "enterprise" },
+  { name: "Layla Haddad", org: "Haddad Design Co. Dubai", initials: "LH", tier: "printShop" },
+  { name: "Nadia Farouk", org: "Farouk Home Office", initials: "NF", tier: "home" },
 ];
 
-export const apparatus: {
+export const orderProducts: {
   title: string;
-  unit: "item" | "roll";
+  unit: "item" | "pack";
   spec: string;
   icon: string;
   price: number;
 }[] = [
-  {
-    title: "Hasselblad X2D 100C + XCD 55mm f/2.5",
-    unit: "item",
-    spec: "1× system + 2× CFexpress 1TB Type B",
-    icon: "lucide:camera",
-    price: 11800,
-  },
-  {
-    title: 'Epson SureColor P9570 44" SpectroProofer',
-    unit: "item",
-    spec: "6× UltraChrome PRO12 ink 700ml",
-    icon: "lucide:printer",
-    price: 8190,
-  },
-  {
-    title: 'Hahnemühle Photo Rag 308g (60" × 39ft)',
-    unit: "roll",
-    spec: "Batch lot 2026-HR-90",
-    icon: "lucide:layers",
-    price: 269,
-  },
-  {
-    title: "Leica Summilux-C 35mm T1.4 Cinema Prime",
-    unit: "item",
-    spec: "Metric PL mount · calibrated shims",
-    icon: "lucide:clapperboard",
-    price: 21500,
-  },
-  {
-    title: "X-Rite i1Pro 3 Plus Metrology Spectro",
-    unit: "item",
-    spec: "Polarization filter + ambient head",
-    icon: "lucide:gauge",
-    price: 2400,
-  },
-  {
-    title: "Sinar p3-df Modular Digital View Bench",
-    unit: "item",
-    spec: "Micrometric focus drive + bellows",
-    icon: "lucide:camera",
-    price: 9800,
-  },
-  {
-    title: "Mineral Carbon Pigment Inks (K7 Monochrome)",
-    unit: "item",
-    spec: "1000ml flasks · pure carbon Dmax 1.95",
-    icon: "lucide:flask-conical",
-    price: 840,
-  },
-  {
-    title: "Phase One IQ4 150MP Trichromatic",
-    unit: "item",
-    spec: "151MP BSI sensor",
-    icon: "lucide:camera",
-    price: 44500,
-  },
-  {
-    title: "Canon imagePROGRAF PRO-4100",
-    unit: "item",
-    spec: "4× LUCIA PRO 12-ink",
-    icon: "lucide:printer",
-    price: 5200,
-  },
-  {
-    title: "ARRI Signature Prime 35mm T1.8",
-    unit: "item",
-    spec: "LPL mount · metrology logged",
-    icon: "lucide:clapperboard",
-    price: 18900,
-  },
-  {
-    title: "Canson Infinity Platine Fibre Rag 310g",
-    unit: "roll",
-    spec: "Acid-free cotton",
-    icon: "lucide:layers",
-    price: 289,
-  },
-  {
-    title: "Piezography Pro Carbon Pigment Set",
-    unit: "item",
-    spec: "Monochrome mineral suspensions",
-    icon: "lucide:flask-conical",
-    price: 840,
-  },
+  { title: "Kopira Pro A3 35 ppm Mono", unit: "item", spec: "Copy, print, scan, fax · finisher ready", icon: "lucide:copy", price: 58900 },
+  { title: 'Nordjet Large-Format 44" CAD & Poster', unit: "item", spec: "5 inks · stand included", icon: "lucide:printer", price: 82500 },
+  { title: "Corex Toner Black 210 High-Yield", unit: "item", spec: "6,000 pages per cartridge", icon: "lucide:droplets", price: 2100 },
+  { title: "Corex Laser 450 Colour", unit: "item", spec: "A4 colour laser · 28 ppm · duplex", icon: "lucide:printer", price: 14900 },
+  { title: "Kopira Toner Black A3 Series", unit: "item", spec: "30,000 pages per cartridge", icon: "lucide:droplets", price: 2800 },
+  { title: "Printa Tank 500 Ink-Tank All-Colour", unit: "item", spec: "A4 ink-tank · automatic duplex", icon: "lucide:printer", price: 5400 },
+  { title: "Nordjet Pigment Ink 8-Colour Set", unit: "pack", spec: "8 × 130 ml pigment set", icon: "lucide:droplets", price: 4900 },
+  { title: "Kopira Pro A3 45 ppm Colour", unit: "item", spec: "Booklet finisher included", icon: "lucide:copy", price: 118000 },
+  { title: "Corex Laser 700 A3 Mono", unit: "item", spec: "A3 mono laser · 40 ppm", icon: "lucide:printer", price: 27400 },
+  { title: "Kopira Drum Unit A3 Series", unit: "item", spec: "100,000 pages per drum", icon: "lucide:cylinder", price: 6400 },
+  { title: 'Nordjet Large-Format 24" Plotter', unit: "item", spec: "A1 drawings · roll feed", icon: "lucide:printer", price: 38900 },
+  { title: "Corex Toner Colour Set 450", unit: "pack", spec: "C/M/Y/K toner set", icon: "lucide:droplets", price: 5200 },
 ];
 
 const TOTAL = 1284;
-// Stage sizes that add up to TOTAL. They are spread through the ledger with a stride (793) that
+// Stage sizes that add up to TOTAL. They are spread through the list with a stride (793) that
 // is coprime with 1284, so every page shows a mix of stages.
 const STAGE_SIZES: [OrderStage, number][] = [
-  ["escrowClearing", 42],
+  ["awaitingPayment", 42],
   ["inTransit", 86],
-  ["cleanroomQa", 38],
-  ["outgassing", 14],
-  ["settled", TOTAL - 42 - 86 - 38 - 14],
+  ["checking", 38],
+  ["packing", 14],
+  ["completed", TOTAL - 42 - 86 - 38 - 14],
 ];
 
 const stageOrder = STAGE_SIZES.flatMap(([stage, n]) =>
@@ -208,66 +76,66 @@ const stageOrder = STAGE_SIZES.flatMap(([stage, n]) =>
 );
 
 const PRIORITIES: OrderPriority[] = [
-  "priority",
-  "commercial",
-  "archive",
-  "metrology",
+  "urgent",
+  "bulk",
+  "installation",
+  "service",
   "hold",
   "standard",
   "vip",
 ];
 
-const ESCROW_NOTES: Record<OrderStage, string[]> = {
-  escrowClearing: [
-    "IBAN validated · pending inbound",
-    "Wire reference matched",
-    "Awaiting counter-signature",
+const PAYMENT_NOTES: Record<OrderStage, string[]> = {
+  awaitingPayment: [
+    "Transfer reference pending",
+    "Transfer reference matched",
+    "Awaiting purchase order approval",
   ],
   inTransit: [
-    "Credit Suisse vault escrow",
-    "Deutsche Bank escrow trust",
-    "Suisse vault · escrow",
+    "Paid by bank transfer",
+    "Paid by card",
+    "Paid on account (30 days)",
   ],
-  cleanroomQa: [
-    "Disputed sensor defect",
-    "Pending MTF interferometry",
-    "Spectral drift under review",
+  checking: [
+    "Paid · held until tests pass",
+    "Paid · test print under review",
+    "Paid · awaiting technician sign-off",
   ],
-  outgassing: ["Deutsche Bank escrow trust", "Credit Suisse vault escrow"],
-  settled: [
-    "Signature key #9021-X",
-    "Block confirmed #9412",
-    "Funds transferred",
+  packing: ["Paid by bank transfer", "Paid on account (30 days)"],
+  completed: [
+    "Paid in full",
+    "Invoice settled",
+    "Payment received",
   ],
 };
-const CUSTODY_NOTES: Record<OrderStage, string[]> = {
-  escrowClearing: ["Warehouse bay 3", "Warehouse bay 7", "Held at depot"],
+const STATUS_NOTES: Record<OrderStage, string[]> = {
+  awaitingPayment: ["Warehouse bay 3", "Warehouse bay 7", "Held in the Cairo warehouse"],
   inTransit: [
-    "Brink's armored · #FR-889",
-    "Zurich → destination",
-    "Armored freight lane 2",
+    "Courier · tracking #CR-889",
+    "Cairo → customer address",
+    "Express lane 2",
   ],
-  cleanroomQa: [
-    "Bench #04 · interferometry",
-    "Bench #02 · collimation",
-    "Bench #07 · spectral",
+  checking: [
+    "Test bay #04 · print test",
+    "Test bay #02 · paper path",
+    "Test bay #07 · network setup",
   ],
-  outgassing: ["Chamber B · 36h remaining", "Chamber A · 12h remaining"],
-  settled: ["Custody transferred", "Signed handoff", "Delivered · archived"],
+  packing: ["Packing bay B · 4 h left", "Packing bay A · 1 h left"],
+  completed: ["Delivered and signed", "Installed on site", "Delivered · closed"],
 };
 
-/** The ledger has a fixed "now" so filters and sorting are stable between reloads. */
+/** The list has a fixed "now" so filters and sorting are stable between reloads. */
 const DEMO_NOW = Date.UTC(2026, 9, 31, 15, 0, 0);
 const LATEST = Date.UTC(2026, 9, 31, 14, 22, 8);
 
 const hexOf = (id: number) =>
   `0x${((id * 2654435761) >>> 0).toString(16).toUpperCase().slice(0, 5)}`;
 
-/** Extra accessories on an order, derived from its id so the list and detail agree. */
+/** Extra supplies on an order, derived from its id so the list and detail agree. */
 const extrasFor = (idNumber: number, mainIx: number) => {
   const out: { ix: number; quantity: number }[] = [];
   for (let k = 0; k < idNumber % 3; k++) {
-    const ix = (idNumber * 5 + k * 3 + 1) % apparatus.length;
+    const ix = (idNumber * 5 + k * 3 + 1) % orderProducts.length;
     if (ix !== mainIx && !out.some((o) => o.ix === ix))
       out.push({ ix, quantity: 1 + ((idNumber + k) % 2) });
   }
@@ -278,19 +146,19 @@ const build = (
   idNumber: number,
   placedAt: number,
   customerIx: number,
-  apparatusIx: number,
+  productIx: number,
   quantity: number,
   priority: OrderPriority,
   stage: OrderStage,
   variant: number,
 ): OrderRow => {
-  const a = apparatus[apparatusIx]!;
+  const a = orderProducts[productIx]!;
   const customer = customers[customerIx]!;
   const pick = (list: string[]) => list[variant % list.length]!;
   const priced = [
     { unitPrice: a.price, quantity },
-    ...extrasFor(idNumber, apparatusIx).map((e) => ({
-      unitPrice: apparatus[e.ix]!.price,
+    ...extrasFor(idNumber, productIx).map((e) => ({
+      unitPrice: orderProducts[e.ix]!.price,
       quantity: e.quantity,
     })),
   ];
@@ -309,8 +177,8 @@ const build = (
     },
     amount: orderPricing(priced, customer.tier).total,
     stage,
-    escrowNote: pick(ESCROW_NOTES[stage]),
-    custodyNote: pick(CUSTODY_NOTES[stage]),
+    paymentNote: pick(PAYMENT_NOTES[stage]),
+    statusNote: pick(STATUS_NOTES[stage]),
   };
 };
 
@@ -322,7 +190,7 @@ const generated: OrderRow[] = (() => {
       948201 - i * 2 - Math.floor(i / 3),
       at,
       (i * 5) % customers.length,
-      (i * 7 + Math.floor(i / 12)) % apparatus.length,
+      (i * 7 + Math.floor(i / 12)) % orderProducts.length,
       1 + ((i * 3) % 6),
       PRIORITIES[(i * 5) % PRIORITIES.length]!,
       stageOrder[(i * 793) % TOTAL]!,
@@ -336,14 +204,14 @@ const created: OrderRow[] = [];
 
 const allOrders = () => [...created, ...generated];
 
-export const escrowModeOf = (stage: OrderStage): EscrowMode =>
+export const paymentStateOf = (stage: OrderStage): PaymentState =>
   ({
-    escrowClearing: "awaitingWire",
-    inTransit: "funded",
-    cleanroomQa: "qaHold",
-    outgassing: "funded",
-    settled: "settled",
-  })[stage] as EscrowMode;
+    awaitingPayment: "awaitingTransfer",
+    inTransit: "paid",
+    checking: "onHold",
+    packing: "paid",
+    completed: "settled",
+  })[stage] as PaymentState;
 
 const pick = <T extends string>(
   value: unknown,
@@ -369,20 +237,14 @@ export const parseOrdersQuery = (
     ["all", ...STAGE_SIZES.map(([s]) => s)] as const,
     "all",
   ),
-  escrow: pick(
-    raw.escrow,
-    ["all", "awaitingWire", "funded", "qaHold", "settled"] as const,
+  payment: pick(
+    raw.payment,
+    ["all", "awaitingTransfer", "paid", "onHold", "settled"] as const,
     "all",
   ),
   tier: pick(
     raw.tier,
-    [
-      "all",
-      "museumCustody",
-      "galleryPremium",
-      "institutionalArchive",
-      "collectiveGuild",
-    ] as const,
+    ["all", "enterprise", "business", "printShop", "home"] as const,
     "all",
   ),
   range: pick(raw.range, ["all", "30d", "7d"] as const, "all"),
@@ -412,7 +274,7 @@ export const queryOrders = (query: OrdersQuery): OrdersResponse => {
         .join(" ")
         .toLowerCase()
         .includes(needle)) &&
-    (query.escrow === "all" || escrowModeOf(o.stage) === query.escrow) &&
+    (query.payment === "all" || paymentStateOf(o.stage) === query.payment) &&
     (query.tier === "all" || o.customer.tier === query.tier) &&
     Date.parse(o.placedAt) >= since;
 
@@ -420,11 +282,11 @@ export const queryOrders = (query: OrdersQuery): OrdersResponse => {
 
   const counts: OrderCounts = {
     all: base.length,
-    escrowClearing: 0,
+    awaitingPayment: 0,
     inTransit: 0,
-    cleanroomQa: 0,
-    outgassing: 0,
-    settled: 0,
+    checking: 0,
+    packing: 0,
+    completed: 0,
   };
   for (const o of base) counts[o.stage]++;
 
@@ -453,11 +315,11 @@ export const queryOrders = (query: OrdersQuery): OrdersResponse => {
     total: sorted.length,
     counts,
     kpis: {
-      totalRequisitions: everything.length,
+      totalOrders: everything.length,
       historicalDelta: 4.2,
-      volumeEur: 482940,
-      pendingEscrowEur: 74210,
-      quarantineHold: 9,
+      volume: 482940,
+      pendingPayment: 74210,
+      onHold: 9,
     },
   };
 };
@@ -468,10 +330,10 @@ export const createOrder = (input: CreateOrderInput): OrderRow => {
     id,
     DEMO_NOW + (created.length + 1) * 60_000,
     input.customerId,
-    input.apparatusId,
+    input.productId,
     input.quantity,
     input.priority,
-    "escrowClearing",
+    "awaitingPayment",
     id,
   );
   created.unshift(row);
@@ -481,22 +343,22 @@ export const createOrder = (input: CreateOrderInput): OrderRow => {
 export const validateCreateOrder = (body: unknown): CreateOrderInput | null => {
   const b = (body ?? {}) as Record<string, unknown>;
   const customerId = Number(b.customerId);
-  const apparatusId = Number(b.apparatusId);
+  const productId = Number(b.productId);
   const quantity = Number(b.quantity);
   const priority = pick(b.priority, PRIORITIES, "standard");
   if (
     !Number.isInteger(customerId) ||
     customerId < 0 ||
     customerId >= customers.length ||
-    !Number.isInteger(apparatusId) ||
-    apparatusId < 0 ||
-    apparatusId >= apparatus.length ||
+    !Number.isInteger(productId) ||
+    productId < 0 ||
+    productId >= orderProducts.length ||
     !Number.isInteger(quantity) ||
     quantity < 1 ||
     quantity > 50
   )
     return null;
-  return { customerId, apparatusId, quantity, priority };
+  return { customerId, productId, quantity, priority };
 };
 
 // ---------------------------------------------------------------------------
@@ -508,7 +370,7 @@ const shortStamp = (iso: string) =>
   `${MONTHS[Number(iso.slice(5, 7)) - 1]} ${Number(iso.slice(8, 10))} ${iso.slice(11, 16)} UTC`;
 
 const skuOf = (ix: number) =>
-  `${apparatus[ix]!.title
+  `${orderProducts[ix]!.title
     .split(/[^A-Za-z0-9]+/)
     .filter(Boolean)
     .slice(0, 2)
@@ -516,31 +378,31 @@ const skuOf = (ix: number) =>
     .join("-")}-${ix * 37 + 110}`;
 
 export const pipelineStages: { stage: OrderStage; title: string }[] = [
-  { stage: "escrowClearing", title: "Escrow funded & logged" },
-  { stage: "cleanroomQa", title: "Cleanroom QA & collimation" },
-  { stage: "outgassing", title: "Outgassing & packing" },
-  { stage: "inTransit", title: "Armored freight dispatch" },
-  { stage: "settled", title: "Conservator handoff" },
+  { stage: "awaitingPayment", title: "Payment confirmed & logged" },
+  { stage: "checking", title: "Checked & test-printed" },
+  { stage: "packing", title: "Packed & sealed" },
+  { stage: "inTransit", title: "Courier dispatch" },
+  { stage: "completed", title: "Delivered & installed" },
 ];
 
-// Where each stage sits in the five-step pipeline (settled = every step done).
+// Where each stage sits in the five-step pipeline (completed = every step done).
 const ACTIVE_PHASE: Record<OrderStage, number> = {
-  escrowClearing: 0,
-  cleanroomQa: 1,
-  outgassing: 2,
+  awaitingPayment: 0,
+  checking: 1,
+  packing: 2,
   inTransit: 3,
-  settled: 5,
+  completed: 5,
 };
 
 const SHIPMENT_STATUS: Record<OrderStage, string> = {
-  escrowClearing: "Vault hold",
-  cleanroomQa: "Awaiting dispatch",
-  outgassing: "Awaiting dispatch",
-  inTransit: "Climate vault en route",
-  settled: "Delivered",
+  awaitingPayment: "Held in the warehouse",
+  checking: "Awaiting dispatch",
+  packing: "Awaiting dispatch",
+  inTransit: "On the way",
+  completed: "Delivered",
 };
 
-// Notes and ledger events added through the API live here until the server restarts.
+// Notes and events added through the API live here until the server restarts.
 const addedNotes = new Map<string, OrderNote[]>();
 const addedEvents = new Map<string, LedgerEvent[]>();
 let noteSeq = 100;
@@ -561,12 +423,12 @@ export const orderDetail = (slug: string): OrderDetail | null => {
   if (!row) return null;
 
   const idNumber = Number(slug.slice(3));
-  const mainIx = apparatus.findIndex((a) => a.title === row.allocation.title);
+  const mainIx = orderProducts.findIndex((a) => a.title === row.allocation.title);
   const lines: OrderLine[] = [
     { ix: mainIx, quantity: row.allocation.quantity },
     ...extrasFor(idNumber, mainIx),
   ].map(({ ix, quantity }) => {
-    const a = apparatus[ix]!;
+    const a = orderProducts[ix]!;
     return {
       sku: skuOf(ix),
       title: a.title,
@@ -581,11 +443,11 @@ export const orderDetail = (slug: string): OrderDetail | null => {
 
   const active = ACTIVE_PHASE[row.stage];
   const phaseDetail = [
-    `Funded & logged · ${shortStamp(row.placedAt)}`,
-    "Bench #04 · interferometer 0.22µm",
-    "Nitrogen purge · hermetic seal",
-    "Lloyd's courier tier-1 · dual armed escort",
-    "Escrow settlement · biometric receipt",
+    `Payment confirmed · ${shortStamp(row.placedAt)}`,
+    "Test bay #04 · test page and paper path",
+    "Boxed with cables and starter supplies",
+    "Insured courier · tracking active",
+    "Signed for on delivery",
   ];
   const phases: OrderPhase[] = pipelineStages.map((p, i) => ({
     ...p,
@@ -605,14 +467,14 @@ export const orderDetail = (slug: string): OrderDetail | null => {
       id: 1,
       author: "COO Admin (Station-01)",
       ago: "2 hours ago",
-      text: "Interferometer test on XCD 55mm lens showed minor chromatic flare at f/2.5. Re-centered element #3. Collimation now nominal 99.4% MTF.",
+      text: "Test print on the machine showed faint banding on the left edge. Replaced the drum unit and the test pages are now clean.",
       urgent: false,
     },
     {
       id: 2,
-      author: "Escrow Officer M. Klein",
+      author: "Accounts officer M. Klein",
       ago: "4 hours ago",
-      text: `Wire transfer of EGP ${row.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })} confirmed via Deutsche Bank Trust. Escrow vault lock established.`,
+      text: `Bank transfer of EGP ${row.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })} confirmed. Payment recorded against the order.`,
       urgent: false,
     },
   ];
@@ -620,16 +482,16 @@ export const orderDetail = (slug: string): OrderDetail | null => {
   const at = Date.parse(row.placedAt);
   const stamp = (min: number) => new Date(at + min * 60_000).toISOString();
   const base: LedgerEvent[] = [
-    { at: stamp(0), text: `Requisition created via Atelier Portal by ${row.customer.name}` },
+    { at: stamp(0), text: `Order created via the customer portal by ${row.customer.name}` },
   ];
   if (active >= 1) {
-    base.push({ at: stamp(13), text: "Escrow funded notification transmitted to customer" });
-    base.push({ at: stamp(95), text: "Collimation report uploaded by Tech-04 (SHA-256 verified)" });
+    base.push({ at: stamp(13), text: "Payment confirmation sent to the customer" });
+    base.push({ at: stamp(95), text: "Test report uploaded by Tech-04" });
   }
-  if (active >= 3) base.push({ at: stamp(300), text: "Outgassing complete · crate sealed under nitrogen" });
-  if (active >= 4) base.push({ at: stamp(480), text: "Custody handed to conservator · escrow released" });
+  if (active >= 3) base.push({ at: stamp(300), text: "Packed and sealed with cables and starter supplies" });
+  if (active >= 4) base.push({ at: stamp(480), text: "Delivered and signed for · order completed" });
   else if (active === 3)
-    base.push({ at: stamp(480), text: `Armored courier dispatched · waybill BRK-${idNumber}-EU` });
+    base.push({ at: stamp(480), text: `Courier dispatched · tracking CR-${idNumber}-EG` });
 
   return {
     row,
@@ -637,28 +499,32 @@ export const orderDetail = (slug: string): OrderDetail | null => {
     pricing: orderPricing(lines, row.customer.tier),
     phases,
     customer: {
-      role: ["Chief Conservator", "Head of Collections", "Master Printer", "Imaging Director"][idNumber % 4]!,
-      email: `${slugName}@${domain}.org`,
-      phone: `+${[1, 33, 49, 41][idNumber % 4]} (${200 + (idNumber % 700)}) ${535 + (idNumber % 400)}-${7000 + (idNumber % 2999)}`,
-      taxId: `EIN ${10 + (idNumber % 80)}-${1000000 + ((idNumber * 7919) % 8999999)}`,
-      lifetimeEscrow: Math.round(
-        mine.filter((o) => o.stage === "settled").reduce((sum, o) => sum + o.amount, 0),
+      role: ["Office Manager", "Head of IT", "Print Room Supervisor", "Procurement Lead"][idNumber % 4]!,
+      email: `${slugName}@${domain}.com`,
+      phone: `+${[20, 966, 971, 974][idNumber % 4]} (${200 + (idNumber % 700)}) ${535 + (idNumber % 400)}-${7000 + (idNumber % 2999)}`,
+      taxId: `Tax ID ${100 + (idNumber % 800)}-${100000 + ((idNumber * 7919) % 899999)}`,
+      lifetimeValue: Math.round(
+        mine.filter((o) => o.stage === "completed").reduce((sum, o) => sum + o.amount, 0),
       ),
       orders: mine.length,
     },
     shipment: {
       status: SHIPMENT_STATUS[row.stage],
-      carrier: "Brink's Armored Fine-Art Logistics",
-      waybill: `BRK-${idNumber}-EU`,
-      origin: "Lumen & Press Metrology Depot 01, Frankfurt Node",
-      destination: `${row.customer.org} — receiving dock 4B`,
-      sensors: { temp: "18.5 °C", humidity: "45% RH", shock: "< 0.26 G" },
+      carrier: "PrintPro Delivery (insured courier)",
+      waybill: `CR-${idNumber}-EG`,
+      origin: "PrintPro Cairo warehouse",
+      destination: `${row.customer.org} — reception`,
+      parcel: {
+        parcels: String(1 + (idNumber % 3)),
+        weight: `${8 + (idNumber % 40)} kg`,
+        signature: "Required",
+      },
       trace: Array.from({ length: 24 }, (_, i) => 50 + Math.round(Math.sin(i * 1.7 + idNumber) * 8)),
     },
     directive: {
       quote:
-        "Please ensure optical bench collimation report is physically signed and hermetically sealed inside the inner Pelican case. Cleanroom delivery must coordinate with Security Dock 4B before 11:00 AM EST.",
-      recordedAt: `Recorded ${shortStamp(row.placedAt)} · authenticated via client keyring`,
+        "Please deliver before 11:00 and call the reception desk on arrival. A technician should be present to install the machine and connect it to our network.",
+      recordedAt: `Recorded ${shortStamp(row.placedAt)} · from the customer portal`,
     },
     notes: [...(addedNotes.get(row.id) ?? []), ...seedNotes],
     ledger: [...(addedEvents.get(row.id) ?? []), ...base].sort(
@@ -672,12 +538,12 @@ export const setOrderStage = (slug: string, stage: OrderStage): OrderRow | null 
   if (!row) return null;
   if (row.stage !== stage) {
     row.stage = stage;
-    row.escrowNote = ESCROW_NOTES[stage][0]!;
-    row.custodyNote = CUSTODY_NOTES[stage][0]!;
+    row.paymentNote = PAYMENT_NOTES[stage][0]!;
+    row.statusNote = STATUS_NOTES[stage][0]!;
     logEvent(
       row.id,
-      stage === "settled"
-        ? "Escrow released and requisition fulfilled by COO Admin"
+      stage === "completed"
+        ? "Order completed and closed by COO Admin"
         : `Pipeline moved to "${pipelineStages.find((p) => p.stage === stage)!.title}" by COO Admin`,
     );
   }

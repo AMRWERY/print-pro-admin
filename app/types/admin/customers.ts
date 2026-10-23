@@ -1,4 +1,4 @@
-export type CustomerSegment = "institutional" | "commercial" | "printmaker" | "collector" | "highLtv";
+export type CustomerSegment = "enterprise" | "business" | "printShop" | "home" | "highLtv";
 
 export type CustomerStatus = "active" | "audit" | "dormant";
 
@@ -16,7 +16,7 @@ export interface Customer {
   role: string;
   email: string;
   phone: string;
-  /** Regional custody node, for example "New York Node". */
+  /** Region or branch, for example "Cairo". */
   node: string;
   segment: CustomerSegment;
   tier: CustomerTier;
@@ -27,10 +27,10 @@ export interface Customer {
   ltv: number;
   orders: number;
   activeOrders: number;
-  escrowRating: number;
+  paymentRating: number;
   taxId: string;
-  depot: string;
-  escrowTerms: string;
+  deliveryAddress: string;
+  paymentTerms: string;
   createdAt: string;
 }
 
@@ -93,6 +93,6 @@ export interface CustomerInput {
   tier: CustomerTier;
   status: CustomerStatus;
   taxId: string;
-  depot: string;
-  escrowTerms: string;
+  deliveryAddress: string;
+  paymentTerms: string;
 }

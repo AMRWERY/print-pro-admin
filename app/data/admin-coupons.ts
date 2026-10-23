@@ -25,19 +25,19 @@ const addDays = (days: number) => new Date(Date.parse(TODAY) + days * DAY).toISO
 type Seed = Omit<Coupon, "id" | "updatedAt" | "status"> & { status?: CouponStatus };
 
 const seeds: Seed[] = [
-  { code: "HASSELBLAD15", campaign: "Q4 Optical Upgrade Incentive", description: "15% concession on X2D 100C bodies and XCD prime lenses applied at certified checkout.", type: "percentage", value: 15, cap: 1500, limit: 200, used: 142, perAccount: 3, minOrder: 5000, tier: "all", categories: ["cameras", "glass"], startsAt: addDays(-40), endsAt: addDays(55) },
-  { code: "ARCHIVAL-FREIGHT", campaign: "Armored Temperature-Controlled Freight Subsidy", description: "White-glove armored transit subsidy for optics shipments.", type: "freight", value: 320, cap: null, limit: 500, used: 480, perAccount: 0, minOrder: 1200, tier: "all", categories: ["glass"], startsAt: addDays(-90), endsAt: addDays(1) },
-  { code: "EPSON-PROOF-10", campaign: "12-Channel MicroPiezo Trial Credit", description: "Large-format piezo proofer rebate deducted from escrow.", type: "labCredit", value: 250, cap: null, limit: 100, used: 64, perAccount: 1, minOrder: 3500, tier: "all", categories: ["printers"], startsAt: addDays(-30), endsAt: addDays(90) },
-  { code: "INSTITUTION-2026", campaign: "Museum Cleanroom Metrology Bulk Procurement", description: "20% tier rebate for national galleries and museum bulk procurement.", type: "percentage", value: 20, cap: 4000, limit: 50, used: 28, perAccount: 5, minOrder: 10000, tier: "AAA", categories: [], startsAt: addDays(-120), endsAt: addDays(200) },
-  { code: "WELCOME-HAHNE", campaign: "Cotton Rag 310GSM Onboarding", description: "Hahnemühle cotton rag starter welcome for new studios.", type: "fixed", value: 50, cap: null, limit: 1000, used: 820, perAccount: 1, minOrder: 300, tier: "all", categories: ["rag"], startsAt: addDays(-200), endsAt: null },
-  { code: "CINE-PRIME-PRO", campaign: "Anamorphic Glass Summer Allocation", description: "Leitz cine prime six-lens bundle rebate.", type: "fixed", value: 1200, cap: null, limit: 12, used: 12, perAccount: 1, minOrder: 12000, tier: "all", categories: ["glass"], startsAt: addDays(-150), endsAt: addDays(30) },
-  { code: "EXPO-PARIS-26", campaign: "Paris Photo Metrology Showcase", description: "Paris Photo VIP collector badge voucher.", type: "percentage", value: 10, cap: 500, limit: 250, used: 0, perAccount: 1, minOrder: 800, tier: "all", categories: [], startsAt: addDays(10), endsAt: addDays(25) },
+  { code: "TONER-BULK10", campaign: "Toner Bulk Saver", description: "10% off ink and toner when you buy three or more of the same item.", type: "percentage", value: 10, cap: 1500, limit: 200, used: 142, perAccount: 3, minOrder: 1000, tier: "all", categories: ["inks-toner"], startsAt: addDays(-40), endsAt: addDays(55) },
+  { code: "FREE-DELIVERY-A3", campaign: "Free Delivery on A3 Machines", description: "Free insured delivery and installation on A3 photocopiers.", type: "freight", value: 320, cap: null, limit: 500, used: 480, perAccount: 0, minOrder: 1200, tier: "all", categories: ["copiers"], startsAt: addDays(-90), endsAt: addDays(1) },
+  { code: "PRINTER-SETUP-250", campaign: "Printer Setup Credit", description: "Service credit for on-site setup of large-format printers.", type: "serviceCredit", value: 250, cap: null, limit: 100, used: 64, perAccount: 1, minOrder: 3500, tier: "all", categories: ["printers"], startsAt: addDays(-30), endsAt: addDays(90) },
+  { code: "BUSINESS-2026", campaign: "Business Account Bulk Procurement", description: "20% rebate for schools and offices ordering in bulk.", type: "percentage", value: 20, cap: 4000, limit: 50, used: 28, perAccount: 5, minOrder: 10000, tier: "AAA", categories: [], startsAt: addDays(-120), endsAt: addDays(200) },
+  { code: "WELCOME-INK", campaign: "Welcome Ink Offer", description: "Welcome credit on the first ink order for new customers.", type: "fixed", value: 50, cap: null, limit: 1000, used: 820, perAccount: 1, minOrder: 300, tier: "all", categories: ["inks-toner"], startsAt: addDays(-200), endsAt: null },
+  { code: "COPIER-TRADE-IN", campaign: "Trade-In Upgrade Bonus", description: "Extra credit when you trade in an old photocopier.", type: "fixed", value: 1200, cap: null, limit: 12, used: 12, perAccount: 1, minOrder: 12000, tier: "all", categories: ["copiers"], startsAt: addDays(-150), endsAt: addDays(30) },
+  { code: "EXPO-CAIRO-26", campaign: "Cairo Office Expo Voucher", description: "Voucher for visitors of the Cairo office technology expo.", type: "percentage", value: 10, cap: 500, limit: 250, used: 0, perAccount: 1, minOrder: 800, tier: "all", categories: [], startsAt: addDays(10), endsAt: addDays(25) },
 ];
 
-const WORDS = ["ATELIER", "VAULT", "LENS", "RAG", "PIGMENT", "PROOF", "STUDIO", "MUSEUM", "CINE", "PRINT", "BENCH", "ARCHIVE"];
-const THEMES = ["Autumn Calibration Fellowship", "Spring Substrate Clearance", "Collector Preview Rebate", "Lab Onboarding Credit", "Winter Optics Allocation", "Atelier Loyalty Reward", "Pigment Refill Incentive"];
-const CATS: ProductCategory[][] = [["cameras"], ["glass"], ["printers"], ["rag"], ["pigments"], ["metrology"], []];
-const TYPES: CouponType[] = ["percentage", "fixed", "freight", "labCredit"];
+const WORDS = ["PRINTER", "TONER", "INK", "COPIER", "OFFICE", "SCHOOL", "BULK", "SETUP", "PRINT", "SERVICE", "DELIVERY", "SUPPLIES"];
+const THEMES = ["Autumn Toner Saver", "Spring Printer Clearance", "School Supplies Rebate", "Office Onboarding Credit", "Winter Copier Offer", "Reseller Loyalty Reward", "Ink Refill Incentive"];
+const CATS: ProductCategory[][] = [["printers"], ["copiers"], ["inks-toner"], ["printers", "inks-toner"], ["copiers", "inks-toner"], ["printers", "copiers"], []];
+const TYPES: CouponType[] = ["percentage", "fixed", "freight", "serviceCredit"];
 
 // How the 21 generated coupons are spread: scheduled, depleted, expired, draft, paused, active.
 const PLAN: ("scheduled" | "depleted" | "expired" | "draft" | "paused" | "active")[] = [
@@ -51,7 +51,7 @@ const generated: Seed[] = PLAN.map((plan, k) => {
   const base: Seed = {
     code: `${WORDS[k % WORDS.length]}-${String(10 + k * 3).padStart(2, "0")}`,
     campaign: `${THEMES[k % THEMES.length]!}`,
-    description: `Concession for ${CATS[k % CATS.length]!.length ? "selected divisions" : "all divisions"}.`,
+    description: `Offer for ${CATS[k % CATS.length]!.length ? "selected categories" : "all categories"}.`,
     type,
     value: type === "percentage" ? [5, 10, 12, 15, 20][k % 5]! : [50, 100, 150, 250, 320][k % 5]!,
     cap: type === "percentage" ? [500, 1000, 2000][k % 3]! : null,
@@ -100,7 +100,7 @@ export const stateOf = (c: Coupon): CouponState => {
 
 const toRow = (c: Coupon): CouponRow => ({ ...c, state: stateOf(c) });
 
-/** Rough value of one redemption, used for the escrow KPI. */
+/** Rough value of one redemption, used for the discount KPI. */
 const concession = (c: Coupon) =>
   c.type === "percentage" ? Math.min(c.cap ?? Infinity, ((Math.max(c.minOrder, 3000) * c.value) / 100)) : c.value;
 
@@ -114,7 +114,7 @@ export const parseCouponQuery = (raw: Record<string, unknown>): CouponQuery => {
   return {
     q: typeof raw.q === "string" ? raw.q.trim().slice(0, 80) : "",
     tab: pick<CouponTab>(raw.tab, ["all", "active", "scheduled", "depleted", "expired", "draft"], "all"),
-    type: pick(raw.type, ["all", "percentage", "fixed", "freight", "labCredit"] as const, "all"),
+    type: pick(raw.type, ["all", "percentage", "fixed", "freight", "serviceCredit"] as const, "all"),
     tier: pick<CouponTier>(raw.tier, ["all", "AAA", "AA", "A"], "all"),
     sort: pick<CouponSort>(raw.sort, ["recent", "expiry", "usage", "code"], "recent"),
     page: Number.isFinite(page) ? Math.min(100_000, Math.max(1, page)) : 1,
@@ -166,7 +166,7 @@ export const queryCoupons = (query: CouponQuery): CouponsResponse => {
     total: sorted.length,
     counts,
     kpis: {
-      escrowValue: Math.round(store.reduce((s, c) => s + c.used * concession(c), 0)),
+      discountValue: Math.round(store.reduce((s, c) => s + c.used * concession(c), 0)),
       redemptions,
       active: active.length,
       singleUse: active.filter((c) => c.perAccount === 1).length,
@@ -195,7 +195,7 @@ export const validateCoupon = (body: unknown): CouponInput | null => {
   const b = (body ?? {}) as Record<string, unknown>;
   const code = str(b.code, 40).toUpperCase().replace(/\s+/g, "-");
   const campaign = str(b.campaign, 120);
-  const type = pick<CouponType>(b.type, ["percentage", "fixed", "freight", "labCredit"], "percentage");
+  const type = pick<CouponType>(b.type, ["percentage", "fixed", "freight", "serviceCredit"], "percentage");
   const value = numOrNull(b.value);
   const startsAt = dateOrNull(b.startsAt);
   const endsAt = dateOrNull(b.endsAt);
@@ -207,7 +207,7 @@ export const validateCoupon = (body: unknown): CouponInput | null => {
   if (limit !== null && (!Number.isInteger(limit) || limit < 1)) return null;
   const perAccount = numOrNull(b.perAccount, 1000);
   const categories = (Array.isArray(b.categories) ? b.categories : [])
-    .filter((c): c is ProductCategory => ["cameras", "glass", "printers", "rag", "pigments", "metrology"].includes(c as string))
+    .filter((c): c is ProductCategory => ["printers", "copiers", "inks-toner"].includes(c as string))
     .slice(0, 6);
   return {
     code,

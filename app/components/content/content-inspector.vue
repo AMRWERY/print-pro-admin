@@ -91,7 +91,7 @@
             required
             :rules="linkRule"
             maxlength="200"
-            placeholder="/cameras-optics/…"
+            placeholder="/photocopiers/…"
             input-class="font-mono"
             dir="ltr"
           />
@@ -370,7 +370,7 @@ const linkRule = (v: unknown) => {
   if (!s) return "Enter where this block should link to.";
   return /^\/[^\s]*$/.test(s) || /^https:\/\/[^\s/]+\.[^\s]+$/.test(s)
     ? true
-    : "Use a storefront path like /cameras-optics or a full https:// address.";
+    : "Use a storefront path like /photocopiers or a full https:// address.";
 };
 
 const imageRule = (v: unknown) => {

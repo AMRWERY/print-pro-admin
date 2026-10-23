@@ -1,7 +1,7 @@
 <template>
   <LazyVPanel
     id="pricing"
-    title="03 // Pricing & escrow protocol"
+    title="03 // Pricing"
     icon="lucide:banknote"
     class="scroll-mt-24"
   >
@@ -77,8 +77,8 @@
         <LazyVCheckboxImput
           v-model="form.taxExempt"
           name="taxExempt"
-          label="Exempt from VAT for verified institutional clients"
-          description="Reverse charge applies to AAA-tier accounts. Escrow fee is waived at checkout."
+          label="Exempt from VAT for verified business clients"
+          description="Reverse charge applies to enterprise accounts with a tax number on file."
         />
       </div>
     </div>

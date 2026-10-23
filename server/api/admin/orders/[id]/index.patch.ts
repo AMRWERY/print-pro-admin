@@ -1,6 +1,6 @@
 import { isOrderSlug, isOrderStage, orderDetail, setOrderStage } from "~/data/admin-orders";
 
-// Moves a requisition to another pipeline stage (including releasing escrow).
+// Moves a order to another pipeline stage (including completing the order).
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, "id");
   const body = (await readBody(event)) as { stage?: unknown } | null;
@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   }
   await simulateLatency(350);
   if (!setOrderStage(id, body.stage)) {
-    throw createError({ statusCode: 404, statusMessage: "Requisition not found" });
+    throw createError({ statusCode: 404, statusMessage: "Order not found" });
   }
   return orderDetail(id);
 });

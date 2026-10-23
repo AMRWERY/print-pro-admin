@@ -1,15 +1,15 @@
 <template>
   <div :aria-busy="loading || undefined">
-    <!-- Wide screens: ledger table. It fits its column, so there is no sideways scrolling. -->
+    <!-- Wide screens: table. It fits its column, so there is no sideways scrolling. -->
     <div class="hidden lg:block">
       <table class="w-full text-sm">
         <caption class="sr-only">
-          Inventory ledger
+          Inventory
         </caption>
         <thead>
           <tr class="border-y border-line bg-ink">
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Apparatus / substrate
+              Product
             </th>
             <th
               scope="col"
@@ -70,7 +70,7 @@
             </td>
             <td class="px-2.5 py-3.5 font-mono text-xs" dir="ltr">
               <p class="font-semibold">{{ i.sku }}</p>
-              <p class="text-mute">{{ i.vault }}</p>
+              <p class="text-mute">{{ i.warehouse }}</p>
               <p class="text-mute">{{ i.bin }}</p>
             </td>
             <td class="w-36 px-2.5 py-3.5">
@@ -156,7 +156,7 @@
 
           <div class="min-w-0 flex-1">
             <p class="font-mono text-2xs text-mute" dir="ltr">
-              {{ i.sku }} · {{ i.vault }} {{ i.bin }}
+              {{ i.sku }} · {{ i.warehouse }} {{ i.bin }}
             </p>
             <h3 class="font-display text-base font-bold leading-snug">
               {{ i.name }}

@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   if (!input) {
     throw createError({
       statusCode: 400,
-      statusMessage: "Invalid requisition",
+      statusMessage: "Invalid order",
     });
   }
   await simulateLatency(400);

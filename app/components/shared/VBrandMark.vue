@@ -15,7 +15,7 @@
         >Print<span class="text-accent">Pro</span></span
       >
       <span class="block meta tracking-widest"
-        >Studios &amp; Printworks</span
+        >Printers &amp; Copiers</span
       >
     </span>
   </nuxt-link-locale>

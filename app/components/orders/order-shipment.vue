@@ -1,6 +1,6 @@
 <template>
   <LazyVPanel
-    title="Shipment tracking & logistics telemetry"
+    title="Shipment tracking"
     icon="lucide:truck"
   >
     <template #actions>
@@ -17,14 +17,14 @@
             <dd class="font-medium">{{ shipment.carrier }}</dd>
           </div>
           <div>
-            <dt class="label-caps">Waybill</dt>
+            <dt class="label-caps">Tracking number</dt>
             <dd class="flex items-center gap-2 font-mono text-xs" dir="ltr">
               {{ shipment.waybill }}
               <LazyVButton
                 variant="icon"
                 size="sm"
                 icon="lucide:copy"
-                aria-label="Copy waybill number"
+                aria-label="Copy tracking number"
                 @click="copy"
               />
             </dd>
@@ -34,36 +34,36 @@
             <dd>{{ shipment.origin }}</dd>
           </div>
           <div>
-            <dt class="label-caps">Receiving dock</dt>
+            <dt class="label-caps">Delivery address</dt>
             <dd>{{ shipment.destination }}</dd>
           </div>
         </dl>
       </div>
 
       <div class="space-y-3 rounded-card border border-line bg-ink p-4">
-        <p class="label-caps">Crate sensor pod</p>
+        <p class="label-caps">Parcel details</p>
         <dl class="grid grid-cols-3 gap-2 text-center">
           <div class="rounded-control border border-line bg-surface p-2">
-            <dt class="label-caps">Chamber temp</dt>
+            <dt class="label-caps">Parcels</dt>
             <dd class="font-mono text-sm font-semibold">
-              {{ shipment.sensors.temp }}
+              {{ shipment.parcel.parcels }}
             </dd>
           </div>
           <div class="rounded-control border border-line bg-surface p-2">
-            <dt class="label-caps">Humidity</dt>
+            <dt class="label-caps">Weight</dt>
             <dd class="font-mono text-sm font-semibold">
-              {{ shipment.sensors.humidity }}
+              {{ shipment.parcel.weight }}
             </dd>
           </div>
           <div class="rounded-control border border-line bg-surface p-2">
-            <dt class="label-caps">Shock</dt>
+            <dt class="label-caps">Signature</dt>
             <dd class="font-mono text-sm font-semibold">
-              {{ shipment.sensors.shock }}
+              {{ shipment.parcel.signature }}
             </dd>
           </div>
         </dl>
         <div>
-          <p class="label-caps mb-1">24-hour telemetry · nominal integrity</p>
+          <p class="label-caps mb-1">Courier progress over the last 24 hours</p>
 
           <dashboard-sparkline :values="shipment.trace" />
         </div>
@@ -82,10 +82,10 @@ const toast = useToast();
 const copy = async () => {
   try {
     await navigator.clipboard.writeText(props.shipment.waybill);
-    toast.success("Waybill copied");
+    toast.success("Tracking number copied");
   } catch {
     toast.error("Couldn't copy", {
-      description: "Select the waybill and copy it manually.",
+      description: "Select the tracking number and copy it manually.",
     });
   }
 };

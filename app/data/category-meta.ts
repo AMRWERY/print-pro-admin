@@ -13,7 +13,7 @@ export const visibilityOptions = (Object.keys(visibilityMeta) as CategoryVisibil
 }));
 
 export const sortOptions: { value: CategorySort; label: string }[] = [
-  { value: "curated", label: "Curated (staff bench choice)" },
+  { value: "curated", label: "Featured (staff choice)" },
   { value: "newest", label: "Newest first" },
   { value: "priceAsc", label: "Price: low to high" },
   { value: "priceDesc", label: "Price: high to low" },

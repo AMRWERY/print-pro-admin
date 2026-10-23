@@ -51,7 +51,7 @@
             Set a new password
           </h1>
           <p class="text-sm text-mute">
-            Choose a strong password for your studio account.
+            Choose a strong password for your account.
           </p>
         </div>
 
@@ -185,7 +185,7 @@ const submit = async () => {
 
 useSeoMeta({
   title: "New Password",
-  description: "Set a new password for your studio account.",
+  description: "Set a new password for your account.",
   robots: "noindex",
 });
 </script>

@@ -8,7 +8,7 @@
       <div class="min-w-0 flex-1">
         <p class="truncate text-sm font-medium">{{ item.name }}</p>
         <p class="meta" dir="ltr">
-          {{ item.sku }} · {{ item.vault }} {{ item.bin }}
+          {{ item.sku }} · {{ item.warehouse }} {{ item.bin }}
         </p>
       </div>
       <p class="text-end font-mono text-xs tabular-nums">

@@ -10,10 +10,10 @@ import type {
 // Labels and tones for the customers screen (no Tailwind classes, see order-meta.ts).
 
 export const segmentMeta: Record<CustomerSegment, { tab: string; short: string; tone: Tone }> = {
-  institutional: { tab: "Institutional museums & archival", short: "Institutional", tone: "info" },
-  commercial: { tab: "Commercial studios & foundries", short: "Commercial", tone: "neutral" },
-  printmaker: { tab: "Master printmakers & ateliers", short: "Printmaker", tone: "neutral" },
-  collector: { tab: "VIP private collectors", short: "Collector", tone: "warning" },
+  enterprise: { tab: "Enterprise & institutions", short: "Enterprise", tone: "info" },
+  business: { tab: "Offices & schools", short: "Business", tone: "neutral" },
+  printShop: { tab: "Print shops & resellers", short: "Print shop", tone: "neutral" },
+  home: { tab: "Home & small office", short: "Home office", tone: "warning" },
   highLtv: { tab: "High value (over 50k)", short: "High value", tone: "success" },
 };
 
@@ -34,7 +34,7 @@ export const statusOptions: { value: "all" | CustomerStatus; label: string }[] =
 ];
 
 export const tierMeta: Record<CustomerTier, { label: string; tone: Tone }> = {
-  AAA: { label: "AAA institutional", tone: "warning" },
+  AAA: { label: "AAA key account", tone: "warning" },
   AA: { label: "AA preferred", tone: "info" },
   A: { label: "A standard", tone: "neutral" },
 };

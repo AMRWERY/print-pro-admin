@@ -1,11 +1,11 @@
 <template>
   <LazyVDialog
     v-model:open="open"
-    :title="customer ? 'Edit client' : 'Register studio client'"
+    :title="customer ? 'Edit customer' : 'Register customer'"
     :description="
       customer
         ? 'Changes apply to the registry straight away.'
-        : 'Adds a verified client dossier to the registry.'
+        : 'Adds a customer record to the directory.'
     "
     size="lg"
   >
@@ -63,11 +63,11 @@
 
         <LazyVInput
           v-model="form.node"
-          name="clientNode"
-          label="Custody node"
+          name="clientRegion"
+          label="Region or branch"
           optional
           maxlength="60"
-          placeholder="Paris Node"
+          placeholder="Cairo"
         />
 
         <LazyVInput
@@ -101,17 +101,17 @@
         />
 
         <LazyVInput
-          v-model="form.escrowTerms"
-          name="clientEscrow"
-          label="Escrow terms"
+          v-model="form.paymentTerms"
+          name="clientPayment"
+          label="Payment terms"
           optional
           maxlength="120"
         />
 
         <LazyVTextarea
-          v-model="form.depot"
-          name="clientDepot"
-          label="Receiving depot / shipping address"
+          v-model="form.deliveryAddress"
+          name="clientAddress"
+          label="Delivery address"
           optional
           rows="2"
           maxlength="200"
@@ -175,12 +175,12 @@ const blank = (): CustomerInput => ({
   email: "",
   phone: "",
   node: "",
-  segment: "commercial",
+  segment: "business",
   tier: "A",
   status: "active",
   taxId: "",
-  depot: "",
-  escrowTerms: "Net-30 escrow lock (Deutsche Bank Luxembourg)",
+  deliveryAddress: "",
+  paymentTerms: "Net-30 invoice, bank transfer",
 });
 
 const form = reactive<CustomerInput>(blank());
@@ -207,8 +207,8 @@ watch(open, (isOpen) => {
           tier: c.tier,
           status: c.status,
           taxId: c.taxId,
-          depot: c.depot,
-          escrowTerms: c.escrowTerms,
+          deliveryAddress: c.deliveryAddress,
+          paymentTerms: c.paymentTerms,
         }
       : blank(),
   );

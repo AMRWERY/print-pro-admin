@@ -10,7 +10,7 @@
           hide-label
           icon="lucide:search"
           autocomplete="off"
-          placeholder="Search name, studio, email…"
+          placeholder="Search name, company, email…"
         />
       </form>
 

@@ -1,23 +1,19 @@
 export type OrderStage =
-  | "escrowClearing"
+  | "awaitingPayment"
   | "inTransit"
-  | "cleanroomQa"
-  | "outgassing"
-  | "settled";
+  | "checking"
+  | "packing"
+  | "completed";
 
-export type EscrowMode = "awaitingWire" | "funded" | "qaHold" | "settled";
+export type PaymentState = "awaitingTransfer" | "paid" | "onHold" | "settled";
 
-export type ClientTier =
-  | "museumCustody"
-  | "galleryPremium"
-  | "institutionalArchive"
-  | "collectiveGuild";
+export type AccountTier = "enterprise" | "business" | "printShop" | "home";
 
 export type OrderPriority =
-  | "priority"
-  | "commercial"
-  | "archive"
-  | "metrology"
+  | "urgent"
+  | "bulk"
+  | "installation"
+  | "service"
   | "hold"
   | "standard"
   | "vip";
@@ -34,26 +30,26 @@ export interface OrderRow {
     name: string;
     org: string;
     initials: string;
-    tier: ClientTier;
+    tier: AccountTier;
   };
   allocation: {
     title: string;
     quantity: number;
-    unit: "item" | "roll";
+    unit: "item" | "pack";
     spec: string;
     icon: string;
   };
   amount: number;
   stage: OrderStage;
-  escrowNote: string;
-  custodyNote: string;
+  paymentNote: string;
+  statusNote: string;
 }
 
 export interface OrdersQuery {
   q: string;
   stage: "all" | OrderStage;
-  escrow: "all" | EscrowMode;
-  tier: "all" | ClientTier;
+  payment: "all" | PaymentState;
+  tier: "all" | AccountTier;
   range: OrderRange;
   sort: OrderSort;
   page: number;
@@ -69,24 +65,24 @@ export interface OrdersResponse {
   /** Per-stage counts under the current non-stage filters (drives the tabs). */
   counts: OrderCounts;
   kpis: {
-    totalRequisitions: number;
+    totalOrders: number;
     historicalDelta: number;
-    volumeEur: number;
-    pendingEscrowEur: number;
-    quarantineHold: number;
+    volume: number;
+    pendingPayment: number;
+    onHold: number;
   };
 }
 
 export interface CreateOrderInput {
   customerId: number;
-  apparatusId: number;
+  productId: number;
   quantity: number;
   priority: OrderPriority;
 }
 
 export interface OrderPricing {
   subtotal: number;
-  qaFee: number;
+  setupFee: number;
   courier: number;
   discountRate: number;
   discount: number;
@@ -100,7 +96,7 @@ export interface OrderLine {
   spec: string;
   icon: string;
   quantity: number;
-  unit: "item" | "roll";
+  unit: "item" | "pack";
   unitPrice: number;
   total: number;
 }
@@ -137,7 +133,7 @@ export interface OrderDetail {
     email: string;
     phone: string;
     taxId: string;
-    lifetimeEscrow: number;
+    lifetimeValue: number;
     orders: number;
   };
   shipment: {
@@ -146,7 +142,7 @@ export interface OrderDetail {
     waybill: string;
     origin: string;
     destination: string;
-    sensors: { temp: string; humidity: string; shock: string };
+    parcel: { parcels: string; weight: string; signature: string };
     trace: number[];
   };
   directive: { quote: string; recordedAt: string };

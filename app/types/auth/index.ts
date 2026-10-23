@@ -1,4 +1,4 @@
-export type Tier = "atelier" | "museum" | "photographer";
+export type Tier = "business" | "reseller" | "home";
 
 export interface Account {
   id: string;

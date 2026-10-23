@@ -31,7 +31,7 @@
  * The ⋯ menu at the end of a row, the same on every list: Edit, optional Duplicate,
  * and Delete in the danger colour. Extra actions go in the default slot.
  *
- *   <VRowActions label="Actions for Hasselblad" duplicate @edit="…" @duplicate="…" @remove="…" />
+ *   <VRowActions label="Actions for Kopira Pro A3" duplicate @edit="…" @duplicate="…" @remove="…" />
  */
 withDefaults(
   defineProps<{

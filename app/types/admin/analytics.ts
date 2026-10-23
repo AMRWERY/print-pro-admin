@@ -13,7 +13,7 @@ export type Granularity = "day" | "week" | "month";
 /** The interval the server actually used. Today is shown by the hour. */
 export type EffectiveGranularity = Granularity | "hour";
 
-export type Cohort = "all" | "institutional" | "commercial" | "printmaker";
+export type Cohort = "all" | "enterprise" | "business" | "printShop";
 
 export interface AnalyticsQuery {
   range: AnalyticsRange;
@@ -29,7 +29,7 @@ export interface TimePoint {
   at: string;
   revenue: number;
   prior: number;
-  escrow: number;
+  collected: number;
   margin: number;
 }
 
@@ -39,7 +39,7 @@ export interface AnalyticsKpis {
   turnoverChange: number;
   orders: number;
   ordersDelta: number;
-  inCustody: number;
+  inProgress: number;
   aov: number;
   aovDelta: number;
   conversion: number;
@@ -75,7 +75,7 @@ export interface CohortRow {
 }
 
 export interface RegionRow {
-  key: "dach" | "northAmerica" | "nordic" | "apac";
+  key: "cairo" | "delta" | "gulf" | "levant";
   orders: number;
   revenue: number;
   share: number;
@@ -101,7 +101,7 @@ export interface AnalyticsResponse {
   portfolioMargin: number;
   cohorts: CohortRow[];
   regions: RegionRow[];
-  wallets: number;
+  accounts: number;
   onTimePct: number;
 }
 

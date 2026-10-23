@@ -2,7 +2,7 @@
   <LazyVDialog
     v-model:open="open"
     title="Stock adjustment / transfer"
-    description="Correct a count after an audit, or move an item to another vault. Every change is written to the ledger."
+    description="Correct a count after an audit, or move an item to another warehouse. Every change is written to the movement history."
     size="lg"
   >
     <form id="stock-form" class="space-y-4" novalidate @submit.prevent="submit">
@@ -67,18 +67,18 @@
             required
             rules="required|min:3|max:200"
             maxlength="200"
-            placeholder="Cycle count, damaged in handling, QA destructive test…"
+            placeholder="Cycle count, damaged in handling, returned by customer…"
           />
         </template>
 
         <template v-else>
           <LazyVSelectInput
-            v-model="vault"
-            name="vault"
-            label="Move to vault"
+            v-model="warehouse"
+            name="warehouse"
+            label="Move to warehouse"
             required
             rules="required"
-            :options="vaultChoices"
+            :options="warehouseChoices"
           />
           <p class="callout">
             <Icon
@@ -89,7 +89,7 @@
             />
             <span
               >Currently kept in
-              <strong>{{ vaultLabel[product.vault] }}</strong> ({{
+              <strong>{{ warehouseLabel[product.warehouse] }}</strong> ({{
                 product.bin
               }}). The whole stock record moves.</span
             >
@@ -126,8 +126,8 @@
 </template>
 
 <script lang="ts" setup>
-import { vaultLabel } from "~/data/inventory-meta";
-import type { InventoryItem, Vault } from "~/types/admin/inventory";
+import { warehouseLabel } from "~/data/inventory-meta";
+import type { InventoryItem, Warehouse } from "~/types/admin/inventory";
 
 const props = defineProps<{ item: InventoryItem | null }>();
 
@@ -139,7 +139,7 @@ const toast = useToast();
 
 const tabOptions = [
   { value: "adjust" as const, label: "Adjust stock" },
-  { value: "transfer" as const, label: "Move to another vault" },
+  { value: "transfer" as const, label: "Move to another warehouse" },
 ];
 const modeOptions = [
   { value: "delta" as const, label: "Add or remove" },
@@ -152,7 +152,7 @@ const tab = ref<"adjust" | "transfer">("adjust");
 const mode = ref<"delta" | "set">("delta");
 const qty = ref<number | null>(null);
 const reason = ref("");
-const vault = ref<Vault | "">("");
+const warehouse = ref<Warehouse | "">("");
 const error = ref("");
 const loading = ref(false);
 
@@ -167,16 +167,16 @@ watch(open, (isOpen) => {
   mode.value = "delta";
   qty.value = null;
   reason.value = "";
-  vault.value = "";
+  warehouse.value = "";
   error.value = "";
   resetForm();
 });
 
-const vaultChoices = computed(() => [
-  { value: "", label: "Select a vault…" },
-  ...(Object.keys(vaultLabel) as Vault[])
-    .filter((v) => v !== product.value?.vault)
-    .map((v) => ({ value: v, label: vaultLabel[v] })),
+const warehouseChoices = computed(() => [
+  { value: "", label: "Select a warehouse…" },
+  ...(Object.keys(warehouseLabel) as Warehouse[])
+    .filter((v) => v !== product.value?.warehouse)
+    .map((v) => ({ value: v, label: warehouseLabel[v] })),
 ]);
 
 const next = computed(() => {
@@ -206,7 +206,7 @@ const submit = async () => {
                 qty: qty.value,
                 reason: reason.value,
               }
-            : { productId: product.value.id, vault: vault.value },
+            : { productId: product.value.id, warehouse: warehouse.value },
       },
     );
     toast.success(tab.value === "adjust" ? "Stock adjusted" : "Item moved", {
@@ -220,7 +220,7 @@ const submit = async () => {
       status === 409
         ? "That would put the stock below zero or over the limit."
         : status === 400
-          ? "Nothing to change. Check the quantity or the vault."
+          ? "Nothing to change. Check the quantity or the warehouse."
           : "The change could not be saved. Try again.";
   } finally {
     loading.value = false;

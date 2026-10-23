@@ -41,10 +41,10 @@ export const downloadAnalyticsPdf = async (a: AnalyticsResponse, top: TopProduct
     head: [["Indicator", "Value", "Change"]],
     body: [
       ["Gross turnover", egp(k.turnover), `${k.turnoverDelta >= 0 ? "+" : ""}${pct(k.turnoverDelta)} vs previous period`],
-      ["Orders & requisitions", String(k.orders), `+${pct(k.ordersDelta)} (${k.inCustody} in custody)`],
+      ["Orders", String(k.orders), `+${pct(k.ordersDelta)} (${k.inProgress} in progress)`],
       ["Average order value", egp(k.aov), `+${pct(k.aovDelta)}`],
       ["Storefront conversion", pct(k.conversion, 2), `+${pct(k.conversionDelta, 2)} (${k.sessions} sessions)`],
-      ["Verified studio intake", `+${k.intake}`, `+${pct(k.intakeDelta)}`],
+      ["New business customers", `+${k.intake}`, `+${pct(k.intakeDelta)}`],
     ],
     headStyles: { fillColor: accent },
     styles: { fontSize: 9, cellPadding: 5 },
@@ -61,12 +61,12 @@ export const downloadAnalyticsPdf = async (a: AnalyticsResponse, top: TopProduct
     [1, 2, 3, 4],
   );
   table(
-    ["Region", "Requisitions", "Revenue", "Share"],
+    ["Region", "Orders", "Revenue", "Share"],
     a.regions.map((r) => [regionLabel[r.key].name, r.orders, egp(r.revenue), pct(r.share)]),
     [1, 2, 3],
   );
   table(
-    ["Best-selling apparatus", "Units", "Revenue", "Margin", "Buffer", "Status"],
+    ["Best-selling products", "Units", "Revenue", "Margin", "Buffer", "Status"],
     top.map((t) => [`${t.name} (${t.sku})`, t.units, egp(t.revenue), pct(t.margin), `${t.daysLeft} days`, velocityMeta[t.status].label]),
     [1, 2, 3, 4],
   );
@@ -95,19 +95,19 @@ export const downloadAnalyticsExcel = async (a: AnalyticsResponse, top: TopProdu
       [],
       ["Gross turnover", k.turnover],
       ["Change vs previous period (%)", k.turnoverDelta],
-      ["Orders and requisitions", k.orders],
-      ["In custody", k.inCustody],
+      ["Orders", k.orders],
+      ["In progress", k.inProgress],
       ["Average order value", k.aov],
       ["Storefront conversion (%)", k.conversion],
       ["Sessions", k.sessions],
-      ["Verified studio intake", k.intake],
+      ["New business customers", k.intake],
       ["Portfolio weighted margin (%)", a.portfolioMargin],
     ],
     [34, 30],
   );
   add(
     "Revenue",
-    [["Interval", "Revenue", "Previous period", "Escrow release", "Net margin"], ...a.series.map((p) => [pointLabel(p.at, a.granularity), p.revenue, p.prior, p.escrow, p.margin])],
+    [["Interval", "Revenue", "Previous period", "Cash collected", "Net margin"], ...a.series.map((p) => [pointLabel(p.at, a.granularity), p.revenue, p.prior, p.collected, p.margin])],
     [16, 14, 16, 16, 14],
   );
   add(
@@ -122,7 +122,7 @@ export const downloadAnalyticsExcel = async (a: AnalyticsResponse, top: TopProdu
   );
   add(
     "Regions",
-    [["Region", "Requisitions", "Revenue", "Share (%)"], ...a.regions.map((r) => [regionLabel[r.key].name, r.orders, r.revenue, r.share])],
+    [["Region", "Orders", "Revenue", "Share (%)"], ...a.regions.map((r) => [regionLabel[r.key].name, r.orders, r.revenue, r.share])],
     [30, 14, 14, 12],
   );
   add(

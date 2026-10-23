@@ -1,7 +1,7 @@
 import type { CustomerTier } from "~/types/admin/customers";
 import type { ProductCategory } from "~/types/admin/products";
 
-export type CouponType = "percentage" | "fixed" | "freight" | "labCredit";
+export type CouponType = "percentage" | "fixed" | "freight" | "serviceCredit";
 
 /** What an admin sets. A coupon's visible state is worked out from this and the dates. */
 export type CouponStatus = "active" | "paused" | "draft" | "archived";
@@ -59,7 +59,7 @@ export interface CouponsResponse {
   total: number;
   counts: Record<CouponTab, number>;
   kpis: {
-    escrowValue: number;
+    discountValue: number;
     redemptions: number;
     active: number;
     singleUse: number;

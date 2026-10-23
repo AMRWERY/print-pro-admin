@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-5">
     <LazyVPageHeader
-      title="Commercial Telemetry & Yield Analytics"
-      description="Econometric reporting on hardware acquisitions, substrate consumption and institutional requisitions."
+      title="Analytics"
+      description="Reporting on machine sales, supplies consumption and customer orders."
       :breadcrumb="[{ label: 'Dashboard', to: '/' }, { label: 'Analytics' }]"
     >
       <template #actions>
@@ -171,7 +171,7 @@
         <analytics-cohorts
           :cohorts="data?.cohorts"
           :regions="data?.regions"
-          :wallets="data?.wallets ?? 0"
+          :accounts="data?.accounts ?? 0"
           :on-time-pct="data?.onTimePct ?? 0"
           :selected="filters.cohort"
         />

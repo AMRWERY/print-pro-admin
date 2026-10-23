@@ -1,7 +1,7 @@
 <template>
   <LazyVPanel
     title="Client cohort tiers & geography"
-    subtitle="Requisition density by client type and dispatch region"
+    subtitle="Order density by client type and dispatch region"
     icon="lucide:globe"
   >
     <div v-if="!cohorts || !regions" class="space-y-3" aria-busy="true">
@@ -45,7 +45,7 @@
               {{ regionLabel[r.key].name }}
               <span class="meta">({{ regionLabel[r.key].sub }})</span>
             </p>
-            <p class="meta">{{ number(r.orders) }} requisitions</p>
+            <p class="meta">{{ number(r.orders) }} orders</p>
           </div>
           <div class="text-end">
             <p class="font-mono text-sm font-semibold tabular-nums">
@@ -67,7 +67,7 @@
       <p
         class="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-line pt-3 font-mono text-xs text-mute"
       >
-        <span>{{ wallets }} active escrow wallets</span>
+        <span>{{ accounts }} active business accounts</span>
         <span class="text-success"
           >{{ percent(onTimePct) }} on-time carrier delivery</span
         >
@@ -83,7 +83,7 @@ import type { Cohort, CohortRow, RegionRow } from "~/types/admin/analytics";
 defineProps<{
   cohorts?: CohortRow[] | null;
   regions?: RegionRow[] | null;
-  wallets: number;
+  accounts: number;
   onTimePct: number;
   /** The cohort currently filtered to, outlined among the tiles. */
   selected?: Cohort;

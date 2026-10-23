@@ -1,5 +1,5 @@
 <template>
-  <LazyVPanel title="Immutable ledger" icon="lucide:database">
+  <LazyVPanel title="Order history" icon="lucide:database">
     <template #actions>
       <span class="chip" dir="ltr">{{ chain }}</span>
     </template>

@@ -62,7 +62,7 @@ export const parseAnalyticsQuery = (
   ),
   cohort: pick<Cohort>(
     raw.cohort,
-    ["all", "institutional", "commercial", "printmaker"],
+    ["all", "enterprise", "business", "printShop"],
     "all",
   ),
 });
@@ -109,15 +109,15 @@ export const resolveRange = (
 
 const COHORT_SHARE: Record<Cohort, number> = {
   all: 1,
-  institutional: 0.48,
-  commercial: 0.34,
-  printmaker: 0.18,
+  enterprise: 0.48,
+  business: 0.34,
+  printShop: 0.18,
 };
 const COHORT_AOV: Record<Cohort, number> = {
   all: 1,
-  institutional: 1.9,
-  commercial: 0.8,
-  printmaker: 0.55,
+  enterprise: 1.9,
+  business: 0.8,
+  printShop: 0.55,
 };
 
 const DAILY_BASE = 128_000;
@@ -173,8 +173,8 @@ const buildSeries = (
       at: start,
       revenue: Math.round(r),
       prior: Math.round(prior[i]!),
-      // Escrow is released after clearing, so it trails the revenue curve.
-      escrow: Math.round(0.9 * (i ? revenue[i - 1]! : r * 0.9)),
+      // Cash is collected after invoicing, so it trails the revenue curve.
+      collected: Math.round(0.9 * (i ? revenue[i - 1]! : r * 0.9)),
       margin: Math.round(r * 0.384),
     };
   });
@@ -186,18 +186,16 @@ const CATEGORY_ROWS: {
   yoy: number;
   margin: number;
 }[] = [
-    { category: "cameras", share: 37.0, yoy: 21.4, margin: 34.2 },
-    { category: "printers", share: 30.7, yoy: 14.8, margin: 29.8 },
-    { category: "glass", share: 16.7, yoy: 28.6, margin: 42.1 },
-    { category: "rag", share: 10.7, yoy: 8.2, margin: 52.4 },
-    { category: "pigments", share: 4.9, yoy: 5.1, margin: 48.0 },
+    { category: "copiers", share: 46.5, yoy: 18.2, margin: 27.4 },
+    { category: "printers", share: 33.1, yoy: 14.8, margin: 29.8 },
+    { category: "inks-toner", share: 20.4, yoy: 24.6, margin: 44.6 },
   ];
 
 const REGIONS: { key: RegionRow["key"]; share: number }[] = [
-  { key: "dach", share: 36.9 },
-  { key: "northAmerica", share: 30.7 },
-  { key: "nordic", share: 16.6 },
-  { key: "apac", share: 15.8 },
+  { key: "cairo", share: 36.9 },
+  { key: "delta", share: 30.7 },
+  { key: "gulf", share: 16.6 },
+  { key: "levant", share: 15.8 },
 ];
 
 export const buildAnalytics = (query: AnalyticsQuery): AnalyticsResponse => {
@@ -261,19 +259,19 @@ export const buildAnalytics = (query: AnalyticsQuery): AnalyticsResponse => {
   const allOrders = Math.round(orders / factor);
   const cohorts = [
     {
-      key: "institutional" as const,
+      key: "enterprise" as const,
       share: 48,
       yoy: 31,
       orders: Math.round(allOrders * 0.48),
     },
     {
-      key: "commercial" as const,
+      key: "business" as const,
       share: 34,
       yoy: 12,
       orders: Math.round(allOrders * 0.34),
     },
     {
-      key: "printmaker" as const,
+      key: "printShop" as const,
       share: 18,
       yoy: 6,
       orders: Math.round(allOrders * 0.18),
@@ -290,7 +288,7 @@ export const buildAnalytics = (query: AnalyticsQuery): AnalyticsResponse => {
       turnoverChange: turnover - priorTotal,
       orders,
       ordersDelta: 8.4,
-      inCustody: Math.max(0, Math.round(orders * 0.0065)),
+      inProgress: Math.max(0, Math.round(orders * 0.0065)),
       aov,
       aovDelta: 9.1,
       conversion: 3.42,
@@ -318,12 +316,12 @@ export const buildAnalytics = (query: AnalyticsQuery): AnalyticsResponse => {
       revenue: Math.round((turnover * r.share) / 100),
       orders: Math.round((orders * r.share) / 100),
     })),
-    wallets: 42,
+    accounts: 42,
     onTimePct: 99.8,
   };
 };
 
-// --- Best-selling apparatus ---
+// --- Best-selling products ---
 
 // Units dispatched in a 31-day month for the first products; the rest follow a fixed pattern.
 const SEED_UNITS: Record<string, number> = {
@@ -347,12 +345,9 @@ const SEED_MARGIN: Record<string, number> = {
 const SEED_INBOUND: Record<string, number> = { "p-0": 12, "p-2": 27, "p-4": 8, "p-3": 41, "p-5": 21 };
 const INBOUND_PATTERN = [14, 28, 8, 42, 21];
 const BASE_MARGIN: Record<ProductCategory, number> = {
-  cameras: 33,
-  glass: 41,
   printers: 30,
-  rag: 53,
-  pigments: 48,
-  metrology: 36,
+  copiers: 27,
+  "inks-toner": 46,
 };
 
 const statusOf = (daysLeft: number): VelocityStatus =>
@@ -373,12 +368,9 @@ export const parseTopQuery = (raw: Record<string, unknown>): TopQuery => {
       raw.category,
       [
         "all",
-        "cameras",
-        "glass",
         "printers",
-        "rag",
-        "pigments",
-        "metrology",
+        "copiers",
+        "inks-toner",
       ] as const,
       "all",
     ),

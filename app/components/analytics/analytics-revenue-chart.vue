@@ -1,6 +1,6 @@
 <template>
   <LazyVPanel
-    title="Gross revenue vs escrow settlement velocity"
+    title="Gross revenue vs cash collected"
     subtitle="Current period compared with the previous one, interval by interval"
     icon="lucide:chart-line"
   >
@@ -122,8 +122,8 @@
             />
           </template>
           <path
-            v-if="visible.escrow"
-            :d="path('escrow')"
+            v-if="visible.collected"
+            :d="path('collected')"
             fill="none"
             class="stroke-yellow"
             stroke-width="2"
@@ -172,8 +172,8 @@
           <p class="text-mute">
             Previous {{ compactCurrency(series[active]!.prior) }}
           </p>
-          <p v-if="visible.escrow" class="text-yellow">
-            Escrow {{ compactCurrency(series[active]!.escrow) }}
+          <p v-if="visible.collected" class="text-yellow">
+            Collected {{ compactCurrency(series[active]!.collected) }}
           </p>
           <p v-if="visible.margin" class="text-cyan">
             Margin {{ compactCurrency(series[active]!.margin) }}
@@ -235,9 +235,9 @@ const fillId = `analytics-fill-${useId()}`;
 const toggles = [
   { key: "revenue", label: "Gross revenue", dot: "bg-accent" },
   { key: "margin", label: "Net margin", dot: "bg-cyan" },
-  { key: "escrow", label: "Escrow release", dot: "bg-yellow" },
+  { key: "collected", label: "Cash collected", dot: "bg-yellow" },
 ] as const;
-const visible = reactive({ revenue: true, margin: false, escrow: false });
+const visible = reactive({ revenue: true, margin: false, collected: false });
 
 const W = 760;
 const H = 300;
@@ -269,7 +269,7 @@ const x = (i: number) =>
   PL + (count.value > 1 ? (i * innerW) / (count.value - 1) : innerW / 2);
 const y = (v: number) => PT + innerH - (v / yMax.value) * innerH;
 
-const path = (key: "revenue" | "prior" | "escrow" | "margin") =>
+const path = (key: "revenue" | "prior" | "collected" | "margin") =>
   (props.series ?? [])
     .map((p, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(p[key]).toFixed(1)}`)
     .join(" ");

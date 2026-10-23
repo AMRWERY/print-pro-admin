@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-5">
     <LazyVPageHeader
-      title="Inventory Reserves & Stock Telemetry Ledger"
-      description="Real-time tracking of medium-format optical assemblies, piezo print engines, master paper rolls and mineral pigment chemistry across the climate-controlled vaults."
+      title="Inventory"
+      description="Real-time stock for printers, photocopiers, ink and toner across the Cairo, Giza and Alexandria warehouses."
       :breadcrumb="[{ label: 'Dashboard', to: '/' }, { label: 'Inventory' }]"
     >
       <template #actions>
@@ -64,7 +64,7 @@
           <inventory-toolbar
             v-model:q="filters.q"
             v-model:category="filters.category"
-            v-model:vault="filters.vault"
+            v-model:warehouse="filters.warehouse"
             v-model:filter="filters.filter"
             v-model:sort="filters.sort"
             :counts="data?.counts"
@@ -90,7 +90,7 @@
           <div v-else-if="!pending && data && !rows.length" class="p-5">
             <LazyVEmptyState
               title="No stock matches these filters"
-              description="Try a different SKU or bin, another vault, or the All inventory tab."
+              description="Try a different SKU or bin, another warehouse, or the All inventory tab."
               eyebrow="QUERY :: NO_RESULTS"
               tag="0 RESULTS"
             >
@@ -171,14 +171,14 @@
 
 <script lang="ts" setup>
 import { categoryMeta } from "~/data/product-meta";
-import { vaultLabel } from "~/data/inventory-meta";
+import { warehouseLabel } from "~/data/inventory-meta";
 import type {
   InventoryFilter,
   InventoryItem,
   InventoryResponse,
   InventorySort,
   Movement,
-  Vault,
+  Warehouse,
 } from "~/types/admin/inventory";
 import type { ProductCategory } from "~/types/admin/products";
 
@@ -188,7 +188,7 @@ const { number, currency } = useFormatters();
 const filters = reactive({
   q: "",
   category: "all" as "all" | ProductCategory,
-  vault: "all" as "all" | Vault,
+  warehouse: "all" as "all" | Warehouse,
   filter: "all" as InventoryFilter,
   sort: "urgent" as InventorySort,
 });
@@ -226,7 +226,7 @@ const rows = computed(() => data.value?.rows ?? []);
 const resetFilters = () => {
   filters.q = "";
   filters.category = "all";
-  filters.vault = "all";
+  filters.warehouse = "all";
   filters.filter = "all";
 };
 
@@ -235,7 +235,7 @@ watch(
   [
     debouncedQ,
     () => filters.category,
-    () => filters.vault,
+    () => filters.warehouse,
     () => filters.filter,
     () => filters.sort,
     perPage,
@@ -323,7 +323,7 @@ const exportRows = async (format: "pdf" | "excel") => {
         "SKU",
         "Name",
         "Division",
-        "Vault",
+        "Warehouse",
         "Bin",
         "Stock",
         "Reserved",
@@ -335,7 +335,7 @@ const exportRows = async (format: "pdf" | "excel") => {
         i.sku,
         i.name,
         categoryMeta[i.category].label,
-        vaultLabel[i.vault],
+        warehouseLabel[i.warehouse],
         i.bin,
         i.stock,
         i.reserved,
@@ -361,6 +361,6 @@ definePageMeta({
 useSeoMeta({
   title: "Inventory",
   description:
-    "Stock levels, vault locations and movement history for the whole catalog.",
+    "Stock levels, warehouse locations and movement history for the whole catalog.",
 });
 </script>

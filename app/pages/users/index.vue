@@ -672,7 +672,7 @@ const createRole = async () => {
       body: {
         name: "New custom role",
         description: "",
-        scope: "Lab-specific",
+        scope: "Warehouse",
         permissions: [],
       },
     });
@@ -779,7 +779,7 @@ const saveOperator = async (values: OperatorInput) => {
         : reason === "self"
           ? "You can't change your own role or lock yourself out."
           : reason === "last-super"
-            ? "At least one active Super Curator must remain."
+            ? "At least one active Owner must remain."
             : "The operator could not be saved. Check the values and try again.";
   } finally {
     savingOperator.value = false;
@@ -855,7 +855,7 @@ const confirmDelete = async () => {
     else
       toast.warning("Nothing deleted", {
         description:
-          "Yourself and the last active Super Curator can't be deleted.",
+          "Yourself and the last active Owner can't be deleted.",
       });
     selected.value = [];
     deleteOpen.value = false;

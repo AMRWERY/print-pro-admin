@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-5">
     <LazyVPageHeader
-      title="Category Taxonomy & Metrology Hierarchy"
+      title="Categories"
       description="Organise the catalog into master categories and sub-categories. Reorder them, control what shows on the storefront, and edit each node's URL and listing."
       :breadcrumb="[{ label: 'Dashboard', to: '/' }, { label: 'Categories' }]"
     />

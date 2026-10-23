@@ -10,7 +10,7 @@
       v-model="s.integrations.webhookUrl"
       name="webhookUrl"
       type="url"
-      label="Telemetry webhook URL"
+      label="Events webhook URL"
       optional
       :rules="httpsUrlRule"
       maxlength="200"
@@ -138,15 +138,15 @@
 
     <div class="grid gap-3 md:grid-cols-2">
       <settings-toggle
-        v-model="s.email.transmitProofs"
-        title="Send calibration proofs with orders"
+        v-model="s.email.attachTestReports"
+        title="Attach test reports to orders"
         description="Attach the signed proof or certificate when a print order ships."
       />
 
       <settings-toggle
-        v-model="s.email.signatoryAlerts"
+        v-model="s.email.approverAlerts"
         title="Email approvers when a release is waiting"
-        description="Dual-sign escrow releases notify both signatories."
+        description="Payments above the two-approver limit notify both approvers."
       />
     </div>
   </settings-section>

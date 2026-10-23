@@ -1,7 +1,7 @@
 <template>
   <LazyVPanel
-    title="Requisition conversion funnel"
-    subtitle="From discovery to escrow clearance"
+    title="Order conversion funnel"
+    subtitle="From first visit to paid order"
     icon="lucide:funnel"
   >
     <template v-if="funnel" #actions>
@@ -54,7 +54,7 @@
       >
         <span class="flex items-center gap-1.5 text-mute"
           ><Icon name="lucide:clock" size="14" aria-hidden="true" /> B2B
-          institutional velocity</span
+          enterprise velocity</span
         >
         <span class="font-semibold text-success"
           >{{ funnel.velocityHours }} hrs median</span

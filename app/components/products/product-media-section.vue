@@ -1,7 +1,7 @@
 <template>
   <LazyVPanel
     id="media"
-    title="02 // Optical media reel"
+    title="02 // Images"
     icon="lucide:image"
     class="scroll-mt-24"
   >
@@ -62,9 +62,9 @@
       multiple
       :max-files="MAX"
       :max-size-mb="200"
-      :accept="['.tif', '.tiff', '.png', '.jpg', '.jpeg', '.dng', '.3fr']"
-      title="Drag and drop uncompressed TIFF, Hasselblad 3FR/DNG or 16-bit PNG"
-      description="Calibrated optical assets. The first file is the cover."
+      :accept="['.png', '.jpg', '.jpeg', '.webp']"
+      title="Drag and drop product images (JPG, PNG or WebP)"
+      description="The first image is the cover."
       button-label="Select local files"
       @select="add"
       @reject="

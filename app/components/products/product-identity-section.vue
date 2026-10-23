@@ -1,7 +1,7 @@
 <template>
   <LazyVPanel
     id="identity"
-    title="01 // Identity & curatorial prose"
+    title="01 // Identity & description"
     icon="lucide:file-text"
     class="scroll-mt-24"
   >
@@ -25,12 +25,12 @@
           @update:model-value="slugTouched = true"
         />
         <p class="meta mt-1 break-all" dir="ltr">
-          https://lumenpress.com/products/{{ form.slug || "…" }}
+          https://printpro.com/products/{{ form.slug || "…" }}
         </p>
       </div>
 
       <div ref="editor">
-        <p class="label">Technical & curatorial dossier</p>
+        <p class="label">Description</p>
         <div class="mt-1.5 overflow-hidden rounded-control border border-line">
           <div
             class="flex flex-wrap items-center gap-1 border-b border-line bg-ink p-1.5"
@@ -76,7 +76,7 @@
           <LazyVTextarea
             v-model="form.description"
             name="description"
-            label="Dossier text"
+            label="Description"
             hide-label
             rows="8"
             maxlength="4000"
@@ -89,7 +89,7 @@
         <LazyVTextarea
           v-model="form.excerpt"
           name="excerpt"
-          label="Short curator excerpt (catalog card)"
+          label="Short summary (catalog card)"
           optional
           rows="2"
           maxlength="300"

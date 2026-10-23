@@ -2,8 +2,8 @@
   <settings-section
     id="payments"
     number="05"
-    title="Payment gateways & escrow custody"
-    description="How customers pay, and the point above which a payment is held in escrow until the goods are confirmed."
+    title="Payment methods & approvals"
+    description="How customers pay, and the point above which a payment is held until the goods are confirmed."
     :changed="changed.includes('payments')"
   >
     <!-- Bank wire -->
@@ -12,13 +12,13 @@
         <div class="min-w-0">
           <p class="flex items-center gap-2 text-sm font-semibold">
             <Icon name="lucide:landmark" size="16" class="text-accent" aria-hidden="true" />
-            Escrow wire transfer
+            Bank transfer
           </p>
           <p class="meta mt-0.5">
-            Customers send funds to this account; release is manual after delivery.
+            Customers send funds to this account; the order is confirmed once the transfer arrives.
           </p>
         </div>
-        <LazyVSwitch v-model="s.payments.wireEnabled" label="Accept escrow wire transfers" />
+        <LazyVSwitch v-model="s.payments.wireEnabled" label="Accept bank transfers" />
       </div>
 
       <div v-if="s.payments.wireEnabled" class="mt-4 grid gap-4 md:grid-cols-2">
@@ -30,14 +30,14 @@
           maxlength="80"
         />
         <LazyVInput
-          v-model="s.payments.escrowLimit"
-          name="escrowLimit"
+          v-model="s.payments.approvalLimit"
+          name="approvalLimit"
           type="number"
-          label="Dual-sign escrow limit"
+          label="Two-approver limit"
           required
           rules="required|min_value:0"
           min="0"
-          hint="Releases above this need two approvers."
+          hint="Refunds and payouts above this need two approvers."
         />
         <LazyVInput
           v-model="s.payments.iban"
@@ -103,23 +103,23 @@
     </p>
 
     <LazyVInput
-      v-model="s.payments.escrowThreshold"
-      name="escrowThreshold"
+      v-model="s.payments.holdThreshold"
+      name="holdThreshold"
       type="number"
-      label="Escrow threshold"
+      label="Payment hold threshold"
       required
       rules="required|min_value:0"
       min="0"
       class="md:max-w-sm"
-      hint="Orders above this value are paid into escrow instead of straight to you."
+      hint="Orders above this value are held until the transfer is confirmed."
     />
   </settings-section>
 
   <settings-section
     id="shipping"
     number="06"
-    title="Shipping & armored logistics"
-    description="Carriers offered at checkout, the default escort level and when delivery becomes free."
+    title="Shipping & delivery"
+    description="Couriers offered at checkout, the default delivery service and when delivery becomes free."
     :changed="changed.includes('shipping')"
   >
     <ul class="grid gap-3 lg:grid-cols-3">
@@ -138,7 +138,7 @@
           v-model="c.fee"
           :name="`carrierFee${i}`"
           type="number"
-          label="Base fee per consignment"
+          label="Base fee per delivery"
           required
           rules="required|min_value:0"
           min="0"
@@ -148,7 +148,7 @@
     </ul>
 
     <fieldset>
-      <legend class="label">Default escort priority</legend>
+      <legend class="label">Default delivery service</legend>
       <div class="mt-1.5 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
         <LazyVRadioInput
           v-for="t in escortOptions"
@@ -206,10 +206,10 @@
         max="1440"
       />
       <LazyVInput
-        v-model="s.orders.clearanceHours"
-        name="clearanceHours"
+        v-model="s.orders.paymentWindowHours"
+        name="paymentWindowHours"
         type="number"
-        label="Escrow clearance (hours)"
+        label="Payment window (hours)"
         required
         rules="required|integer|min_value:1|max_value:720"
         min="1"

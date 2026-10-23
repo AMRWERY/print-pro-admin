@@ -64,14 +64,14 @@ const statusText: Record<string, string> = {
 
 const noteText: Record<string, string> = {
   lead: "Supplier lead",
-  run: "Mill run",
+  run: "Supplier run",
   edi: "EDI line",
-  priority: "Lab priority",
+  priority: "Service priority",
 };
 
 const actionText: Record<string, string> = {
-  restockLens: "Restock lens PO",
-  restockSubstrate: "Restock substrate",
+  restockMachines: "Restock machines",
+  restockToner: "Restock toner and ink",
   confirmEdi: "Confirm EDI line",
   emergencySpares: "Emergency spares order",
 };

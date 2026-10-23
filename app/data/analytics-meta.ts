@@ -26,31 +26,31 @@ export const granularityOptions: { value: Granularity; label: string }[] = [
 ];
 
 export const cohortLabel: Record<Cohort, string> = {
-  all: "All cohorts",
-  institutional: "Institutional",
-  commercial: "Commercial",
-  printmaker: "Printmakers",
+  all: "All customer groups",
+  enterprise: "Enterprise",
+  business: "Business & schools",
+  printShop: "Print shops",
 };
 
 export const cohortNote: Record<Exclude<Cohort, "all">, { name: string; sub: string; yoyLabel: string }> = {
-  institutional: { name: "Institutions", sub: "Museum archives", yoyLabel: "requisitions" },
-  commercial: { name: "Commercial", sub: "Cine & foundries", yoyLabel: "studio hire" },
-  printmaker: { name: "Printmakers", sub: "Ateliers / masters", yoyLabel: "demand" },
+  enterprise: { name: "Enterprise", sub: "Large offices & groups", yoyLabel: "orders" },
+  business: { name: "Business & schools", sub: "Offices, schools, clinics", yoyLabel: "orders" },
+  printShop: { name: "Print shops", sub: "Print shops & resellers", yoyLabel: "demand" },
 };
 
 export const funnelLabel: Record<FunnelStage["key"], { title: string; hint: string }> = {
-  sessions: { title: "Studio discovery & sessions", hint: "Visitors reaching the catalog" },
-  inspections: { title: "Metrology inspections", hint: "Spec sheets and MTF reports opened" },
-  carts: { title: "Cart & escrow allocations", hint: "Requisitions opened with an escrow hold" },
-  wire: { title: "Wire verification gate", hint: "Anti-fraud escrow screening" },
-  dispatched: { title: "Dispatched requisitions", hint: "Settled and shipped" },
+  sessions: { title: "Visits & sessions", hint: "Visitors reaching the catalog" },
+  inspections: { title: "Product page views", hint: "Spec sheets and compatibility lists opened" },
+  carts: { title: "Carts & quotes", hint: "Orders started or quotes requested" },
+  wire: { title: "Payment confirmation", hint: "Bank transfer and card checks" },
+  dispatched: { title: "Dispatched orders", hint: "Settled and shipped" },
 };
 
 export const regionLabel: Record<RegionRow["key"], { name: string; sub: string }> = {
-  dach: { name: "DACH central node", sub: "DE / AT / CH" },
-  northAmerica: { name: "North America east", sub: "NY / MA / ON" },
-  nordic: { name: "Nordic archival nodes", sub: "SE / NO / DK" },
-  apac: { name: "Asia-Pacific atelier escrow", sub: "TYO / HKG" },
+  cairo: { name: "Greater Cairo", sub: "Cairo / Giza" },
+  delta: { name: "Alexandria & Delta", sub: "ALX / MNS / TNT" },
+  gulf: { name: "Gulf markets", sub: "KSA / UAE / QA" },
+  levant: { name: "Levant & upper Egypt", sub: "JO / LXR / ASW" },
 };
 
 export const velocityMeta: Record<VelocityStatus, { label: string; tone: Tone; icon: string }> = {

@@ -19,17 +19,17 @@ const cardMethods: CardMethod[] = ["wallet", "sepa", "zero-liability", "local"];
 
 const defaults = (): Settings => ({
   store: {
-    legalName: "Lumen & Press Optical Printworks",
-    registration: "CHE-492.918.203-MWST",
-    address: "Limmatquai 104, 8001 Zürich, Switzerland",
+    legalName: "PrintPro Trading Co.",
+    registration: "CR 118-204-557",
+    address: "12 Tahrir Street, Dokki, Cairo, Egypt",
     timezone: "Africa/Cairo",
     storefront: "live",
-    maintenanceMessage: "We're calibrating the vault and will be back shortly.",
+    maintenanceMessage: "We're updating the store and will be back shortly.",
   },
   contact: {
-    email: "concierge@lumenpress.art",
-    phone: "+41 44 214 88 00",
-    emergencyPhone: "+41 79 555 01 23",
+    email: "support@printpro.com",
+    phone: "+20 2 3335 7700",
+    emergencyPhone: "+20 100 555 0123",
     pgpKey: "0x4DF2B13F98A19B4C",
   },
   currency: { base: "EGP", secondary: "EUR", tertiary: "USD", syncMinutes: 60, rounding: "cent", markup: 0.5 },
@@ -49,35 +49,35 @@ const defaults = (): Settings => ({
     bankName: "Deutsche Bank Luxembourg SA",
     iban: "DE89370400440532013000",
     bic: "DEUTDEFFXXX",
-    escrowLimit: 250000,
+    approvalLimit: 250000,
     cardEnabled: true,
     cardMethods: ["wallet", "sepa", "zero-liability"],
-    escrowThreshold: 15000,
+    holdThreshold: 15000,
   },
   shipping: {
     carriers: [
-      { id: "cr-brink", name: "Brink's fine art transit", description: "Dual-guard GPS tracking with continuous accelerometer and shock telemetry.", fee: 200, enabled: true },
-      { id: "cr-crate", name: "Cleanroom vacuum crate", description: "Mylar-sealed ISO class 5 packaging with desiccant and shock indicators.", fee: 120, enabled: true },
-      { id: "cr-free", name: "Free consignment basket", description: "Automatic freight concession above the VIP basket threshold.", fee: 0, enabled: false },
+      { id: "cr-brink", name: "Insured express courier", description: "GPS-tracked next-day delivery with signature and full insurance.", fee: 200, enabled: true },
+      { id: "cr-crate", name: "Pallet and crate", description: "Strapped pallet with a protective crate for photocopiers and large printers.", fee: 120, enabled: true },
+      { id: "cr-free", name: "Free delivery", description: "Automatic free delivery above the free-shipping threshold.", fee: 0, enabled: false },
     ],
     escortTier: "armored",
     freeThreshold: 2500,
   },
-  orders: { prefix: "LP-2026-", graceMinutes: 60, maxUnverified: 15000, clearanceHours: 48 },
-  inventory: { lowStockDefault: 5, reorderBufferDays: 14, vaultSyncMinutes: 15, autoQuarantine: true, barcodeVerify: true },
+  orders: { prefix: "LP-2026-", graceMinutes: 60, maxUnverified: 15000, paymentWindowHours: 48 },
+  inventory: { lowStockDefault: 5, reorderBufferDays: 14, warehouseSyncMinutes: 15, autoHold: true, barcodeVerify: true },
   security: { requireFido2: true, physicalPresence: true, sessionTimeoutMinutes: 15, ipAllowlist: "196.218.0.0/16\n41.32.10.0/24" },
-  integrations: { webhookUrl: "https://hooks.lumenpress.art/telemetry", slackAlerts: true },
+  integrations: { webhookUrl: "https://hooks.printpro.com/events", slackAlerts: true },
   email: {
     smtpHost: "smtp.postmarkapp.com",
     smtpPort: 587,
-    fromName: "Lumen & Press",
-    fromAddress: "orders@lumenpress.art",
-    transmitProofs: true,
-    signatoryAlerts: true,
+    fromName: "PrintPro",
+    fromAddress: "orders@printpro.com",
+    attachTestReports: true,
+    approverAlerts: true,
   },
   seo: {
-    defaultTitle: "Lumen & Press — photography and print equipment",
-    defaultDescription: "Cameras, lenses, printers and archival substrates for studios and institutions.",
+    defaultTitle: "PrintPro — printers, photocopiers and inks",
+    defaultDescription: "Printers, photocopiers and genuine ink and toner for homes, offices and print rooms.",
     schemaOrg: true,
     sitemap: true,
   },
@@ -86,14 +86,14 @@ const defaults = (): Settings => ({
 
 let settings = defaults();
 let updatedAt = "2026-10-30T09:12:00.000Z";
-let updatedBy = "E. Vanderbilt";
+let updatedBy = "Ahmed El-Sayed";
 let secretLast4 = "9F2C";
 let secretRotatedAt = "2026-09-14T08:00:00.000Z";
 
 export const dnsRecords: SettingsResponse["dns"] = [
-  { type: "DKIM", host: "pm._domainkey.lumenpress.art", target: "k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOC…", ok: true },
-  { type: "SPF", host: "lumenpress.art", target: "v=spf1 include:spf.mtasv.net -all", ok: true },
-  { type: "DMARC", host: "_dmarc.lumenpress.art", target: "v=DMARC1; p=reject; pct=100; rua=…", ok: true },
+  { type: "DKIM", host: "pm._domainkey.printpro.com", target: "k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOC…", ok: true },
+  { type: "SPF", host: "printpro.com", target: "v=spf1 include:spf.mtasv.net -all", ok: true },
+  { type: "DMARC", host: "_dmarc.printpro.com", target: "v=DMARC1; p=reject; pct=100; rua=…", ok: true },
 ];
 
 export const readSettings = (): SettingsResponse => ({
@@ -169,9 +169,9 @@ export const validateSettings = (body: unknown): Settings | null => {
   const p = g("payments");
   const iban = str(p.iban, 34).replace(/\s+/g, "").toUpperCase();
   const bic = str(p.bic, 11).toUpperCase();
-  const escrowLimit = num(p.escrowLimit, 0, 100_000_000);
-  const escrowThreshold = num(p.escrowThreshold, 0, 100_000_000);
-  if (escrowLimit === null || escrowThreshold === null) return null;
+  const approvalLimit = num(p.approvalLimit, 0, 100_000_000);
+  const holdThreshold = num(p.holdThreshold, 0, 100_000_000);
+  if (approvalLimit === null || holdThreshold === null) return null;
   if (bool(p.wireEnabled) && (!/^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(iban) || !/^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(bic))) return null;
   const methods = (Array.isArray(p.cardMethods) ? p.cardMethods : []).filter((m: unknown): m is CardMethod => cardMethods.includes(m as CardMethod));
 
@@ -193,14 +193,14 @@ export const validateSettings = (body: unknown): Settings | null => {
   const prefix = str(o.prefix, 16).toUpperCase();
   const graceMinutes = num(o.graceMinutes, 0, 1440);
   const maxUnverified = num(o.maxUnverified, 0, 100_000_000);
-  const clearanceHours = num(o.clearanceHours, 1, 720);
-  if (!/^[A-Z0-9][A-Z0-9-]{0,15}$/.test(prefix) || graceMinutes === null || maxUnverified === null || clearanceHours === null) return null;
+  const paymentWindowHours = num(o.paymentWindowHours, 1, 720);
+  if (!/^[A-Z0-9][A-Z0-9-]{0,15}$/.test(prefix) || graceMinutes === null || maxUnverified === null || paymentWindowHours === null) return null;
 
   const i = g("inventory");
   const lowStockDefault = num(i.lowStockDefault, 0, 100_000);
   const reorderBufferDays = num(i.reorderBufferDays, 0, 365);
-  const vaultSyncMinutes = num(i.vaultSyncMinutes, 1, 1440);
-  if (lowStockDefault === null || reorderBufferDays === null || vaultSyncMinutes === null) return null;
+  const warehouseSyncMinutes = num(i.warehouseSyncMinutes, 1, 1440);
+  if (lowStockDefault === null || reorderBufferDays === null || warehouseSyncMinutes === null) return null;
 
   // --- security & integrations & email ---
   const sec = g("security");
@@ -230,23 +230,23 @@ export const validateSettings = (body: unknown): Settings | null => {
       bankName: str(p.bankName, 80),
       iban,
       bic,
-      escrowLimit,
+      approvalLimit,
       cardEnabled: bool(p.cardEnabled),
       cardMethods: [...new Set(methods)],
-      escrowThreshold,
+      holdThreshold,
     },
     shipping: { carriers, escortTier, freeThreshold },
-    orders: { prefix, graceMinutes: Math.round(graceMinutes), maxUnverified, clearanceHours: Math.round(clearanceHours) },
+    orders: { prefix, graceMinutes: Math.round(graceMinutes), maxUnverified, paymentWindowHours: Math.round(paymentWindowHours) },
     inventory: {
       lowStockDefault: Math.round(lowStockDefault),
       reorderBufferDays: Math.round(reorderBufferDays),
-      vaultSyncMinutes: Math.round(vaultSyncMinutes),
-      autoQuarantine: bool(i.autoQuarantine),
+      warehouseSyncMinutes: Math.round(warehouseSyncMinutes),
+      autoHold: bool(i.autoHold),
       barcodeVerify: bool(i.barcodeVerify),
     },
     security: { requireFido2: bool(sec.requireFido2), physicalPresence: bool(sec.physicalPresence), sessionTimeoutMinutes: Math.round(sessionTimeoutMinutes), ipAllowlist: ips.join("\n") },
     integrations: { webhookUrl, slackAlerts: bool(g("integrations").slackAlerts) },
-    email: { smtpHost, smtpPort: Math.round(smtpPort), fromName: str(m.fromName, 80), fromAddress, transmitProofs: bool(m.transmitProofs), signatoryAlerts: bool(m.signatoryAlerts) },
+    email: { smtpHost, smtpPort: Math.round(smtpPort), fromName: str(m.fromName, 80), fromAddress, attachTestReports: bool(m.attachTestReports), approverAlerts: bool(m.approverAlerts) },
     seo: { defaultTitle: str(seo.defaultTitle, 70), defaultDescription: str(seo.defaultDescription, 200), schemaOrg: bool(seo.schemaOrg), sitemap: bool(seo.sitemap) },
     ergonomics: { haptic: bool(ergo.haptic), highContrast: bool(ergo.highContrast) },
   };

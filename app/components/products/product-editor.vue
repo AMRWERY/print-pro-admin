@@ -162,7 +162,7 @@ const publicationMeta: Record<Publication, { label: string; tone: Tone }> = {
 const sections = [
   { id: "identity", label: "General info" },
   { id: "media", label: "Media & assets" },
-  { id: "pricing", label: "Pricing & escrow" },
+  { id: "pricing", label: "Pricing" },
   { id: "inventory", label: "Inventory & stock" },
   { id: "variants", label: "Variants" },
   { id: "specs", label: "Specifications" },
@@ -182,12 +182,12 @@ const jump = (id: string) =>
     .getElementById(id)
     ?.scrollIntoView({ behavior: "smooth", block: "start" });
 
-// Items that can be paired with this product (media and chemistry).
+// Items that can be paired with this product (machines and supplies).
 const { data: pairable } = useFetch<{ rows: Product[] }>(
   "/api/admin/products",
   {
     lazy: true,
-    query: { category: "rag", perPage: 10 },
+    query: { category: "inks-toner", perPage: 10 },
   },
 );
 
@@ -195,7 +195,7 @@ const { data: pairableInks } = useFetch<{ rows: Product[] }>(
   "/api/admin/products",
   {
     lazy: true,
-    query: { category: "pigments", perPage: 10 },
+    query: { category: "copiers", perPage: 10 },
   },
 );
 

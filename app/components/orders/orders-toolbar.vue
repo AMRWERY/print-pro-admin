@@ -4,7 +4,7 @@
     <div class="flex flex-wrap items-center justify-between gap-3">
       <div
         role="group"
-        aria-label="Filter by custody stage"
+        aria-label="Filter by order status"
         class="-mx-1 flex max-w-full gap-1.5 overflow-x-auto px-1 pb-1"
       >
         <button
@@ -41,11 +41,11 @@
           v-model="q"
           name="orderSearch"
           type="search"
-          label="Search requisitions"
+          label="Search orders"
           hide-label
           icon="lucide:search"
           autocomplete="off"
-          placeholder="Search order ID, client, atelier, equipment…"
+          placeholder="Search order ID, customer, company, product…"
         />
       </form>
 
@@ -58,17 +58,17 @@
       />
 
       <LazyVSelectInput
-        v-model="escrow"
-        name="orderEscrow"
-        label="Escrow mode"
+        v-model="payment"
+        name="orderPayment"
+        label="Payment"
         hide-label
-        :options="escrowOptions"
+        :options="paymentOptions"
       />
 
       <LazyVSelectInput
         v-model="stage"
         name="orderStage"
-        label="Custody stage"
+        label="Status"
         hide-label
         :options="stageSelect"
       />
@@ -121,7 +121,7 @@
 
 <script lang="ts" setup>
 import {
-  escrowOptions,
+  paymentOptions,
   rangeOptions,
   sortOptions,
   stageMeta,
@@ -129,9 +129,9 @@ import {
   tierOptions,
 } from "~/data/order-meta";
 import type {
-  ClientTier,
+  AccountTier,
   OrderCounts,
-  EscrowMode,
+  PaymentState,
   OrderRange,
   OrderSort,
   OrderStage,
@@ -141,8 +141,8 @@ defineProps<{ counts?: OrderCounts | null }>();
 
 const q = defineModel<string>("q", { required: true });
 const stage = defineModel<"all" | OrderStage>("stage", { required: true });
-const escrow = defineModel<"all" | EscrowMode>("escrow", { required: true });
-const tier = defineModel<"all" | ClientTier>("tier", { required: true });
+const payment = defineModel<"all" | PaymentState>("payment", { required: true });
+const tier = defineModel<"all" | AccountTier>("tier", { required: true });
 const range = defineModel<OrderRange>("range", { required: true });
 const sort = defineModel<OrderSort>("sort", { required: true });
 const view = defineModel<"table" | "kanban">("view", { required: true });
@@ -163,7 +163,7 @@ const tabs = computed(() => [
 ]);
 
 const stageSelect = computed(() => [
-  { value: "all", label: "All custody stages" },
+  { value: "all", label: "All statuses" },
   ...(Object.keys(stageMeta) as OrderStage[]).map((value) => ({
     value,
     label: stageMeta[value].tab,
@@ -185,11 +185,11 @@ const active = computed(() => {
       label: rangeOptions.find((o) => o.value === range.value)!.label,
       clear: () => (range.value = "all"),
     });
-  if (escrow.value !== "all")
+  if (payment.value !== "all")
     chips.push({
-      key: "escrow",
-      label: escrowOptions.find((o) => o.value === escrow.value)!.label,
-      clear: () => (escrow.value = "all"),
+      key: "payment",
+      label: paymentOptions.find((o) => o.value === payment.value)!.label,
+      clear: () => (payment.value = "all"),
     });
   if (stage.value !== "all")
     chips.push({
@@ -209,7 +209,7 @@ const active = computed(() => {
 const clearAll = () => {
   q.value = "";
   range.value = "all";
-  escrow.value = "all";
+  payment.value = "all";
   stage.value = "all";
   tier.value = "all";
 };

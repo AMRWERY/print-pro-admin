@@ -21,7 +21,7 @@
               />
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Product / optical node
+              Product
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
               SKU &amp; EAN ref

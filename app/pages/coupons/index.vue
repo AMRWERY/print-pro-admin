@@ -2,7 +2,7 @@
   <div class="space-y-5">
     <LazyVPageHeader
       title="Discounts & Vouchers"
-      description="Promotional vouchers and escrow concessions: values, usage caps, eligibility and schedules."
+      description="Promotional vouchers and offers: values, usage caps, eligibility and schedules."
       :breadcrumb="[{ label: 'Dashboard', to: '/' }, { label: 'Coupons' }]"
     >
       <template #actions>
@@ -93,7 +93,7 @@
             <LazyVEmptyState
               icon="lucide:ticket-percent"
               title="No vouchers yet"
-              description="Create a voucher to give studios and institutions a discount, a freight subsidy or a lab credit."
+              description="Create a voucher to give customers a discount, free delivery or a service credit."
               eyebrow="LEDGER :: EMPTY"
               tag="0 VOUCHERS"
             >
@@ -544,6 +544,6 @@ definePageMeta({
 useSeoMeta({
   title: "Coupons",
   description:
-    "Promotional vouchers and escrow concessions with usage caps and schedules.",
+    "Promotional vouchers and offers with usage caps and schedules.",
 });
 </script>

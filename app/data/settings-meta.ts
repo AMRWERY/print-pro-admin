@@ -10,13 +10,13 @@ import type {
 // Labels and the section map for the settings screen (no Tailwind classes, see order-meta.ts).
 export const sectionList: SettingsSectionMeta[] = [
   { id: "store", label: "Store information", key: "store", group: "Store & brand" },
-  { id: "contact", label: "Contact & escrow desk", key: "contact", group: "Store & brand" },
+  { id: "contact", label: "Contact & support desk", key: "contact", group: "Store & brand" },
   { id: "currency", label: "Currency & FX", key: "currency", group: "Fiscal & settlement" },
   { id: "tax", label: "Tax & exemptions", key: "tax", group: "Fiscal & settlement" },
-  { id: "payments", label: "Payment & escrow", key: "payments", group: "Commerce" },
-  { id: "shipping", label: "Armored transit", key: "shipping", group: "Commerce" },
+  { id: "payments", label: "Payments", key: "payments", group: "Commerce" },
+  { id: "shipping", label: "Delivery", key: "shipping", group: "Commerce" },
   { id: "orders", label: "Order processing", key: "orders", group: "Commerce" },
-  { id: "inventory", label: "Inventory & vault", key: "inventory", group: "Operations" },
+  { id: "inventory", label: "Inventory & warehouses", key: "inventory", group: "Operations" },
   { id: "security", label: "Security", key: "security", group: "Security & system" },
   { id: "integrations", label: "Notifications & webhooks", key: "integrations", group: "Security & system" },
   { id: "email", label: "Email & signatures", key: "email", group: "Security & system" },
@@ -63,10 +63,10 @@ export const cardMethodOptions: { value: CardMethod; label: string; description:
 ];
 
 export const escortOptions: { value: EscortTier; label: string; description: string }[] = [
-  { value: "standard", label: "Standard vault", description: "Tracked courier, signature on delivery" },
-  { value: "dedicated", label: "Dedicated sprint", description: "Single-parcel courier, same day in-city" },
-  { value: "armored", label: "Armored hand-carry", description: "Guarded transit for high-value kit" },
-  { value: "diplomatic", label: "Diplomatic pouch", description: "Cross-border sealed transit" },
+  { value: "standard", label: "Standard courier", description: "Tracked courier, signature on delivery" },
+  { value: "dedicated", label: "Same-day courier", description: "Single-parcel courier, same day in-city" },
+  { value: "armored", label: "Installation team", description: "Technician delivery and installation for heavy machines" },
+  { value: "diplomatic", label: "Cross-border freight", description: "Sealed freight with customs paperwork" },
 ];
 
 export const dayLabel = (iso: string) =>

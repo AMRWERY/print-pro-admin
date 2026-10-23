@@ -47,7 +47,7 @@
       label="Node"
       optional
       maxlength="60"
-      placeholder="zurich-executive-01"
+      placeholder="cairo-hq-01"
       input-class="font-mono"
       hint="Where this operator works from. Lowercase letters, numbers and dashes."
       :rules="nodeRule"

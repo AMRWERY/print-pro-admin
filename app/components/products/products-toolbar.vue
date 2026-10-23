@@ -129,7 +129,7 @@ const view = defineModel<"ledger" | "cards">("view", { required: true });
 const { number } = useFormatters();
 
 const viewOptions = [
-  { value: "ledger" as const, label: "Dense ledger" },
+  { value: "ledger" as const, label: "Table" },
   { value: "cards" as const, label: "Cards" },
 ];
 
@@ -138,21 +138,21 @@ const brandOptions = computed(() => [
   ...(props.brands ?? []).map((b) => ({ value: b, label: b })),
 ]);
 
-type PresetKey = "hasselbladGlass" | "ragRolls" | "depleted";
+type PresetKey = "a3Copiers" | "supplies" | "depleted";
 
 const presetList = computed(() => [
   {
-    key: "hasselbladGlass" as const,
-    label: "Hasselblad prime glass",
-    count: props.presets?.hasselbladGlass ?? 0,
-    active: brand.value === "Hasselblad AB" && category.value === "glass",
+    key: "a3Copiers" as const,
+    label: "A3 photocopiers",
+    count: props.presets?.a3Copiers ?? 0,
+    active: category.value === "copiers" && brand.value === "all" && stock.value === "all",
   },
   {
-    key: "ragRolls" as const,
-    label: "Archival cotton rag rolls",
-    count: props.presets?.ragRolls ?? 0,
+    key: "supplies" as const,
+    label: "Ink & toner supplies",
+    count: props.presets?.supplies ?? 0,
     active:
-      category.value === "rag" &&
+      category.value === "inks-toner" &&
       brand.value === "all" &&
       stock.value === "all",
   },
@@ -186,10 +186,8 @@ const applyPreset = (key: PresetKey) => {
   const wasActive = presetList.value.find((p) => p.key === key)!.active;
   reset();
   if (wasActive) return;
-  if (key === "hasselbladGlass") {
-    brand.value = "Hasselblad AB";
-    category.value = "glass";
-  } else if (key === "ragRolls") category.value = "rag";
+  if (key === "a3Copiers") category.value = "copiers";
+  else if (key === "supplies") category.value = "inks-toner";
   else stock.value = "depleted";
 };
 

@@ -46,7 +46,7 @@
  * Free-form list of short values shown as removable chips: type, press Enter (or comma)
  * to add; Backspace on an empty field removes the last one.
  *
- *   <LazyVChipsInput v-model="tags" label="Archival tags" placeholder="#tag" :max="15" />
+ *   <LazyVChipsInput v-model="tags" label="Product tags" placeholder="#tag" :max="15" />
  */
 
 const props = defineProps<{

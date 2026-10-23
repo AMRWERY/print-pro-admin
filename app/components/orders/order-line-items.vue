@@ -1,6 +1,6 @@
 <template>
   <LazyVPanel
-    title="Allocated equipment & substrates"
+    title="Items in this order"
     :subtitle="`${count} ${count === 1 ? 'unit' : 'units'} across ${lines.length} ${lines.length === 1 ? 'batch' : 'batches'}`"
     icon="lucide:package"
   >
@@ -37,15 +37,15 @@
       class="mt-4 space-y-1.5 rounded-card border border-line bg-ink p-4 font-mono text-xs"
     >
       <div class="flex justify-between gap-4">
-        <dt class="text-mute">Subtotal allocated substrates</dt>
+        <dt class="text-mute">Subtotal</dt>
         <dd class="tabular-nums">{{ currency(pricing.subtotal, cents) }}</dd>
       </div>
       <div class="flex justify-between gap-4">
-        <dt class="text-mute">Cleanroom QA & spectro-profiling fee</dt>
-        <dd class="tabular-nums">{{ currency(pricing.qaFee, cents) }}</dd>
+        <dt class="text-mute">Testing & setup fee</dt>
+        <dd class="tabular-nums">{{ currency(pricing.setupFee, cents) }}</dd>
       </div>
       <div class="flex justify-between gap-4">
-        <dt class="text-mute">Armored courier climate transit (insured)</dt>
+        <dt class="text-mute">Insured courier delivery</dt>
         <dd class="tabular-nums">{{ currency(pricing.courier, cents) }}</dd>
       </div>
       <div
@@ -70,9 +70,9 @@
     >
       <div>
         <p class="font-display text-base font-bold">
-          Total escrow requisition value
+          Total order value
         </p>
-        <p class="font-mono text-2xs text-success">{{ vaultNote }}</p>
+        <p class="font-mono text-2xs text-success">{{ deliveryNote }}</p>
       </div>
       <p class="font-display text-3xl font-bold tabular-nums text-accent">
         {{ currency(pricing.total, cents) }}
@@ -87,7 +87,7 @@ import type { OrderLine, OrderPricing } from "~/types/admin/orders";
 const props = defineProps<{
   lines: OrderLine[];
   pricing: OrderPricing;
-  vaultNote: string;
+  deliveryNote: string;
 }>();
 
 const { currency } = useFormatters();

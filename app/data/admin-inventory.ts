@@ -21,35 +21,32 @@ import type {
   MovementType,
   ReceiveInput,
   TransferInput,
-  Vault,
+  Warehouse,
 } from "~/types/admin/inventory";
 
 // Demo stock ledger. It reads the same register as the Products screen, so a change made
 // here shows up there. When the app has a backend this file goes away and
 // server/api/admin/inventory/* proxies the real service.
 
-export const VAULTS: Vault[] = ["FKT-01", "ZUR-OPT", "GOT-01"];
+export const WAREHOUSES: Warehouse[] = ["CAI-01", "GIZ-02", "ALX-01"];
 
 const BIN_PREFIX: Record<ProductCategory, string> = {
-  cameras: "B4",
-  glass: "OPT",
-  printers: "ENG",
-  rag: "CLIM",
-  pigments: "CHEM",
-  metrology: "CAL",
+  printers: "PRN",
+  copiers: "CPY",
+  "inks-toner": "SUP",
 };
 
 // Where an item was moved to; items not listed here sit where they were first shelved.
-const moved = new Map<string, { vault: Vault; bin: string }>();
+const moved = new Map<string, { warehouse: Warehouse; bin: string }>();
 
 const numberOf = (id: string) => Number(id.slice(2)) || 0;
 
-const locate = (p: Product): { vault: Vault; bin: string } => {
+const locate = (p: Product): { warehouse: Warehouse; bin: string } => {
   const override = moved.get(p.id);
   if (override) return override;
   const n = numberOf(p.id);
-  const vault: Vault = p.category === "glass" ? "ZUR-OPT" : n % 5 === 0 ? "GOT-01" : "FKT-01";
-  return { vault, bin: `${BIN_PREFIX[p.category]}-${String((n % 9) + 1).padStart(2, "0")}` };
+  const warehouse: Warehouse = p.category === "copiers" ? "GIZ-02" : n % 5 === 0 ? "ALX-01" : "CAI-01";
+  return { warehouse, bin: `${BIN_PREFIX[p.category]}-${String((n % 9) + 1).padStart(2, "0")}` };
 };
 
 const toItem = (p: Product): InventoryItem => {
@@ -60,7 +57,7 @@ const toItem = (p: Product): InventoryItem => {
     reserved,
     available: p.stock - reserved,
     state: stockStateOf(p),
-    qaHold: p.status === "bench" || p.status === "quarantine",
+    testHold: p.status === "testing" || p.status === "hold",
   };
 };
 
@@ -96,10 +93,10 @@ const record = (
 const seedHistory = () => {
   const by = (id: string) => findProduct(id);
   const entries: [string, MovementType, number | null, string, number][] = [
-    ["p-5", "calibration", -1, "Transferred to the metrology chamber for spectral profiling", 30],
-    ["p-2", "dispatch", -1, "Dispatched by armored courier to Fondation Lumière Paris", 21],
-    ["p-3", "inbound", 10, "Received from the mill inbound manifest. Lot DE-HN-2026-C9", 3.5],
-    ["p-1", "allocation", -2, "Allocated to requisition #LP-948201", 0.8],
+    ["p-5", "testing", -1, "Moved to the test bay for a print-quality check", 30],
+    ["p-2", "dispatch", -1, "Dispatched by courier to Delta Architects, Cairo", 21],
+    ["p-3", "inbound", 10, "Received from the supplier delivery note. Lot CX-2026-C9", 3.5],
+    ["p-1", "allocation", -2, "Allocated to order #LP-948201", 0.8],
   ];
   for (const [id, type, qty, note, hoursAgo] of entries) {
     const p = by(id);
@@ -119,9 +116,9 @@ export const parseInventoryQuery = (raw: Record<string, unknown>): InventoryQuer
   const page = Number.parseInt(String(raw.page), 10);
   return {
     q: typeof raw.q === "string" ? raw.q.trim().slice(0, 80) : "",
-    category: pick(raw.category, ["all", "cameras", "glass", "printers", "rag", "pigments", "metrology"] as const, "all"),
-    vault: pick(raw.vault, ["all", ...VAULTS] as const, "all"),
-    filter: pick<InventoryFilter>(raw.filter, ["all", "healthy", "low", "out", "qa"], "all"),
+    category: pick(raw.category, ["all", "printers", "copiers", "inks-toner"] as const, "all"),
+    warehouse: pick(raw.warehouse, ["all", ...WAREHOUSES] as const, "all"),
+    filter: pick<InventoryFilter>(raw.filter, ["all", "healthy", "low", "out", "hold"], "all"),
     sort: pick<InventorySort>(raw.sort, ["urgent", "qtyAsc", "qtyDesc", "value"], "urgent"),
     page: Number.isFinite(page) ? Math.min(100_000, Math.max(1, page)) : 1,
     perPage: Number(pick(String(raw.perPage), ["10", "25", "50"] as const, "10")),
@@ -133,18 +130,18 @@ const matchesFilter = (i: InventoryItem, f: InventoryFilter) =>
   (f === "healthy" && i.state === "ok") ||
   (f === "low" && i.state === "low") ||
   (f === "out" && i.state === "out") ||
-  (f === "qa" && i.qaHold);
+  (f === "hold" && i.testHold);
 
 export const queryInventory = (query: InventoryQuery): InventoryResponse => {
   const needle = query.q.toLowerCase();
   const items = allProducts().map(toItem);
 
-  // Tab counts follow the search, division and vault filters, but not the tab itself.
+  // Tab counts follow the search, category and warehouse filters, but not the tab itself.
   const base = items.filter(
     (i) =>
       (!needle || [i.name, i.sku, i.ean, i.serial, i.bin].join(" ").toLowerCase().includes(needle)) &&
       (query.category === "all" || i.category === query.category) &&
-      (query.vault === "all" || i.vault === query.vault),
+      (query.warehouse === "all" || i.warehouse === query.warehouse),
   );
 
   const counts: Record<InventoryFilter, number> = {
@@ -152,7 +149,7 @@ export const queryInventory = (query: InventoryQuery): InventoryResponse => {
     healthy: base.filter((i) => matchesFilter(i, "healthy")).length,
     low: base.filter((i) => matchesFilter(i, "low")).length,
     out: base.filter((i) => matchesFilter(i, "out")).length,
-    qa: base.filter((i) => matchesFilter(i, "qa")).length,
+    hold: base.filter((i) => matchesFilter(i, "hold")).length,
   };
 
   const filtered = base.filter((i) => matchesFilter(i, query.filter));
@@ -221,10 +218,10 @@ export const receiveConsignment = (body: unknown): ChangeResult => {
   const qty = whole(b.qty);
   const reference = reasonOf(b.reference);
   if (!(qty >= 1 && qty <= MAX_STOCK) || !reference || p.stock + qty > MAX_STOCK)
-    return { ok: false, status: 400, message: "Invalid consignment" };
+    return { ok: false, status: 400, message: "Invalid delivery" };
 
   updateProduct(p.id, { stock: p.stock + qty });
-  record("inbound", qty, p, `Received inbound consignment ${reference}`);
+  record("inbound", qty, p, `Received delivery ${reference}`);
   return { ok: true, item: toItem(p) };
 };
 
@@ -232,13 +229,13 @@ export const transferItem = (body: unknown): ChangeResult => {
   const b = (body ?? {}) as Partial<TransferInput>;
   const p = typeof b.productId === "string" ? findProduct(b.productId) : undefined;
   if (!p) return { ok: false, status: 404, message: "Product not found" };
-  if (!VAULTS.includes(b.vault as Vault)) return { ok: false, status: 400, message: "Invalid vault" };
+  if (!WAREHOUSES.includes(b.warehouse as Warehouse)) return { ok: false, status: 400, message: "Invalid warehouse" };
 
   const from = locate(p);
-  if (from.vault === b.vault) return { ok: false, status: 400, message: "Already in that vault" };
+  if (from.warehouse === b.warehouse) return { ok: false, status: 400, message: "Already in that warehouse" };
 
-  moved.set(p.id, { vault: b.vault as Vault, bin: `${BIN_PREFIX[p.category]}-${String((numberOf(p.id) % 9) + 1).padStart(2, "0")}` });
-  record("transfer", null, p, `Moved from ${from.vault} to ${b.vault}`);
+  moved.set(p.id, { warehouse: b.warehouse as Warehouse, bin: `${BIN_PREFIX[p.category]}-${String((numberOf(p.id) % 9) + 1).padStart(2, "0")}` });
+  record("transfer", null, p, `Moved from ${from.warehouse} to ${b.warehouse}`);
   return { ok: true, item: toItem(p) };
 };
 
@@ -259,8 +256,8 @@ const validateItem = (body: unknown): (ItemInput & { status: Product["status"] }
   const b = (body ?? {}) as Record<string, unknown>;
   const base = validateProductInput({ ...b, status: typeof b.status === "string" ? b.status : "active" });
   const bin = typeof b.bin === "string" ? b.bin.trim().toUpperCase() : "";
-  if (!base || !VAULTS.includes(b.vault as Vault) || !/^[A-Z0-9][A-Z0-9-]{1,19}$/.test(bin)) return null;
-  return { ...base, vault: b.vault as Vault, bin };
+  if (!base || !WAREHOUSES.includes(b.warehouse as Warehouse) || !/^[A-Z0-9][A-Z0-9-]{1,19}$/.test(bin)) return null;
+  return { ...base, warehouse: b.warehouse as Warehouse, bin };
 };
 
 export const createItem = (body: unknown): ItemResult => {
@@ -268,9 +265,9 @@ export const createItem = (body: unknown): ItemResult => {
   if (!input) return { ok: false, status: 400, message: "Invalid item" };
   if (skuExists(input.sku)) return { ok: false, status: 409, message: "SKU already exists" };
 
-  const { vault, bin, ...product } = input;
+  const { warehouse, bin, ...product } = input;
   const created = createProduct(product);
-  moved.set(created.id, { vault, bin });
+  moved.set(created.id, { warehouse, bin });
   if (created.stock > 0) record("inbound", created.stock, created, "Initial stock booked when the item was added");
   return { ok: true, item: toItem(created) };
 };
@@ -283,14 +280,14 @@ export const updateItem = (id: string, body: unknown): ItemResult => {
   if (skuExists(input.sku, id)) return { ok: false, status: 409, message: "SKU already exists" };
 
   const before = { stock: p.stock, ...locate(p) };
-  const { vault, bin, ...fields } = input;
+  const { warehouse, bin, ...fields } = input;
   updateProduct(id, fields);
-  moved.set(id, { vault, bin });
+  moved.set(id, { warehouse, bin });
 
   if (fields.stock !== before.stock)
     record("adjustment", fields.stock - before.stock, p, "Stock corrected when the item was edited");
-  if (vault !== before.vault || bin !== before.bin)
-    record("transfer", null, p, `Moved from ${before.vault} ${before.bin} to ${vault} ${bin}`);
+  if (warehouse !== before.warehouse || bin !== before.bin)
+    record("transfer", null, p, `Moved from ${before.warehouse} ${before.bin} to ${warehouse} ${bin}`);
   return { ok: true, item: toItem(p) };
 };
 

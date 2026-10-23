@@ -22,7 +22,7 @@
         />
 
         <span class="label-caps">Client &amp; organization</span>
-        <span class="label-caps ms-auto hidden sm:block">Telemetry / node</span>
+        <span class="label-caps ms-auto hidden sm:block">Activity / region</span>
       </div>
 
       <ul class="divide-y divide-line">
@@ -60,7 +60,7 @@
                     name="lucide:badge-check"
                     size="14"
                     class="text-yellow"
-                    aria-label="AAA institutional tier"
+                    aria-label="AAA key account"
                   />
                 </span>
                 <span class="meta block truncate">{{ c.org }}</span>

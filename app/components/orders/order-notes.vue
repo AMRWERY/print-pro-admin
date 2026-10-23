@@ -36,7 +36,7 @@
         v-model="text"
         name="adminNote"
         label="Append administrative annotation"
-        placeholder="Enter bench observation, optical telemetry, or escrow update…"
+        placeholder="Enter a test result, delivery update or payment note…"
         rows="3"
         maxlength="600"
         rules="required"

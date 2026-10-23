@@ -63,10 +63,10 @@ export interface Settings {
     bankName: string;
     iban: string;
     bic: string;
-    escrowLimit: number;
+    approvalLimit: number;
     cardEnabled: boolean;
     cardMethods: CardMethod[];
-    escrowThreshold: number;
+    holdThreshold: number;
   };
   shipping: {
     carriers: CarrierRow[];
@@ -77,13 +77,13 @@ export interface Settings {
     prefix: string;
     graceMinutes: number;
     maxUnverified: number;
-    clearanceHours: number;
+    paymentWindowHours: number;
   };
   inventory: {
     lowStockDefault: number;
     reorderBufferDays: number;
-    vaultSyncMinutes: number;
-    autoQuarantine: boolean;
+    warehouseSyncMinutes: number;
+    autoHold: boolean;
     barcodeVerify: boolean;
   };
   security: {
@@ -102,8 +102,8 @@ export interface Settings {
     smtpPort: number;
     fromName: string;
     fromAddress: string;
-    transmitProofs: boolean;
-    signatoryAlerts: boolean;
+    attachTestReports: boolean;
+    approverAlerts: boolean;
   };
   seo: {
     defaultTitle: string;

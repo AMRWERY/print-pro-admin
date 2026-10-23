@@ -4,11 +4,11 @@
       v-model="query"
       name="headerSearch"
       type="search"
-      label="Search cameras, lenses, printers and paper"
+      label="Search printers, photocopiers, ink and toner"
       hide-label
       icon="lucide:search"
       autocomplete="off"
-      placeholder="Search cameras, lenses, printers, paper…"
+      placeholder="Search printers, photocopiers, ink, toner…"
       input-class="!pe-4"
     />
   </form>

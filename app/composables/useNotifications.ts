@@ -2,11 +2,11 @@ import type { AdminNotification } from "~/types/notifications";
 
 // Demo feed. When the app has a backend this seed goes away and the list comes from the API.
 const seed = (): AdminNotification[] => [
-  { id: 1, kind: "order", title: "New order #LP-948202", body: "Dr. Elena Vance placed a EGP 14,290 requisition.", ago: "5 min ago", read: false, to: "/orders" },
-  { id: 2, kind: "stock", title: "Low stock: Hasselblad XCD 55mm", body: "2 units left, below the minimum of 5.", ago: "42 min ago", read: false, to: "/inventory" },
-  { id: 3, kind: "payment", title: "Escrow released", body: "Zurich Kunsthaus Lab settled EGP 8,190.", ago: "2 h ago", read: false, to: "/orders" },
-  { id: 4, kind: "customer", title: "New customer", body: "Galerie Max Hetzler verified their account.", ago: "Yesterday", read: true, to: "/customers" },
-  { id: 5, kind: "stock", title: "Restock arrived", body: "12 rolls of Hahnemühle Photo Rag are in the depot.", ago: "Yesterday", read: true, to: "/inventory" },
+  { id: 1, kind: "order", title: "New order #LP-948202", body: "Dr. Amal Fahmy placed a EGP 71,690 order.", ago: "5 min ago", read: false, to: "/orders" },
+  { id: 2, kind: "stock", title: "Low stock: Kopira Toner Black A3", body: "2 units left, below the minimum of 5.", ago: "42 min ago", read: false, to: "/inventory" },
+  { id: 3, kind: "payment", title: "Payment received", body: "Cairo Language School paid EGP 27,400.", ago: "2 h ago", read: false, to: "/orders" },
+  { id: 4, kind: "customer", title: "New customer", body: "Nile Print House verified their account.", ago: "Yesterday", read: true, to: "/customers" },
+  { id: 5, kind: "stock", title: "Restock arrived", body: "40 Corex Toner Black 210 cartridges are in the Cairo warehouse.", ago: "Yesterday", read: true, to: "/inventory" },
 ];
 
 /** Shared notification list for the header bell and its dialog. */

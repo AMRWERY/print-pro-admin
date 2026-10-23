@@ -1,5 +1,5 @@
 <template>
-  <LazyVPanel title="Custody dossier" icon="lucide:contact-round">
+  <LazyVPanel title="Customer details" icon="lucide:contact-round">
     <template #actions>
       <LazyVStatusBadge :tone="tierMeta[customer.tier].tone">{{
         tierMeta[customer.tier].label
@@ -35,13 +35,13 @@
         <dd class="font-mono text-xs" dir="ltr">{{ details.taxId }}</dd>
       </div>
       <div class="rounded-control border border-line bg-ink px-3 py-2">
-        <dt class="label-caps">Lifetime escrow balance</dt>
+        <dt class="label-caps">Lifetime order value</dt>
         <dd class="flex flex-wrap items-baseline justify-between gap-2">
           <span class="font-mono text-sm font-semibold tabular-nums">{{
-            currency(details.lifetimeEscrow, { maximumFractionDigits: 0 })
+            currency(details.lifetimeValue, { maximumFractionDigits: 0 })
           }}</span>
           <span class="font-mono text-2xs text-yellow"
-            >{{ details.orders }} requisitions</span
+            >{{ details.orders }} orders</span
           >
         </dd>
       </div>

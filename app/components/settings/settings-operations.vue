@@ -2,7 +2,7 @@
   <settings-section
     id="inventory"
     number="08"
-    title="Inventory telemetry & reorder thresholds"
+    title="Stock alerts & reorder thresholds"
     description="Defaults for new products, how fresh stock counts are, and automatic safeguards."
     :changed="changed.includes('inventory')"
   >
@@ -30,10 +30,10 @@
       />
 
       <LazyVInput
-        v-model="s.inventory.vaultSyncMinutes"
-        name="vaultSyncMinutes"
+        v-model="s.inventory.warehouseSyncMinutes"
+        name="warehouseSyncMinutes"
         type="number"
-        label="Vault sync (minutes)"
+        label="Warehouse sync (minutes)"
         required
         rules="required|integer|min_value:1|max_value:1440"
         min="1"
@@ -42,9 +42,9 @@
     </div>
     <div class="grid gap-3 md:grid-cols-2">
       <settings-toggle
-        v-model="s.inventory.autoQuarantine"
-        title="Auto-quarantine failed calibration"
-        description="Stock that fails an optical check is held out of sale until reviewed."
+        v-model="s.inventory.autoHold"
+        title="Auto-hold items that fail testing"
+        description="Stock that fails a test print or function check is held out of sale until reviewed."
       />
 
       <settings-toggle
@@ -58,7 +58,7 @@
   <settings-section
     id="security"
     number="09"
-    title="Security & cleanroom terminals"
+    title="Security & sign-in"
     description="Sign-in requirements for every operator. Changes apply the next time someone signs in."
     :changed="changed.includes('security')"
   >

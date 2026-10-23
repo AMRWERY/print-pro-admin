@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   }
   await simulateLatency(300);
   if (!addOrderNote(id, text, body?.urgent === true)) {
-    throw createError({ statusCode: 404, statusMessage: "Requisition not found" });
+    throw createError({ statusCode: 404, statusMessage: "Order not found" });
   }
   setResponseStatus(event, 201);
   return orderDetail(id);

@@ -57,7 +57,7 @@
       <li>
         <LazyVStatCard
           size="lg"
-          label="Orders & requisitions"
+          label="Orders"
           icon="lucide:shopping-cart"
           :value="number(kpis.orders)"
         >
@@ -67,7 +67,7 @@
             icon="lucide:trending-up"
             >{{ signedPercent(kpis.ordersDelta) }}</LazyVStatusBadge
           >
-          <p class="meta">{{ number(kpis.inCustody) }} in custody</p>
+          <p class="meta">{{ number(kpis.inProgress) }} in progress</p>
         </LazyVStatCard>
       </li>
       <li>
@@ -83,7 +83,7 @@
             icon="lucide:trending-up"
             >{{ signedPercent(kpis.aovDelta) }}</LazyVStatusBadge
           >
-          <p class="meta">Prime-lens and back mix</p>
+          <p class="meta">Machine and supply mix</p>
         </LazyVStatCard>
       </li>
       <li>
@@ -105,7 +105,7 @@
       <li class="col-span-2 lg:col-span-1">
         <LazyVStatCard
           size="lg"
-          label="Verified studio intake"
+          label="New business customers"
           icon="lucide:badge-check"
           :value="`+${number(kpis.intake)}`"
         >
@@ -115,7 +115,7 @@
             icon="lucide:trending-up"
             >{{ signedPercent(kpis.intakeDelta) }}</LazyVStatusBadge
           >
-          <p class="meta">Verified institutions and studios</p>
+          <p class="meta">Verified businesses and schools</p>
         </LazyVStatCard>
       </li>
     </template>

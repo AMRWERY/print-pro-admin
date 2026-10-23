@@ -7,7 +7,7 @@ export interface Category {
   /** Catalog code such as CAT-CAM-01. */
   code: string;
   name: string;
-  /** URL path, for example /cameras-optics/medium-format. */
+  /** URL path, for example /printers/laser. */
   slug: string;
   /** null for a master (top-level) category. */
   parentId: string | null;

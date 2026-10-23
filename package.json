@@ -7,7 +7,9 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "check:vocab": "node scripts/check-vocabulary.mjs",
+    "smoke": "node scripts/smoke-routes.mjs"
   },
   "dependencies": {
     "@nuxt/icon": "^2.2.1",

@@ -28,33 +28,52 @@ import { buildVariants } from "~/utils/product-variants";
 // server/api/admin/products/* proxies the real service.
 
 const templates: Template[] = [
-  { prefix: "HAS-X2D", name: "Hasselblad X2D 100C", tag: "IBIS 5-AXIS", spec: "Medium format backside-illuminated CMOS", serialKind: "S/N", category: "cameras", brand: "Hasselblad AB", price: 8199, unit: "unit", min: 4 },
-  { prefix: "HAS-XCD", name: "Hasselblad XCD 55mm f/2.5 V", tag: "ASPH", spec: "Prime leaf-shutter lens, 1/2000s sync", serialKind: "S/N", category: "glass", brand: "Hasselblad AB", price: 3699, unit: "unit", min: 3 },
-  { prefix: "EPS-SCP", name: "Epson SureColor P9570", tag: "12-COLOR", spec: '44" fine-art piezo master engine', serialKind: "S/N", category: "printers", brand: "Seiko Epson Corp", price: 8190, unit: "unit", min: 2 },
-  { prefix: "HAH-PR", name: "Hahnemühle Photo Rag 308gsm", tag: "ACID-FREE", spec: "44in × 39ft roll · 100% cotton rag", serialKind: "BATCH", category: "rag", brand: "Hahnemühle FineArt", price: 269, unit: "roll", min: 12 },
-  { prefix: "LCA-SUM", name: "Leica Summilux-C 35mm T1.4", tag: "METRIC", spec: "Master cine prime optical element", serialKind: "S/N", category: "glass", brand: "Leica Camera AG", price: 14200, unit: "unit", min: 2 },
-  { prefix: "EPS-UC12", name: "UltraChrome PRO12 Ink Set", tag: "12× 700ML", spec: "Master pack mineral pigment formulation", serialKind: "LOT", category: "pigments", brand: "Seiko Epson Corp", price: 2850, unit: "unit", min: 3 },
-  { prefix: "XRT-I1P3", name: "X-Rite i1Pro 3 Plus", tag: "SPECTRO", spec: "Spectral colour profiler with polarization M3", serialKind: "S/N", category: "metrology", brand: "X-Rite Pantone", price: 2450, unit: "unit", min: 2 },
-  { prefix: "CNS-PFR", name: "Canson Platine Fibre Rag", tag: "DMAX 2.4", spec: "60in × 50ft roll · 100% cotton platinum base", serialKind: "BATCH", category: "rag", brand: "Canson Infinity", price: 345, unit: "roll", min: 8 },
-  { prefix: "PHO-IQ4", name: "Phase One IQ4 150MP", tag: "TRICHROMATIC", spec: "151MP BSI digital back", serialKind: "S/N", category: "cameras", brand: "Phase One A/S", price: 44500, unit: "unit", min: 1 },
-  { prefix: "ARR-SIG", name: "ARRI Signature Prime 35mm", tag: "LPL", spec: "Large-format cine prime, T1.8", serialKind: "S/N", category: "glass", brand: "ARRI AG", price: 18900, unit: "unit", min: 2 },
-  { prefix: "CAN-PRO", name: "Canon imagePROGRAF PRO-4100", tag: "LUCIA PRO", spec: '44" 12-ink pigment printer', serialKind: "S/N", category: "printers", brand: "Canon Inc.", price: 5200, unit: "unit", min: 2 },
-  { prefix: "PIE-CPS", name: "Piezography Pro Carbon Set", tag: "K7", spec: "Monochrome mineral suspensions", serialKind: "LOT", category: "pigments", brand: "Cone Editions", price: 840, unit: "unit", min: 4 },
+  { prefix: "PP-PR-0300", name: "Printa Home 300 Wireless Inkjet", tag: "WI-FI", spec: "A4 colour inkjet · Wi-Fi · USB", serialKind: "S/N", category: "printers", brand: "Printa", price: 3200, unit: "unit", min: 6 },
+  { prefix: "PP-PR-0120", name: "Printa Mini Portable Inkjet", tag: "PORTABLE", spec: "Battery-powered A4 inkjet · Wi-Fi", serialKind: "S/N", category: "printers", brand: "Printa", price: 2400, unit: "unit", min: 5 },
+  { prefix: "PP-PR-0500", name: "Printa Tank 500 Ink-Tank All-Colour", tag: "INK TANK", spec: "A4 ink-tank colour · automatic duplex", serialKind: "S/N", category: "printers", brand: "Printa", price: 5400, unit: "unit", min: 6 },
+  { prefix: "PP-CX-0210", name: "Corex Laser 210 Mono", tag: "30 PPM", spec: "A4 mono laser · automatic duplex", serialKind: "S/N", category: "printers", brand: "Corex", price: 6800, unit: "unit", min: 5 },
+  { prefix: "PP-CX-0450", name: "Corex Laser 450 Colour", tag: "COLOUR LASER", spec: "A4 colour laser · 28 ppm · duplex", serialKind: "S/N", category: "printers", brand: "Corex", price: 14900, unit: "unit", min: 3 },
+  { prefix: "PP-CX-0700", name: "Corex Laser 700 A3 Mono", tag: "A3", spec: "A3 mono laser · 40 ppm · duplex", serialKind: "S/N", category: "printers", brand: "Corex", price: 27400, unit: "unit", min: 2 },
+  { prefix: "PP-NJ-0A3", name: "Nordjet Pro A3 Colour Inkjet", tag: "A3", spec: "A3 pigment inkjet · Ethernet", serialKind: "S/N", category: "printers", brand: "Nordjet", price: 18500, unit: "unit", min: 2 },
+  { prefix: "PP-VX-0A3", name: "Vantix Colour Laser A3 Workgroup", tag: "WORKGROUP", spec: "A3 colour laser · 35 ppm · duplex", serialKind: "S/N", category: "printers", brand: "Vantix", price: 39900, unit: "unit", min: 2 },
+  { prefix: "PP-NJ-LF24", name: "Nordjet Large-Format 24\" Plotter", tag: "24-INCH", spec: "24\" roll plotter · A1 drawings", serialKind: "S/N", category: "printers", brand: "Nordjet", price: 38900, unit: "unit", min: 2 },
+  { prefix: "PP-NJ-LF44", name: "Nordjet Large-Format 44\" CAD & Poster", tag: "44-INCH", spec: "44\" roll wide-format · A0 posters", serialKind: "S/N", category: "printers", brand: "Nordjet", price: 82500, unit: "unit", min: 1 },
+  { prefix: "PP-KP-0020", name: "Kopira Office 20 A4 Mono MFP", tag: "20 PPM", spec: "A4 mono MFP · copy, print, scan", serialKind: "S/N", category: "copiers", brand: "Kopira", price: 12500, unit: "unit", min: 3 },
+  { prefix: "PP-KP-0035", name: "Kopira Office 35 A4 Mono MFP", tag: "35 PPM", spec: "A4 mono MFP · copy, print, scan, fax", serialKind: "S/N", category: "copiers", brand: "Kopira", price: 18900, unit: "unit", min: 3 },
+  { prefix: "PP-KP-028C", name: "Kopira Office 28 A4 Colour MFP", tag: "COLOUR MFP", spec: "A4 colour MFP · fax · duplex", serialKind: "S/N", category: "copiers", brand: "Kopira", price: 24900, unit: "unit", min: 2 },
+  { prefix: "PP-KP-A325", name: "Kopira Pro A3 25 ppm Mono", tag: "A3", spec: "A3 mono copier · cabinet included", serialKind: "S/N", category: "copiers", brand: "Kopira", price: 41500, unit: "unit", min: 2 },
+  { prefix: "PP-KP-A335", name: "Kopira Pro A3 35 ppm Mono", tag: "A3", spec: "A3 mono copier · finisher ready", serialKind: "S/N", category: "copiers", brand: "Kopira", price: 58900, unit: "unit", min: 2 },
+  { prefix: "PP-KP-A33C", name: "Kopira Pro A3 30 ppm Colour", tag: "A3 COLOUR", spec: "A3 colour copier · touchscreen", serialKind: "S/N", category: "copiers", brand: "Kopira", price: 76400, unit: "unit", min: 1 },
+  { prefix: "PP-KP-A34C", name: "Kopira Pro A3 45 ppm Colour", tag: "A3 COLOUR", spec: "A3 colour copier · booklet finisher", serialKind: "S/N", category: "copiers", brand: "Kopira", price: 118000, unit: "unit", min: 1 },
+  { prefix: "PP-VX-P060", name: "Vantix Production 60 ppm Mono", tag: "PRODUCTION", spec: "A3 mono production copier", serialKind: "S/N", category: "copiers", brand: "Vantix", price: 195000, unit: "unit", min: 1 },
+  { prefix: "PP-VX-P75C", name: "Vantix Production 75 ppm Colour", tag: "PRODUCTION", spec: "A3 colour production system", serialKind: "S/N", category: "copiers", brand: "Vantix", price: 289000, unit: "unit", min: 1 },
+  { prefix: "PP-IK-PB70", name: "Printa Tank Ink Black 70 ml", tag: "BLACK", spec: "Refill bottle · 4,500 pages", serialKind: "LOT", category: "inks-toner", brand: "Printa", price: 320, unit: "unit", min: 40 },
+  { prefix: "PP-IK-PC3", name: "Printa Tank Ink Colour Set (C/M/Y)", tag: "C/M/Y", spec: "3 × 70 ml refill set · 7,000 pages", serialKind: "LOT", category: "inks-toner", brand: "Printa", price: 780, unit: "pack", min: 30 },
+  { prefix: "PP-IK-NP8", name: "Nordjet Pigment Ink 8-Colour Set 130 ml", tag: "8-COLOUR", spec: "8 × 130 ml pigment set", serialKind: "LOT", category: "inks-toner", brand: "Nordjet", price: 4900, unit: "pack", min: 8 },
+  { prefix: "PP-IK-NLC", name: "Nordjet LF Ink Cartridge Cyan 300 ml", tag: "CYAN", spec: "Large-format cartridge · 300 ml", serialKind: "LOT", category: "inks-toner", brand: "Nordjet", price: 1450, unit: "unit", min: 12 },
+  { prefix: "PP-IK-NLK", name: "Nordjet LF Ink Cartridge Black 300 ml", tag: "BLACK", spec: "Large-format cartridge · 300 ml", serialKind: "LOT", category: "inks-toner", brand: "Nordjet", price: 1450, unit: "unit", min: 12 },
+  { prefix: "PP-TN-C210", name: "Corex Toner Black 210 (2,000 pages)", tag: "STANDARD", spec: "Black toner · 2,000 pages", serialKind: "LOT", category: "inks-toner", brand: "Corex", price: 950, unit: "unit", min: 30 },
+  { prefix: "PP-TN-C21H", name: "Corex Toner Black 210 High-Yield (6,000 pages)", tag: "HIGH-YIELD", spec: "Black toner · 6,000 pages", serialKind: "LOT", category: "inks-toner", brand: "Corex", price: 2100, unit: "unit", min: 25 },
+  { prefix: "PP-TN-C45S", name: "Corex Toner Colour Set 450 (C/M/Y/K)", tag: "4-COLOUR", spec: "C/M/Y/K toner set · 3,000 pages each", serialKind: "LOT", category: "inks-toner", brand: "Corex", price: 5200, unit: "pack", min: 10 },
+  { prefix: "PP-TN-KAB", name: "Kopira Toner Black A3 Series", tag: "A3 SERIES", spec: "Black toner · 30,000 pages", serialKind: "LOT", category: "inks-toner", brand: "Kopira", price: 2800, unit: "unit", min: 12 },
+  { prefix: "PP-TN-KAC", name: "Kopira Toner Colour Set A3 Series", tag: "A3 COLOUR", spec: "C/M/Y toner set · 20,000 pages each", serialKind: "LOT", category: "inks-toner", brand: "Kopira", price: 7900, unit: "pack", min: 8 },
+  { prefix: "PP-DR-KA3", name: "Kopira Drum Unit A3 Series", tag: "DRUM", spec: "Imaging drum · 100,000 pages", serialKind: "LOT", category: "inks-toner", brand: "Kopira", price: 6400, unit: "unit", min: 6 },
+  { prefix: "PP-TN-VPB", name: "Vantix Production Toner Black", tag: "PRODUCTION", spec: "Black toner · 80,000 pages", serialKind: "LOT", category: "inks-toner", brand: "Vantix", price: 5600, unit: "unit", min: 6 },
 ];
 
 // The first screen of the register is hand-picked so low-stock states are visible at once.
 const seeds: { t: number; stock: number }[] = [
-  { t: 0, stock: 8 },
-  { t: 1, stock: 2 },
-  { t: 2, stock: 4 },
-  { t: 3, stock: 6 },
-  { t: 4, stock: 1 },
-  { t: 5, stock: 0 },
-  { t: 6, stock: 0 },
-  { t: 7, stock: 28 },
+  { t: 2, stock: 9 },
+  { t: 3, stock: 3 },
+  { t: 14, stock: 4 },
+  { t: 19, stock: 22 },
+  { t: 25, stock: 10 },
+  { t: 27, stock: 0 },
+  { t: 21, stock: 0 },
+  { t: 24, stock: 64 },
 ];
 
-const VARIANTS = ["Kit A", "Kit B", "Studio pack", "Refurbished", "Demo unit", "Bulk pack", "Archive grade"];
+const VARIANTS = ["Starter pack", "Office bundle", "Refurbished", "Demo unit", "Bulk pack", "Service bundle", "Reseller pack"];
 const TOTAL = 4812;
 
 const eanOf = (n: number) => `7${String(332700000000 + n * 7919).padStart(12, "0")}`;
@@ -77,12 +96,12 @@ const make = (n: number, t: Template, stock: number, variant: number): Product =
     stock,
     min: t.min,
     unit: t.unit,
-    // Exactly 14 on the bench and 3 quarantined across the register; a few drafts.
+    // Exactly 14 in testing and 3 on hold across the register; a few drafts.
     status:
       n % 343 === 5 + seeds.length && n >= seeds.length
-        ? "bench"
+        ? "testing"
         : n % 1601 === 9 + seeds.length && n >= seeds.length
-          ? "quarantine"
+          ? "hold"
           : n >= seeds.length && n % 97 === 50
             ? "draft"
             : "active",
@@ -117,7 +136,7 @@ export const parseProductsQuery = (raw: Record<string, unknown>): ProductsQuery 
     category: pick(raw.category, ["all", ...(Object.keys(categoryMeta) as ProductCategory[])] as const, "all"),
     brand: typeof raw.brand === "string" && raw.brand.length < 80 ? raw.brand : "all",
     stock: pick<StockFilter>(raw.stock, ["all", "ok", "low", "out", "depleted"], "all"),
-    status: pick(raw.status, ["all", "active", "bench", "quarantine", "draft"] as const, "all"),
+    status: pick(raw.status, ["all", "active", "testing", "hold", "draft"] as const, "all"),
     sort: pick<ProductSort>(raw.sort, ["newest", "name", "priceHigh", "priceLow", "stockLow"], "newest"),
     page: Number.isFinite(page) ? Math.min(100_000, Math.max(1, page)) : 1,
     perPage: Number(pick(String(raw.perPage), ["10", "25", "50"] as const, "10")),
@@ -162,14 +181,14 @@ export const queryProducts = (query: ProductsQuery): ProductsResponse => {
     kpis: {
       registered: store.length,
       indexedThisCycle: 18,
-      valuationEur: Math.round(store.reduce((sum, p) => sum + p.price * p.stock, 0)),
+      valuation: Math.round(store.reduce((sum, p) => sum + p.price * p.stock, 0)),
       depleted,
-      bench: store.filter((p) => p.status === "bench").length,
-      quarantine: store.filter((p) => p.status === "quarantine").length,
+      testing: store.filter((p) => p.status === "testing").length,
+      hold: store.filter((p) => p.status === "hold").length,
     },
     presets: {
-      hasselbladGlass: store.filter((p) => p.brand === "Hasselblad AB" && p.category === "glass").length,
-      ragRolls: store.filter((p) => p.category === "rag").length,
+      a3Copiers: store.filter((p) => p.category === "copiers" && p.spec.startsWith("A3")).length,
+      supplies: store.filter((p) => p.category === "inks-toner").length,
       depleted,
     },
   };
@@ -183,8 +202,8 @@ export const validateProductInput = (body: unknown): ProductInput | null => {
   const price = Number(b.price);
   const stock = Number(b.stock);
   const min = Number(b.min);
-  const category = pick<ProductCategory>(b.category, Object.keys(categoryMeta) as ProductCategory[], "cameras");
-  const status = pick<ProductStatus>(b.status, ["active", "bench", "quarantine", "draft"], "active");
+  const category = pick<ProductCategory>(b.category, Object.keys(categoryMeta) as ProductCategory[], "printers");
+  const status = pick<ProductStatus>(b.status, ["active", "testing", "hold", "draft"], "active");
   if (
     name.length < 2 || name.length > 120 ||
     !/^[A-Z0-9][A-Z0-9-]{2,30}$/.test(sku) ||
@@ -208,7 +227,7 @@ export const createProduct = (input: ProductInput): Product => {
     tag: "NEW",
     spec: categoryMeta[input.category].label,
     serial: `S/N: ${input.sku}`,
-    unit: input.category === "rag" ? "roll" : "unit",
+    unit: "unit",
     icon: categoryMeta[input.category].icon,
     ...input,
   };
@@ -245,31 +264,27 @@ const slugify = (s: string) =>
     .slice(0, 80);
 
 const HS_CODES: Record<ProductCategory, string> = {
-  cameras: "9006.30.00",
-  glass: "9002.11.00",
   printers: "8443.32.10",
-  rag: "4911.10.00",
-  pigments: "3215.19.00",
-  metrology: "9027.30.00",
+  copiers: "8443.31.00",
+  "inks-toner": "3215.90.00",
 };
 
 const SPECS: Record<ProductCategory, [string, string][]> = {
-  cameras: [["Sensor", "43.8 × 32.9 mm medium format BSI CMOS"], ["Resolution", "100 MP (11656 × 8742)"], ["Dynamic range", "15 stops, 16-bit colour"], ["Stabilization", "5-axis IBIS, 7 stops"]],
-  glass: [["Focal length", "55 mm"], ["Aperture", "f/2.5 – f/32"], ["Shutter", "Leaf, sync to 1/2000 s"], ["Construction", "9 elements in 8 groups"]],
-  printers: [["Max roll width", "44 inch"], ["Resolution", "2400 × 1200 dpi"], ["Ink", "UltraChrome PRO12, 12 colours"], ["Spectro unit", "Integrated ILS30 spectrophotometer"]],
-  rag: [["Substrate", "100% cotton rag"], ["Weight", "308 gsm"], ["Dmax", "2.4"], ["Archival rating", "ISO 9706, acid-free"]],
-  pigments: [["Formulation", "Mineral pigment suspension"], ["Volume", "700 ml"], ["Density", "Dmax 2.9 on baryta"], ["Shelf life", "24 months sealed"]],
-  metrology: [["Measurement", "Spectral, M0 / M1 / M2 / M3"], ["Aperture", "8 mm polarized"], ["Interface", "USB-C"], ["Calibration", "NIST traceable certificate"]],
+  printers: [["Technology", "Inkjet or laser"], ["Colour", "Colour or black & white"], ["Largest paper size", "A4 to A0"], ["Connectivity", "Wi-Fi, Ethernet, USB"]],
+  copiers: [["Speed", "20 to 75 pages per minute"], ["Paper size", "A4 or A3"], ["Functions", "Copy, print, scan, fax"], ["Automatic duplex", "Yes"]],
+  "inks-toner": [["Type", "Ink, toner or drum unit"], ["Colour", "Black, colour or set"], ["Yield", "Rated pages at 5% coverage"], ["Compatible models", "See the product page"]],
 };
 
 const defaultExtras = (p: Product): ProductExtras => {
   const axes: VariantAxis[] =
-    p.category === "cameras"
+    p.category === "copiers"
       ? [
-          { name: "Finish", values: ["Earth Explorer", "Titanium Graphite"] },
-          { name: "Storage", values: ["1TB", "2TB"] },
+          { name: "Configuration", values: ["Machine only", "With finisher"] },
+          { name: "Contract", values: ["None", "3-year maintenance"] },
         ]
-      : [{ name: "Edition", values: ["Standard", "Studio"] }];
+      : p.category === "printers"
+        ? [{ name: "Configuration", values: ["Printer only", "With setup and care plan"] }]
+        : [{ name: "Pack", values: ["Single", "Multi-pack"] }];
   const variants = buildVariants(axes, p.price).map((v, i) => ({
     ...v,
     price: Math.round(p.price * (1 + i * 0.05)),
@@ -277,11 +292,11 @@ const defaultExtras = (p: Product): ProductExtras => {
   }));
   return {
     slug: slugify(p.name),
-    description: `The ${p.name} sets the standard in its class. ${p.spec}.\n\nEvery unit is bench-verified in the ISO 5 cleanroom and ships with its calibration report.`,
-    excerpt: `${p.name}: ${p.spec}. Bench-certified and calibrated.`,
+    description: `The ${p.name} sets the standard in its class. ${p.spec}.\n\nEvery unit is tested before dispatch and ships with its test print and warranty card.`,
+    excerpt: `${p.name}: ${p.spec}. Tested before dispatch and covered by warranty.`,
     media: [
-      { name: `${p.sku}_primary.tif`, size: 18_600_000 },
-      { name: `${p.sku}_angle.tif`, size: 9_400_000 },
+      { name: `${p.sku}_front.jpg`, size: 1_860_000 },
+      { name: `${p.sku}_angle.jpg`, size: 940_000 },
     ],
     compareAt: Math.round(p.price * 1.08),
     cost: Math.round(p.price * 0.62),
@@ -293,13 +308,13 @@ const defaultExtras = (p: Product): ProductExtras => {
     massKg: 2.4,
     dims: { l: 148, w: 182, h: 7 },
     hsCode: HS_CODES[p.category],
-    packaging: "climate",
-    seoTitle: `${p.name} | Lumen & Press`.slice(0, 70),
-    seoDescription: `${p.name}. ${p.spec}. Certified and benched before dispatch.`.slice(0, 160),
+    packaging: "pallet",
+    seoTitle: `${p.name} | PrintPro`.slice(0, 70),
+    seoDescription: `${p.name}. ${p.spec}. Tested and covered by warranty.`.slice(0, 160),
     publication: p.status === "draft" ? "draft" : "published",
-    channels: ["storefront", "institutional"],
+    channels: ["storefront", "business"],
     subType: categoryMeta[p.category].label,
-    collections: ["Master Fine Art Print 2026"],
+    collections: ["Office printing 2026"],
     tags: [`#${slugify(p.brand).replace(/-/g, "")}`],
     bundled: [],
   };
@@ -331,7 +346,7 @@ const numOrNull = (v: unknown, max = 1_000_000) => {
   return Number.isFinite(n) && n >= 0 && n <= max ? n : null;
 };
 
-export const CHANNELS = ["storefront", "institutional", "printLab", "depot", "vip"] as const;
+export const CHANNELS = ["storefront", "business", "printLab", "depot", "wholesale"] as const;
 
 export const validateProductForm = (body: unknown): ProductFormValues | null => {
   const base = validateProductInput(body);
@@ -378,7 +393,7 @@ export const validateProductForm = (body: unknown): ProductFormValues | null => 
     massKg: numOrNull(b.massKg, 100_000),
     dims: { l: numOrNull(dims.l, 100_000), w: numOrNull(dims.w, 100_000), h: numOrNull(dims.h, 100_000) },
     hsCode: str(b.hsCode, 20),
-    packaging: pick<Packaging>(b.packaging, ["climate", "standard"], "climate"),
+    packaging: pick<Packaging>(b.packaging, ["pallet", "standard"], "pallet"),
     seoTitle: str(b.seoTitle, 70),
     seoDescription: str(b.seoDescription, 160),
     publication: pick<Publication>(b.publication, ["draft", "published", "archived"], "draft"),

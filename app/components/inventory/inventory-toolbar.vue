@@ -23,11 +23,11 @@
       />
 
       <LazyVSelectInput
-        v-model="vault"
-        name="inventoryVault"
-        label="Vault"
+        v-model="warehouse"
+        name="inventoryWarehouse"
+        label="Warehouse"
         hide-label
-        :options="vaultOptions"
+        :options="warehouseOptions"
       />
 
       <LazyVSelectInput
@@ -68,12 +68,12 @@
 
 <script lang="ts" setup>
 import { categoryOptions } from "~/data/product-meta";
-import { filterTabs, sortOptions, vaultOptions } from "~/data/inventory-meta";
+import { filterTabs, sortOptions, warehouseOptions } from "~/data/inventory-meta";
 import type {
   InventoryFilter,
   InventoryResponse,
   InventorySort,
-  Vault,
+  Warehouse,
 } from "~/types/admin/inventory";
 import type { ProductCategory } from "~/types/admin/products";
 
@@ -83,7 +83,7 @@ const q = defineModel<string>("q", { required: true });
 const category = defineModel<"all" | ProductCategory>("category", {
   required: true,
 });
-const vault = defineModel<"all" | Vault>("vault", { required: true });
+const warehouse = defineModel<"all" | Warehouse>("warehouse", { required: true });
 const filter = defineModel<InventoryFilter>("filter", { required: true });
 const sort = defineModel<InventorySort>("sort", { required: true });
 

@@ -21,7 +21,7 @@
         class="relative order-last w-full md:order-none md:ms-auto md:w-72 lg:w-80"
         @submit.prevent
       >
-        <label for="admin-search" class="sr-only">Search telemetry, serials and dossiers</label>
+        <label for="admin-search" class="sr-only">Search orders, customers and products</label>
         <Icon
           name="lucide:search"
           size="16"
@@ -33,7 +33,7 @@
           type="search"
           autocomplete="off"
           class="field !ps-9"
-          placeholder="Search telemetry, serials, dossiers…"
+          placeholder="Search orders, customers, products…"
         />
       </form>
 

@@ -17,13 +17,13 @@
       <li>
         <LazyVStatCard
           size="lg"
-          label="Total requisitions"
+          label="Total orders"
           icon="lucide:archive"
-          :value="number(data.kpis.totalRequisitions)"
-          hint="All-time historical ledger"
+          :value="number(data.kpis.totalOrders)"
+          hint="All-time order count"
         >
           <template #value>
-            {{ number(data.kpis.totalRequisitions) }}
+            {{ number(data.kpis.totalOrders) }}
             <span class="font-mono text-xs font-semibold text-success"
               >+{{ percent(data.kpis.historicalDelta) }}</span
             >
@@ -36,7 +36,7 @@
           size="lg"
           label="Total volume"
           icon="lucide:landmark"
-          :value="currency(data.kpis.volumeEur, { maximumFractionDigits: 0 })"
+          :value="currency(data.kpis.volume, { maximumFractionDigits: 0 })"
           hint="Rolling 30-day custodial value"
         />
       </li>
@@ -45,15 +45,15 @@
         <LazyVStatCard
           size="lg"
           tone="warning"
-          label="Pending escrow"
+          label="Awaiting payment"
           icon="lucide:lock"
           :value="
-            currency(data.kpis.pendingEscrowEur, { maximumFractionDigits: 0 })
+            currency(data.kpis.pendingPayment, { maximumFractionDigits: 0 })
           "
-          hint="Locked pending QA release"
+          hint="Orders held until payment arrives"
         >
           <p class="font-mono text-2xs text-mute">
-            {{ number(data.counts.escrowClearing) }} orders
+            {{ number(data.counts.awaitingPayment) }} orders
           </p>
         </LazyVStatCard>
       </li>
@@ -61,7 +61,7 @@
       <li>
         <LazyVStatCard
           size="lg"
-          label="Armored freight"
+          label="With the courier"
           icon="lucide:truck"
           hint="High-security courier network"
         >
@@ -78,12 +78,12 @@
         <LazyVStatCard
           size="lg"
           tone="accent"
-          label="QA quarantine hold"
+          label="On hold"
           icon="lucide:shield-alert"
-          hint="Spectral / MTF interferometry"
+          hint="Waiting on tests or customer details"
         >
           <template #value>
-            {{ data.kpis.quarantineHold }}
+            {{ data.kpis.onHold }}
             <LazyVStatusBadge tone="accent" icon="lucide:triangle-alert"
               >Flagged</LazyVStatusBadge
             >

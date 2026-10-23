@@ -1,8 +1,8 @@
 <template>
   <LazyVDialog
     v-model:open="open"
-    title="Receive inbound consignment"
-    description="Book delivered units into stock. The ledger records the consignment reference."
+    title="Receive delivery"
+    description="Book delivered units into stock. The history records the delivery reference."
   >
     <form
       id="receive-form"
@@ -27,11 +27,11 @@
           <LazyVInput
             v-model="reference"
             name="receiveRef"
-            label="Consignment reference"
+            label="Delivery reference"
             required
             rules="required|min:3|max:200"
             maxlength="200"
-            placeholder="Manifest or PO number"
+            placeholder="Delivery note or PO number"
           />
         </div>
         <p
@@ -126,14 +126,14 @@ const submit = async () => {
         },
       },
     );
-    toast.success("Consignment received", {
+    toast.success("Delivery received", {
       description: `${updated.name}: now ${updated.stock} in stock.`,
     });
     emit("done", updated);
     open.value = false;
   } catch {
     error.value =
-      "The consignment could not be booked. Check the details and try again.";
+      "The delivery could not be booked. Check the details and try again.";
   } finally {
     loading.value = false;
   }

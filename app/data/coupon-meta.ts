@@ -6,12 +6,12 @@ import type { CouponSort, CouponState, CouponStatus, CouponTab, CouponTier, Coup
 export const typeMeta: Record<CouponType, { label: string; short: string; icon: string }> = {
   percentage: { label: "Percentage (%)", short: "Percentage", icon: "lucide:percent" },
   fixed: { label: "Fixed subtotal", short: "Fixed amount", icon: "lucide:banknote" },
-  freight: { label: "Armored freight", short: "Freight", icon: "lucide:truck" },
-  labCredit: { label: "Lab proof credit", short: "Lab credit", icon: "lucide:printer" },
+  freight: { label: "Free delivery", short: "Delivery", icon: "lucide:truck" },
+  serviceCredit: { label: "Service credit", short: "Service credit", icon: "lucide:printer" },
 };
 
 export const typeOptions: { value: "all" | CouponType; label: string }[] = [
-  { value: "all", label: "Type: all concessions" },
+  { value: "all", label: "Type: all offers" },
   ...(Object.keys(typeMeta) as CouponType[]).map((value) => ({ value, label: typeMeta[value].label })),
 ];
 
@@ -35,7 +35,7 @@ export const tabs: { value: CouponTab; label: string }[] = [
 
 export const tierOptions: { value: CouponTier; label: string }[] = [
   { value: "all", label: "Tier: all customers" },
-  { value: "AAA", label: "AAA institutional only" },
+  { value: "AAA", label: "AAA key accounts only" },
   { value: "AA", label: "AA preferred only" },
   { value: "A", label: "A standard only" },
 ];

@@ -27,7 +27,7 @@ const modulePerms = (m: string, ...ids: string[]) => ids.map((i) => `${m}.${i}`)
 const roles: Role[] = [
   {
     id: SUPER_ROLE,
-    name: "Super Curator",
+    name: "Owner",
     code: "ROLE-ROOT-01",
     description: "Root access across every module. Cannot be edited; at least one active holder must remain.",
     scope: "Global",
@@ -35,25 +35,25 @@ const roles: Role[] = [
     permissions: [...allPermissions],
   },
   {
-    id: "role-metrology",
-    name: "Hardware Metrologist & Cleanroom QA",
-    code: "ROLE-METROLOGY-02",
-    description: "Owns the product register and the vault: calibration, stock holds and storefront publishing.",
-    scope: "Lab-specific",
+    id: "role-warehouse",
+    name: "Warehouse & Service Manager",
+    code: "ROLE-WAREHOUSE-02",
+    description: "Owns stock and the test bay: stock holds, product testing and storefront publishing.",
+    scope: "Warehouse",
     system: false,
     permissions: perms(
       ...modulePerms("products", "view", "create", "edit", "publish"),
       ...modulePerms("orders", "view", "hold"),
       ...modulePerms("customers", "view"),
-      ...modulePerms("inventory", "view", "adjust", "quarantine", "transfer"),
+      ...modulePerms("inventory", "view", "adjust", "hold", "transfer"),
       ...modulePerms("reports", "view"),
     ),
   },
   {
-    id: "role-escrow",
-    name: "Escrow Officer",
-    code: "ROLE-ESCROW-03",
-    description: "Treasury and wire work: releases, refunds and escrow holds on requisitions.",
+    id: "role-accounts",
+    name: "Accounts Officer",
+    code: "ROLE-ACCOUNTS-03",
+    description: "Payments and invoicing: refunds, payment holds and customer accounts on orders.",
     scope: "Finance",
     system: false,
     permissions: perms(
@@ -65,7 +65,7 @@ const roles: Role[] = [
   },
   {
     id: "role-cms",
-    name: "CMS Lead",
+    name: "Content Lead",
     code: "ROLE-CMS-04",
     description: "Catalog and media: banners, featured blocks and product copy.",
     scope: "Content",
@@ -100,22 +100,22 @@ type Seed = Omit<Operator, "createdAt" | "isYou" | "keyEnrolled" | "sessions" | 
   Partial<Pick<Operator, "keyEnrolled" | "sessions" | "failedAttempts">>;
 
 const seeds: Seed[] = [
-  { id: "ADM-0104", name: "E. Vanderbilt", email: "vanderbilt@lumenpress.ch", roleId: SUPER_ROLE, node: "zurich-executive-01", status: "active", lastSeen: ago(1), sessions: 2 },
-  { id: "ADM-0882", name: "Dr. Aris Thorne", email: "thorne@cleanroom.lumenpress.ch", roleId: "role-metrology", node: "berlin-cleanroom-01", status: "active", lastSeen: ago(6), sessions: 1 },
-  { id: "ADM-0329", name: "Margot Chen", email: "m.chen@treasury.lumenpress.ch", roleId: "role-escrow", node: "ny-treasury-node", status: "active", lastSeen: ago(14), sessions: 1 },
-  { id: "ADM-0551", name: "Soren Kjaer", email: "kjaer@curation.lumenpress.ch", roleId: "role-cms", node: "cph-studio-edit", status: "idle", lastSeen: ago(42), sessions: 1 },
-  { id: "ADM-0712", name: "Hélène Gautier", email: "gautier@paris.lumenpress.ch", roleId: "role-auditor", node: "paris-optical-lab", status: "active", lastSeen: ago(25), sessions: 1 },
-  { id: "ADM-0901", name: "Kaelen Voss", email: "voss@external-audit.ch", roleId: "role-auditor", node: "remote-untrusted", status: "suspended", lastSeen: ago(60 * 26), sessions: 0, keyEnrolled: false, failedAttempts: 4 },
+  { id: "ADM-0104", name: "Ahmed El-Sayed", email: "ahmed.elsayed@printpro.com", roleId: SUPER_ROLE, node: "cairo-hq-01", status: "active", lastSeen: ago(1), sessions: 2 },
+  { id: "ADM-0882", name: "Dr. Hany Thabet", email: "thabet@warehouse.printpro.com", roleId: "role-warehouse", node: "cairo-warehouse-01", status: "active", lastSeen: ago(6), sessions: 1 },
+  { id: "ADM-0329", name: "Mona Fouad", email: "m.fouad@accounts.printpro.com", roleId: "role-accounts", node: "cairo-accounts-01", status: "active", lastSeen: ago(14), sessions: 1 },
+  { id: "ADM-0551", name: "Khaled Ramzy", email: "ramzy@content.printpro.com", roleId: "role-cms", node: "giza-content-desk", status: "idle", lastSeen: ago(42), sessions: 1 },
+  { id: "ADM-0712", name: "Heba Gamal", email: "gamal@audit.printpro.com", roleId: "role-auditor", node: "alex-office-01", status: "active", lastSeen: ago(25), sessions: 1 },
+  { id: "ADM-0901", name: "Kamal Nasser", email: "k.nasser@external-audit.com", roleId: "role-auditor", node: "remote-untrusted", status: "suspended", lastSeen: ago(60 * 26), sessions: 0, keyEnrolled: false, failedAttempts: 4 },
 ];
 
-const NAMES = ["Ines Marchetti", "Tomas Reyes", "Priya Nandakumar", "Jonas Albrecht", "Yuki Tanabe", "Lena Hofmann", "Omar Haddad", "Clara Whitfield", "Viktor Sokolov", "Aiko Brandt"];
-const NODES = ["zurich-vault-02", "berlin-qa-02", "lyon-print-room", "vienna-finance", "oslo-media-desk", "geneva-escrow-01", "milan-showroom", "ams-archive-03", "lisbon-support", "prague-lab-04"];
-const ROLE_CYCLE = ["role-metrology", "role-escrow", "role-cms", "role-auditor", "role-cms", "role-metrology", "role-escrow", "role-auditor", "role-root", "role-cms"];
+const NAMES = ["Rania Mostafa", "Tamer Abdelaziz", "Yasmin Khalil", "Hossam Fathy", "Nour Darwish", "Heba Saleh", "Omar Haddad", "Salma Zaki", "Walid Samir", "Aya Kamel"];
+const NODES = ["cairo-warehouse-02", "giza-service-02", "alex-print-room", "cairo-finance", "giza-media-desk", "cairo-accounts-02", "alex-showroom", "cairo-archive-03", "giza-support", "alex-lab-04"];
+const ROLE_CYCLE = ["role-warehouse", "role-accounts", "role-cms", "role-auditor", "role-cms", "role-warehouse", "role-accounts", "role-auditor", "role-root", "role-cms"];
 
 const generated: Seed[] = NAMES.map((name, k) => ({
   id: `ADM-${String(1100 + k * 37).padStart(4, "0")}`,
   name,
-  email: `${name.toLowerCase().replace(/[^a-z]+/g, ".")}@lumenpress.ch`,
+  email: `${name.toLowerCase().replace(/[^a-z]+/g, ".")}@printpro.com`,
   roleId: ROLE_CYCLE[k]!,
   node: NODES[k]!,
   status: (k === 3 ? "idle" : k === 7 ? "suspended" : k % 4 === 2 ? "idle" : "active") as OperatorStatus,

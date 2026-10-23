@@ -17,14 +17,14 @@
       <!-- Stacked cards on mobile, a real table from md. -->
       <div class="overflow-x-auto">
       <table class="block w-full text-sm md:table">
-        <caption class="sr-only">Live stream of verified studio transactions awaiting dispatch or settlement</caption>
+        <caption class="sr-only">Latest customer orders awaiting dispatch or payment</caption>
         <thead class="hidden md:table-header-group">
           <tr class="border-y border-line bg-ink">
-            <th scope="col" class="label-caps px-5 py-2.5 text-start font-normal">Requisition ID</th>
-            <th scope="col" class="label-caps px-3 py-2.5 text-start font-normal">Client atelier</th>
+            <th scope="col" class="label-caps px-5 py-2.5 text-start font-normal">Order ID</th>
+            <th scope="col" class="label-caps px-3 py-2.5 text-start font-normal">Customer</th>
             <th scope="col" class="label-caps hidden px-3 py-2.5 text-start font-normal 2xl:table-cell">Allocated equipment</th>
             <th scope="col" class="label-caps px-3 py-2.5 text-end font-normal">Settlement</th>
-            <th scope="col" class="label-caps px-3 py-2.5 text-start font-normal">Custody stage</th>
+            <th scope="col" class="label-caps px-3 py-2.5 text-start font-normal">Status</th>
             <th scope="col" class="px-5 py-2.5"><span class="sr-only">Action</span></th>
           </tr>
         </thead>
@@ -63,18 +63,18 @@
 import type { DashboardSummary, OrderStatus, Tone } from "~/types/admin/dashboard";
 
 const statusText: Record<string, string> = {
-  qaPending: "QA pending",
-  armoredTransit: "Armored courier",
-  escrowSettled: "Escrow settled",
-  inProduction: "In production",
-  cleanroomQa: "Cleanroom QA",
+  awaitingPayment: "Awaiting payment",
+  checking: "Being tested",
+  packing: "Packing",
+  inTransit: "With the courier",
+  completed: "Completed",
 };
 
 const actionText: Record<string, string> = {
-  releaseEscrow: "Release escrow",
-  printWaybill: "Print waybill",
-  viewDossier: "View dossier",
-  auditBatch: "Audit batch",
+  completeOrder: "Complete order",
+  printDeliveryNote: "Print delivery note",
+  viewOrder: "View order",
+  checkBatch: "Check batch",
 };
 
 
@@ -83,10 +83,10 @@ defineProps<{ data?: DashboardSummary["orders"] | null }>();
 const { number, currency, percent } = useFormatters();
 
 const status: Record<OrderStatus, { tone: Tone; icon: string }> = {
-  qaPending: { tone: "warning", icon: "lucide:clock" },
-  armoredTransit: { tone: "info", icon: "lucide:truck" },
-  escrowSettled: { tone: "success", icon: "lucide:shield-check" },
-  inProduction: { tone: "neutral", icon: "lucide:printer" },
-  cleanroomQa: { tone: "accent", icon: "lucide:microscope" },
+  awaitingPayment: { tone: "warning", icon: "lucide:clock" },
+  checking: { tone: "accent", icon: "lucide:flask-conical" },
+  packing: { tone: "neutral", icon: "lucide:package" },
+  inTransit: { tone: "info", icon: "lucide:truck" },
+  completed: { tone: "success", icon: "lucide:shield-check" },
 };
 </script>

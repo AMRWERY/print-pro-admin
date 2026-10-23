@@ -1,10 +1,10 @@
 <template>
   <LazyVPanel
-    :title="coupon ? 'Edit voucher' : 'Create archival voucher'"
+    :title="coupon ? 'Edit voucher' : 'Create voucher'"
     :subtitle="
       coupon
         ? `Live inspection · ${coupon.code}`
-        : 'Calibrated escrow provisioning'
+        : 'Set up a voucher for your customers'
     "
     :icon="coupon ? 'lucide:ticket-percent' : 'lucide:circle-plus'"
   >
@@ -132,7 +132,7 @@
       <!-- 03 -->
       <section class="space-y-3" aria-labelledby="cp-usage">
         <h3 id="cp-usage" class="label-caps">
-          03 // Usage rules &amp; escrow cap
+          03 // Usage rules &amp; cap
         </h3>
         <div class="grid gap-3 sm:grid-cols-2">
           <div>
@@ -158,7 +158,7 @@
           <LazyVSelectInput
             v-model="form.perAccount"
             name="cpPerAccount"
-            label="Per-studio limit"
+            label="Per-account limit"
             :options="perAccountOptions"
           />
         </div>
@@ -167,7 +167,7 @@
           v-model="form.minOrder"
           name="cpMin"
           type="number"
-          label="Minimum requisition basket"
+          label="Minimum order value"
           optional
           rules="min_value:0"
           min="0"
@@ -188,7 +188,7 @@
 
         <fieldset>
           <legend class="label">
-            Allowed divisions
+            Allowed categories
             <span class="font-normal text-mute">(none selected means all)</span>
           </legend>
           <div class="mt-1.5 grid gap-2 sm:grid-cols-2">

@@ -1,8 +1,8 @@
 <template>
   <LazyVDialog
     v-model:open="open"
-    :title="row ? `Requisition ${row.id}` : 'Requisition'"
-    description="Chain-of-custody record, escrow ledger and allocation"
+    :title="row ? `Order ${row.id}` : 'Order'"
+    description="Order status, payment and items"
     size="lg"
   >
     <div v-if="row" class="space-y-5">
@@ -12,15 +12,15 @@
         }}</LazyVStatusBadge>
 
         <LazyVStatusBadge
-          :tone="stageMeta[row.stage].escrowTone"
-          :icon="stageMeta[row.stage].escrowIcon"
-          >{{ stageMeta[row.stage].escrow }}</LazyVStatusBadge
+          :tone="stageMeta[row.stage].paymentTone"
+          :icon="stageMeta[row.stage].paymentIcon"
+          >{{ stageMeta[row.stage].payment }}</LazyVStatusBadge
         >
 
         <LazyVStatusBadge
-          :tone="stageMeta[row.stage].custodyTone"
-          :icon="stageMeta[row.stage].custodyIcon"
-          >{{ stageMeta[row.stage].custody }}</LazyVStatusBadge
+          :tone="stageMeta[row.stage].statusTone"
+          :icon="stageMeta[row.stage].statusIcon"
+          >{{ stageMeta[row.stage].status }}</LazyVStatusBadge
         >
       </div>
 
@@ -40,20 +40,20 @@
           <dd class="font-mono text-sm tabular-nums" dir="ltr">
             {{ formatUtc(row.placedAt) }}
           </dd>
-          <dt class="label-caps mt-3">Ledger hash</dt>
+          <dt class="label-caps mt-3">Order reference</dt>
           <dd class="flex items-center gap-2 font-mono text-sm" dir="ltr">
             {{ row.hex }}
             <LazyVButton
               variant="icon"
               size="sm"
               icon="lucide:copy"
-              aria-label="Copy ledger hash"
+              aria-label="Copy order reference"
               @click="copy(row.hex)"
             />
           </dd>
         </div>
         <div class="sm:col-span-2">
-          <dt class="label-caps">Apparatus &amp; media allocation</dt>
+          <dt class="label-caps">Items ordered</dt>
           <dd class="font-medium">{{ row.allocation.title }}</dd>
           <dd class="meta">
             {{ row.allocation.quantity }}× {{ row.allocation.unit
@@ -62,16 +62,16 @@
           </dd>
         </div>
         <div>
-          <dt class="label-caps">Escrow value</dt>
+          <dt class="label-caps">Order value</dt>
           <dd class="font-display text-2xl font-bold tabular-nums">
             {{ currency(row.amount, { maximumFractionDigits: 0 }) }}
           </dd>
-          <dd class="meta">{{ row.escrowNote }}</dd>
+          <dd class="meta">{{ row.paymentNote }}</dd>
         </div>
         <div>
-          <dt class="label-caps">Custody</dt>
-          <dd class="font-medium">{{ stageMeta[row.stage].custody }}</dd>
-          <dd class="meta">{{ row.custodyNote }}</dd>
+          <dt class="label-caps">Status</dt>
+          <dd class="font-medium">{{ stageMeta[row.stage].status }}</dd>
+          <dd class="meta">{{ row.statusNote }}</dd>
         </div>
       </dl>
     </div>
@@ -104,7 +104,7 @@ const toast = useToast();
 const copy = async (value: string) => {
   try {
     await navigator.clipboard.writeText(value);
-    toast.success("Ledger hash copied");
+    toast.success("Order reference copied");
   } catch {
     toast.error("Couldn't copy", {
       description: "Select the hash and copy it manually.",

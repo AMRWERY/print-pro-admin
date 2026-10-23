@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-5">
     <LazyVPageHeader
-      title="Order Requisition & Escrow Ledger"
-      description="Authorized chain-of-custody transaction clearing house for optical systems, master-grade piezo print engines, and archival cotton substrates. Dual-signatory escrow protocols active."
+      title="Orders"
+      description="Customer orders for printers, photocopiers, ink and toner: payment, testing, packing and delivery."
       :breadcrumb="[{ label: 'Dashboard', to: '/' }, { label: 'Orders' }]"
     >
       <template #meta>
@@ -42,19 +42,19 @@
         </LazyVMenu>
 
         <LazyVButton icon="lucide:circle-plus" @click="createOpen = true"
-          >Create manual requisition</LazyVButton
+          >Create manual order</LazyVButton
         >
       </template>
     </LazyVPageHeader>
 
     <orders-kpis :data="data" />
 
-    <section class="card" aria-label="Requisition ledger">
+    <section class="card" aria-label="Orders">
       <div class="space-y-4 p-4 sm:p-5">
         <orders-toolbar
           v-model:q="filters.q"
           v-model:stage="filters.stage"
-          v-model:escrow="filters.escrow"
+          v-model:payment="filters.payment"
           v-model:tier="filters.tier"
           v-model:range="filters.range"
           v-model:sort="filters.sort"
@@ -69,7 +69,7 @@
           <LazyVEmptyState
             icon="lucide:triangle-alert"
             title="Ledger sync failed"
-            description="The requisition ledger could not be reached. Your filters are kept, so retrying picks up where you left off."
+            description="The orders could not be loaded. Your filters are kept, so retrying picks up where you left off."
             eyebrow="LEDGER :: SYNC_ERROR"
             tag="OFFLINE"
             tag-tone="accent"
@@ -86,7 +86,7 @@
           class="p-5"
         >
           <LazyVEmptyState
-            title="No requisitions match these filters"
+            title="No orders match these filters"
             description="Try a different order ID, widen the date range or clear the stage and tier filters."
             eyebrow="QUERY :: NO_RESULTS"
             tag="0 RESULTS"
@@ -101,13 +101,13 @@
         <div v-else-if="!pending && data && !rows.length" class="p-5">
           <LazyVEmptyState
             icon="lucide:receipt-text"
-            title="No requisitions yet"
-            description="New studio requisitions and their escrow clearing appear here as soon as they are placed."
+            title="No orders yet"
+            description="New orders and their payment status appear here as soon as they are placed."
             eyebrow="LEDGER :: EMPTY"
             tag="0 ORDERS"
           >
             <LazyVButton icon="lucide:circle-plus" @click="createOpen = true"
-              >Create manual requisition</LazyVButton
+              >Create manual order</LazyVButton
             >
           </LazyVEmptyState>
         </div>
@@ -141,7 +141,7 @@
           :total="data?.total ?? 0"
           :per-page-options="[10, 25, 50]"
           show-per-page
-          item-label="requisitions"
+          item-label="orders"
           scroll-to="#ledger"
         />
       </div>
@@ -156,7 +156,7 @@
       </li>
       <li class="flex items-center gap-2">
         <Icon name="lucide:database" size="12" aria-hidden="true" />Node:
-        Cleanroom Lab A (synced 12ms)
+        Order system (synced 12ms)
       </li>
       <li class="flex items-center gap-2">
         <Icon name="lucide:gauge" size="12" aria-hidden="true" />Illuminant: D50
@@ -198,15 +198,15 @@ import type {
   OrderSort,
   OrdersResponse,
 } from "~/types/admin/orders";
-import type { ClientTier, EscrowMode, OrderStage } from "~/types/admin/orders";
+import type { AccountTier, PaymentState, OrderStage } from "~/types/admin/orders";
 
 const toast = useToast();
 
 const filters = reactive({
   q: "",
   stage: "all" as "all" | OrderStage,
-  escrow: "all" as "all" | EscrowMode,
-  tier: "all" as "all" | ClientTier,
+  payment: "all" as "all" | PaymentState,
+  tier: "all" as "all" | AccountTier,
   range: "all" as OrderRange,
   sort: "newest" as OrderSort,
 });
@@ -241,7 +241,7 @@ const hasFilters = computed(
   () =>
     !!debouncedQ.value ||
     filters.stage !== "all" ||
-    filters.escrow !== "all" ||
+    filters.payment !== "all" ||
     filters.tier !== "all" ||
     filters.range !== "all",
 );
@@ -249,7 +249,7 @@ const hasFilters = computed(
 const resetFilters = () => {
   filters.q = "";
   filters.stage = "all";
-  filters.escrow = "all";
+  filters.payment = "all";
   filters.tier = "all";
   filters.range = "all";
 };
@@ -259,7 +259,7 @@ watch(
   [
     debouncedQ,
     () => filters.stage,
-    () => filters.escrow,
+    () => filters.payment,
     () => filters.tier,
     () => filters.range,
     () => filters.sort,
@@ -291,7 +291,7 @@ const route = useRoute();
 const createOpen = ref(route.query.create === "1");
 
 const onCreated = () => {
-  // Show the new requisition at the top of the newest-first ledger.
+  // Show the new order at the top of the newest-first ledger.
   filters.sort = "newest";
   filters.stage = "all";
   page.value = 1;
@@ -302,22 +302,22 @@ const onCreated = () => {
 const exportRows = async (list: OrderRow[], format: "pdf" | "excel") => {
   if (!list.length) {
     toast.warning("Nothing to export", {
-      description: "There are no requisitions on this page.",
+      description: "There are no orders on this page.",
     });
     return;
   }
   try {
     await downloadTable(format, {
-      title: "Requisition ledger",
-      subtitle: `${list.length} requisition${list.length > 1 ? "s" : ""}`,
-      fileName: `requisitions-${new Date().toISOString().slice(0, 10)}`,
+      title: "Orders",
+      subtitle: `${list.length} order${list.length > 1 ? "s" : ""}`,
+      fileName: `orders-${new Date().toISOString().slice(0, 10)}`,
       head: [
-        "Requisition",
+        "Order",
         "Placed (UTC)",
         "Customer",
-        "Atelier",
+        "Company",
         "Allocation",
-        "Escrow (EGP)",
+        "Order value (EGP)",
         "Stage",
       ],
       body: list.map((r) => [
@@ -332,7 +332,7 @@ const exportRows = async (list: OrderRow[], format: "pdf" | "excel") => {
       moneyCols: [5],
     });
     toast.success(
-      `Exported ${list.length} requisition${list.length > 1 ? "s" : ""}`,
+      `Exported ${list.length} order${list.length > 1 ? "s" : ""}`,
     );
   } catch {
     toast.error("Couldn't create the file", {
@@ -346,8 +346,8 @@ definePageMeta({
 });
 
 useSeoMeta({
-  title: "Order Requisition & Escrow Ledger",
+  title: "Orders",
   description:
-    "Chain-of-custody clearing house for optical systems, piezo print engines and archival substrates.",
+    "Customer orders for printers, photocopiers, ink and toner.",
 });
 </script>

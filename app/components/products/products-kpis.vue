@@ -17,19 +17,19 @@
       <li>
         <LazyVStatCard
           size="lg"
-          label="Active register"
+          label="Products listed"
           icon="lucide:archive"
           :value="number(data.kpis.registered)"
-          :hint="`+${data.kpis.indexedThisCycle} indexed this cycle`"
+          :hint="`+${data.kpis.indexedThisCycle} added this month`"
         />
       </li>
       <li>
         <LazyVStatCard
           size="lg"
-          label="Total valuation"
+          label="Stock value"
           icon="lucide:landmark"
           :value="
-            currency(data.kpis.valuationEur, {
+            currency(data.kpis.valuation, {
               maximumFractionDigits: 0,
               notation: 'compact',
             })
@@ -50,19 +50,19 @@
       <li>
         <LazyVStatCard
           size="lg"
-          label="Bench metrology"
-          icon="lucide:microscope"
-          :value="number(data.kpis.bench)"
-          hint="Units in polishing / QA"
+          label="In testing"
+          icon="lucide:flask-conical"
+          :value="number(data.kpis.testing)"
+          hint="Items being tested before listing"
         />
       </li>
       <li class="col-span-2 md:col-span-1">
         <LazyVStatCard
           size="lg"
-          label="Quarantined"
+          label="On hold"
           icon="lucide:shield-alert"
-          :value="number(data.kpis.quarantine)"
-          hint="Awaiting vendor recertification"
+          :value="number(data.kpis.hold)"
+          hint="Withdrawn or waiting on the supplier"
         />
       </li>
     </template>

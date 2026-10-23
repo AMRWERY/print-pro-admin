@@ -118,6 +118,6 @@ definePageMeta({
 useSeoMeta({
   title: "PrintPro",
   description:
-    "Chain-of-custody clearing house for optical systems, piezo print engines and archival substrates.",
+    "Sales, orders and stock for printers, photocopiers, ink and toner.",
 });
 </script>

@@ -11,10 +11,10 @@
       <li>
         <LazyVStatCard
           size="lg"
-          label="Cumulative discount escrow"
+          label="Total discount value"
           icon="lucide:landmark"
           :value="
-            currency(kpis.escrowValue, {
+            currency(kpis.discountValue, {
               maximumFractionDigits: 0,
               notation: 'compact',
             })

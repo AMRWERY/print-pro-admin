@@ -71,7 +71,7 @@
         <LazyVTextarea
           v-model="form.abstract"
           name="catAbstract"
-          label="Curatorial abstract"
+          label="Description"
           optional
           rows="4"
           maxlength="400"
@@ -125,7 +125,7 @@
           {{ form.name || "Category name" }}
         </p>
         <p class="truncate font-mono text-2xs text-mute" dir="ltr">
-          https://lumenpress.com{{ form.slug }}
+          https://printpro.com{{ form.slug }}
         </p>
         <p class="mt-1 line-clamp-2 text-xs text-mute">
           {{ form.abstract || "The abstract appears here." }}

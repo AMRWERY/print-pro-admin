@@ -2,11 +2,11 @@
   <div class="space-y-5">
     <LazyVPageHeader
       title="Customer Accounts & Registries"
-      description="Master directory of studios, institutions and collectors: contact details, escrow standing and requisition history."
+      description="Directory of businesses, schools, print shops and home offices: contact details, payment standing and order history."
       :breadcrumb="[{ label: 'Dashboard', to: '/' }, { label: 'Customers' }]"
     >
       <template #actions>
-        <LazyVMenu label="Export dossiers">
+        <LazyVMenu label="Export customers">
           <template #trigger="{ attrs, toggle }">
             <LazyVButton
               v-bind="attrs"
@@ -14,7 +14,7 @@
               icon="lucide:download"
               icon-end="lucide:chevron-down"
               @click="toggle"
-              >Export dossiers</LazyVButton
+              >Export customers</LazyVButton
             >
           </template>
           <button
@@ -38,7 +38,7 @@
         </LazyVMenu>
         
         <LazyVButton icon="lucide:user-plus" @click="openForm(null)"
-          >Register studio client</LazyVButton
+          >Register customer</LazyVButton
         >
       </template>
     </LazyVPageHeader>
@@ -94,12 +94,12 @@
             <LazyVEmptyState
               icon="lucide:users"
               title="No clients registered yet"
-              description="Register your first studio, institution or collector to start building the registry."
+              description="Register your first business, school or print shop to start building the directory."
               eyebrow="REGISTRY :: EMPTY"
               tag="0 CLIENTS"
             >
               <LazyVButton icon="lucide:user-plus" @click="openForm(null)"
-                >Register studio client</LazyVButton
+                >Register customer</LazyVButton
               >
             </LazyVEmptyState>
           </div>
@@ -127,17 +127,17 @@
             :total="data?.total ?? 0"
             :per-page-options="[10, 25, 50]"
             show-per-page
-            item-label="registered dossiers"
+            item-label="registered customers"
             scroll-to="#registry"
           />
         </div>
       </section>
 
-      <!-- Wide screens: the dossier sits beside the registry and stays in view -->
+      <!-- Wide screens: the details sit beside the directory and stay in view -->
       <aside
         v-if="isWide"
         class="min-w-0 xl:sticky xl:top-24 xl:max-h-[calc(100vh-7rem)] xl:overflow-y-auto"
-        aria-label="Client dossier"
+        aria-label="Customer details"
       >
         <customer-inspector
           v-if="selectedId"
@@ -153,13 +153,13 @@
           bare
           icon="lucide:mouse-pointer-click"
           title="Select a customer"
-          description="Choose a customer to open their dossier, or register a new one."
+          description="Choose a customer to open their details, or register a new one."
         />
       </aside>
     </div>
 
-    <!-- Narrower screens: the same dossier in a dialog -->
-    <LazyVDialog v-model:open="dialogOpen" title="Client dossier" size="lg">
+    <!-- Narrower screens: the same details in a dialog -->
+    <LazyVDialog v-model:open="dialogOpen" title="Customer details" size="lg">
       <customer-inspector
         v-if="selectedId"
         ref="inspector"
@@ -219,7 +219,7 @@
           class="bullet-icon"
           aria-hidden="true"
         />
-        This removes the client dossier and its notes. Past requisitions keep
+        This removes the customer record and its notes. Past orders keep
         their history. It cannot be undone from this screen.
       </p>
       <template #footer>
@@ -411,7 +411,7 @@ const exportRows = async (list: Customer[], format: "pdf" | "excel") => {
         "Role",
         "Email",
         "Phone",
-        "Node",
+        "Region",
         "Segment",
         "Tier",
         "Status",
@@ -451,6 +451,6 @@ definePageMeta({
 useSeoMeta({
   title: "Customers",
   description:
-    "Client registry: contact details, escrow standing and requisition history.",
+    "Customer directory: contact details, payment standing and order history.",
 });
 </script>

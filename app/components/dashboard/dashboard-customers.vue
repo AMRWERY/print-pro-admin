@@ -49,9 +49,9 @@ defineProps<{ items?: RecentCustomer[] | null }>();
 const { currency } = useFormatters();
 
 const tierText: Record<RecentCustomer["tier"], string> = {
-  museumCustody: "Museum",
-  galleryPremium: "Gallery",
-  collectiveGuild: "Collective",
-  institutionalArchive: "Institution",
+  enterprise: "Enterprise",
+  business: "Business",
+  printShop: "Print shop",
+  home: "Home office",
 };
 </script>

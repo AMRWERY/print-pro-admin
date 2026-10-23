@@ -22,7 +22,7 @@
       <li>
         <LazyVStatCard
           size="lg"
-          label="Cumulative escrow & spend"
+          label="Total customer spend"
           icon="lucide:landmark"
           :value="
             currency(kpis.spend, {
@@ -37,19 +37,19 @@
         <LazyVStatCard
           size="lg"
           tone="warning"
-          label="Active in-custody orders"
+          label="Open orders"
           icon="lucide:shield-check"
           :value="number(kpis.activeOrders)"
-          :hint="`Across ${number(kpis.activeClients)} custody nodes`"
+          :hint="`Across ${number(kpis.activeClients)} regions`"
         />
       </li>
       <li>
         <LazyVStatCard
           size="lg"
-          label="VIP institutional tier (AAA)"
+          label="Key accounts (AAA)"
           icon="lucide:award"
           :value="number(kpis.vip)"
-          hint="Concierge escrow active"
+          hint="Dedicated account manager"
         />
       </li>
     </template>

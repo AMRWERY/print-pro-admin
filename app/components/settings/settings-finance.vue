@@ -205,8 +205,8 @@
 
       <settings-toggle
         v-model="s.tax.zeroRating"
-        title="Zero-rate qualifying institutions"
-        description="Museums and archives with a valid exemption certificate pay no tax."
+        title="Zero-rate qualifying customers"
+        description="Customers with a valid tax exemption certificate pay no tax."
       />
     </div>
   </settings-section>

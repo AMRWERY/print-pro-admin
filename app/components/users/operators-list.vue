@@ -20,7 +20,7 @@
           :disabled="!selectable.length"
           @update:model-value="toggleAll"
         />
-        <span class="label-caps">Operator dossier</span>
+        <span class="label-caps">Operator</span>
         <span class="label-caps ms-auto hidden md:block"
           >Assigned role · security status</span
         >

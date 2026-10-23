@@ -9,7 +9,7 @@
         <div>
           <p class="text-sm font-medium">Appearance</p>
           <p class="text-xs text-mute">
-            Dark is easier on the eyes in the cleanroom. Light suits bright
+            Dark is easier on the eyes at night. Light suits bright
             offices.
           </p>
         </div>
@@ -26,7 +26,7 @@
           :model-value="account.newsletter"
           name="profileNewsletter"
           label="Product and stock announcements"
-          description="Occasional email about new equipment, restocks and calibration notices."
+          description="Occasional email about new equipment, restocks and service notices."
           @update:model-value="setNewsletter"
         />
       </div>

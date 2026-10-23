@@ -4,29 +4,29 @@ import type {
   StockState,
 } from "~/types/admin/products";
 
-export type Vault = "FKT-01" | "ZUR-OPT" | "GOT-01";
+export type Warehouse = "CAI-01" | "GIZ-02" | "ALX-01";
 
-export type InventoryFilter = "all" | "healthy" | "low" | "out" | "qa";
+export type InventoryFilter = "all" | "healthy" | "low" | "out" | "hold";
 
 export type InventorySort = "urgent" | "qtyAsc" | "qtyDesc" | "value";
 
 /** A product as the inventory ledger sees it: stock plus where it is kept. */
 export interface InventoryItem extends Product {
-  vault: Vault;
+  warehouse: Warehouse;
   bin: string;
-  /** Units promised to open requisitions. */
+  /** Units promised to open orders. */
   reserved: number;
   /** Units that can still be promised: stock minus reserved. */
   available: number;
   state: StockState;
-  /** Waiting on bench metrology or vendor recertification. */
-  qaHold: boolean;
+  /** On hold: being tested, or waiting on the supplier. */
+  testHold: boolean;
 }
 
 export interface InventoryQuery {
   q: string;
   category: "all" | ProductCategory;
-  vault: "all" | Vault;
+  warehouse: "all" | Warehouse;
   filter: InventoryFilter;
   sort: InventorySort;
   page: number;
@@ -54,7 +54,7 @@ export type MovementType =
   | "inbound"
   | "dispatch"
   | "transfer"
-  | "calibration"
+  | "testing"
   | "adjustment";
 
 export interface Movement {
@@ -84,7 +84,7 @@ export interface ReceiveInput {
 
 export interface TransferInput {
   productId: string;
-  vault: Vault;
+  warehouse: Warehouse;
 }
 
 /** The editable record of an inventory item (add and edit share it). */
@@ -98,6 +98,6 @@ export interface ItemInput {
   stock: number;
   /** Reorder point. */
   min: number;
-  vault: Vault;
+  warehouse: Warehouse;
   bin: string;
 }

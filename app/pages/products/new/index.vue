@@ -21,7 +21,7 @@ const from = typeof route.query.from === "string" ? route.query.from : "";
 const blank = (): ProductFormValues => ({
   name: "",
   sku: "",
-  category: "cameras",
+  category: "printers",
   brand: "",
   price: null as unknown as number,
   stock: 0,
@@ -41,7 +41,7 @@ const blank = (): ProductFormValues => ({
   massKg: null,
   dims: { l: null, w: null, h: null },
   hsCode: "",
-  packaging: "climate",
+  packaging: "pallet",
   seoTitle: "",
   seoDescription: "",
   publication: "draft",

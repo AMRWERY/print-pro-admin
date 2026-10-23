@@ -31,12 +31,12 @@ type Seed = Omit<ContentBlock, "id" | "updatedAt" | "status" | "imageUrl"> & {
 const seeds: Seed[] = [
   {
     kind: "hero",
-    title: "The Earth From Above // Hasselblad X2D 100C",
+    title: "Print, copy and keep going // Kopira Pro A3",
     subtitle:
-      "100-megapixel medium format with 5-axis in-body stabilization and natural colour science.",
-    ctaLabel: "Explore requisition",
-    link: "/cameras-optics/hasselblad-x2d",
-    imageAlt: "Hasselblad X2D 100C on a studio bench",
+      "A3 photocopiers delivered, installed and covered by a maintenance contract.",
+    ctaLabel: "Shop photocopiers",
+    link: "/photocopiers",
+    imageAlt: "Kopira Pro A3 photocopier in a bright office",
     palette: "graphite",
     startsAt: addDays(-16),
     endsAt: addDays(30),
@@ -45,12 +45,12 @@ const seeds: Seed[] = [
   },
   {
     kind: "hero",
-    title: "Archival Masterworks on Cotton Rag",
+    title: "Genuine Ink and Toner, Matched to Your Machine",
     subtitle:
-      "Museum-grade pigment prints with 120-second rotation of the season's collections.",
-    ctaLabel: "View the collection",
-    link: "/paper-pigments/fineart",
-    imageAlt: "Framed archival print on cotton rag",
+      "Every supply lists the exact printers and photocopiers it fits.",
+    ctaLabel: "Shop ink and toner",
+    link: "/inks-toner",
+    imageAlt: "Boxes of genuine toner cartridges",
     palette: "sand",
     startsAt: addDays(-20),
     endsAt: null,
@@ -59,12 +59,12 @@ const seeds: Seed[] = [
   },
   {
     kind: "product",
-    title: "Epson SureColor P9570 Large-Format Printer",
+    title: "Nordjet Large-Format 44-inch Printer",
     subtitle:
-      "12-channel MicroPiezo proofing with continuous-node ink delivery.",
+      "Sharp CAD drawings and posters up to A0, with installation included.",
     ctaLabel: "Shop the printer",
-    link: "/piezo-engines/surecolor-p9570",
-    imageAlt: "Epson SureColor P9570 printer",
+    link: "/printers/nordjet-large-format-44",
+    imageAlt: "Nordjet 44 inch large-format printer",
     palette: "ocean",
     startsAt: addDays(-60),
     endsAt: null,
@@ -73,11 +73,11 @@ const seeds: Seed[] = [
   },
   {
     kind: "marquee",
-    title: "Institutional Museum Procurement Window",
+    title: "Business and School Procurement Window",
     subtitle:
-      "Curators and archives get 20% tier rebate on escrow requisitions this quarter.",
+      "Schools and offices get a 20% account rebate on bulk orders this quarter.",
     ctaLabel: "Request a quote",
-    link: "/escrow/cleanroom",
+    link: "/services/financing",
     imageAlt: "",
     palette: "forest",
     startsAt: addDays(-12),
@@ -87,11 +87,12 @@ const seeds: Seed[] = [
   },
   {
     kind: "category",
-    title: "Cine Primes & Anamorphic Glass",
-    subtitle: "Featured on the homepage grid, dynamic slot #03.",
-    ctaLabel: "Shop lenses",
-    link: "/cine-prime-glass",
-    imageAlt: "Row of cine prime lenses",
+    title: "Photocopiers for Every Office",
+    subtitle:
+      "Featured on the homepage grid, dynamic slot #03.",
+    ctaLabel: "Shop photocopiers",
+    link: "/photocopiers",
+    imageAlt: "Row of A3 photocopiers",
     palette: "violet",
     startsAt: null,
     endsAt: null,
@@ -100,12 +101,12 @@ const seeds: Seed[] = [
   },
   {
     kind: "marquee",
-    title: "Winter Solstice Darkroom Sale",
+    title: "Winter Toner Sale",
     subtitle:
-      "Staged for the cron trigger: pigments and rag substrates at seasonal pricing.",
+      "Staged for the cron trigger: toner and ink at seasonal pricing.",
     ctaLabel: "See the offers",
-    link: "/paper-pigments/chemistry",
-    imageAlt: "Darkroom trays under red safelight",
+    link: "/inks-toner",
+    imageAlt: "Toner cartridges on a shelf",
     palette: "ember",
     startsAt: addDays(15),
     endsAt: addDays(45),
@@ -114,11 +115,11 @@ const seeds: Seed[] = [
   },
   {
     kind: "brand",
-    title: "Leica Summilux-C Archive Showcase",
+    title: "Kopira Photocopier Range Showcase",
     subtitle:
       "Unpublished staging sandbox for the brand story, awaiting asset review.",
-    ctaLabel: "Discover Leica",
-    link: "/optics/leica-summilux",
+    ctaLabel: "Discover Kopira",
+    link: "/photocopiers/kopira",
     imageAlt: "",
     palette: "graphite",
     startsAt: null,
@@ -131,34 +132,34 @@ const seeds: Seed[] = [
 
 const TITLES: Record<BlockKind, string[]> = {
   hero: [
-    "Phase One IQ4 150MP Trichromatic",
-    "Studio Lighting Season Opener",
-    "Fujifilm GFX Collector Edition",
+    "Nordjet Pro A3 Colour Inkjet",
+    "Back-to-School Printer Offers",
+    "Corex Laser Office Edition",
   ],
   promo: [
-    "Free armored freight on optics orders",
-    "Calibration clinic: book a bench slot",
-    "Trade-in your body, upgrade your glass",
+    "Free delivery on photocopier orders",
+    "Service clinic: book a technician visit",
+    "Trade in your old printer, upgrade today",
   ],
   category: [
     "Large-Format Printers",
-    "Mineral Pigments & Inks",
-    "Metrology & Colour Targets",
+    "Toner & Drum Units",
+    "Ink Bottles & Cartridges",
   ],
   product: [
-    "Hahnemühle Cotton Rag 310gsm",
-    "X-Rite i1Pro 3 Plus Spectrophotometer",
-    "Profoto D2 Studio Monolight Kit",
+    "Corex Toner Black 210 High-Yield",
+    "Printa Tank 500 Ink-Tank Printer",
+    "Kopira Pro A3 35 ppm Photocopier",
   ],
   brand: [
-    "Hasselblad Heritage Story",
-    "Epson Pro Graphics Partner",
-    "Hahnemühle Since 1584",
+    "Kopira Heritage Story",
+    "Nordjet Wide-Format Partner",
+    "Corex Genuine Supplies",
   ],
   marquee: [
-    "Paris Photo showcase pass",
+    "Cairo office expo voucher",
     "Back-in-stock alerts now live",
-    "Autumn lab onboarding credit",
+    "Autumn onboarding credit",
   ],
 };
 const PALETTES: BlockPalette[] = [

@@ -1,5 +1,5 @@
 <template>
-  <LazyVPanel title="Customer dossier inspector" icon="lucide:contact-round">
+  <LazyVPanel title="Customer details" icon="lucide:contact-round">
     <template #actions>
       <LazyVButton
         variant="icon"
@@ -73,9 +73,9 @@
           </dd>
         </div>
         <div class="rounded-card border border-line bg-ink p-3">
-          <dt class="label-caps">Escrow trust rating</dt>
+          <dt class="label-caps">On-time payment rating</dt>
           <dd class="font-display text-lg font-bold tabular-nums text-success">
-            {{ percent(detail.escrowRating) }}
+            {{ percent(detail.paymentRating) }}
           </dd>
         </div>
       </dl>
@@ -105,8 +105,8 @@
             </dd>
           </div>
           <div>
-            <dt class="label-caps">Receiving depot</dt>
-            <dd class="text-xs">{{ detail.depot || "Not provided" }}</dd>
+            <dt class="label-caps">Delivery address</dt>
+            <dd class="text-xs">{{ detail.deliveryAddress || "Not provided" }}</dd>
           </div>
           <div>
             <dt class="label-caps">Tax / legal ID</dt>
@@ -115,8 +115,8 @@
             </dd>
           </div>
           <div>
-            <dt class="label-caps">Escrow settlement terms</dt>
-            <dd class="text-xs">{{ detail.escrowTerms }}</dd>
+            <dt class="label-caps">Payment terms</dt>
+            <dd class="text-xs">{{ detail.paymentTerms }}</dd>
           </div>
         </dl>
       </section>
@@ -129,14 +129,14 @@
         @add="addNote"
       />
 
-      <!-- Recent requisitions -->
+      <!-- Recent orders -->
       <section aria-labelledby="dossier-orders" class="space-y-2">
-        <h4 id="dossier-orders" class="label-caps">Recent requisitions</h4>
+        <h4 id="dossier-orders" class="label-caps">Recent orders</h4>
         <p
           v-if="!detail.recentOrders.length"
           class="rounded-card border border-dashed border-line p-3 text-sm text-mute"
         >
-          No requisitions yet for this client.
+          No orders yet for this customer.
         </p>
         <ul class="space-y-2">
           <li v-for="o in detail.recentOrders" :key="o.id">
@@ -166,7 +166,7 @@
       <!-- Actions -->
       <div class="flex flex-wrap items-center gap-2 border-t border-line pt-4">
         <LazyVButton to="/orders?create=1" icon="lucide:circle-plus"
-          >Open new requisition</LazyVButton
+          >Create new order</LazyVButton
         >
 
         <LazyVButton
@@ -174,7 +174,7 @@
           icon="lucide:printer"
           :loading="printing"
           @click="print"
-          >Print dossier</LazyVButton
+          >Print customer record</LazyVButton
         >
         <div class="ms-auto flex items-center gap-1.5">
           <LazyVButton
@@ -261,7 +261,7 @@ const print = async () => {
   printing.value = true;
   try {
     await downloadCustomerPdf(detail.value);
-    toast.success("Dossier PDF downloaded");
+    toast.success("Customer PDF downloaded");
   } catch {
     toast.error("Couldn't create the PDF", {
       description: "Try again in a moment.",

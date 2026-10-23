@@ -4,8 +4,8 @@
     :title="editing ? 'Edit inventory item' : copy ? 'Duplicate inventory item' : 'Add inventory item'"
     :description="
       editing
-        ? 'Changes to the count and the location are written to the movement ledger.'
-        : 'Registers a new SKU and books its starting stock into a vault.'
+        ? 'Changes to the count and the location are written to the movement history.'
+        : 'Registers a new SKU and books its starting stock into a warehouse.'
     "
     size="lg"
   >
@@ -82,12 +82,12 @@
         />
 
         <LazyVSelectInput
-          v-model="form.vault"
-          name="itemVault"
-          label="Vault"
+          v-model="form.warehouse"
+          name="itemWarehouse"
+          label="Warehouse"
           required
           rules="required"
-          :options="vaultChoices"
+          :options="warehouseChoices"
         />
 
         <LazyVInput
@@ -130,9 +130,9 @@
 </template>
 
 <script lang="ts" setup>
-import { vaultLabel } from "~/data/inventory-meta";
+import { warehouseLabel } from "~/data/inventory-meta";
 import { categoryMeta } from "~/data/product-meta";
-import type { InventoryItem, ItemInput, Vault } from "~/types/admin/inventory";
+import type { InventoryItem, ItemInput, Warehouse } from "~/types/admin/inventory";
 import type { ProductCategory } from "~/types/admin/products";
 
 const props = defineProps<{
@@ -156,20 +156,20 @@ const categoryChoices = (Object.keys(categoryMeta) as ProductCategory[]).map(
   }),
 );
 
-const vaultChoices = (Object.keys(vaultLabel) as Vault[]).map((value) => ({
+const warehouseChoices = (Object.keys(warehouseLabel) as Warehouse[]).map((value) => ({
   value,
-  label: vaultLabel[value],
+  label: warehouseLabel[value],
 }));
 
 const blank = (): ItemInput => ({
   name: "",
   sku: "",
-  category: "cameras",
+  category: "printers",
   brand: "",
   price: null as unknown as number,
   stock: 0,
   min: 1,
-  vault: "FKT-01",
+  warehouse: "CAI-01",
   bin: "",
 });
 
@@ -194,7 +194,7 @@ watch(open, (isOpen) => {
           price: i.price,
           stock: i.stock,
           min: i.min,
-          vault: i.vault,
+          warehouse: i.warehouse,
           bin: i.bin,
         }
       : blank(),

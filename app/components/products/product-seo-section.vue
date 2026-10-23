@@ -8,7 +8,7 @@
     <figure class="rounded-card border border-line bg-ink p-4">
       <figcaption class="label-caps mb-2">Search result preview</figcaption>
       <p class="truncate font-mono text-xs text-mute" dir="ltr">
-        https://lumenpress.com › products › {{ form.slug || "…" }}
+        https://printpro.com › products › {{ form.slug || "…" }}
       </p>
       <p class="mt-1 text-lg font-medium leading-snug text-cyan">
         {{ form.seoTitle || form.name || "Product title" }}

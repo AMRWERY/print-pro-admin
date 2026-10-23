@@ -1,6 +1,6 @@
 <template>
   <LazyVPanel
-    title="Custody trajectory & metrology pipeline"
+    title="Order progress"
     subtitle="ISO 14644-1 class 4 protocol"
     icon="lucide:link-2"
   >
@@ -43,8 +43,8 @@
     >
       <LazyVSelectInput
         v-model="target"
-        name="metrologyOverride"
-        label="Metrology override"
+        name="stageOverride"
+        label="Move to stage"
         class="min-w-0 flex-1 basis-64"
         :options="options"
       />

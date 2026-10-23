@@ -6,7 +6,7 @@ import type { OperatorStatus, PermissionModule } from "~/types/admin/users";
 export const permissionModules: PermissionModule[] = [
   {
     id: "products",
-    label: "Products & apparatus",
+    label: "Products & supplies",
     icon: "lucide:package",
     privileges: [
       { id: "view", label: "View", hint: "See the product register" },
@@ -18,21 +18,21 @@ export const permissionModules: PermissionModule[] = [
   },
   {
     id: "orders",
-    label: "Orders & escrow",
+    label: "Orders & payments",
     icon: "lucide:receipt-text",
     privileges: [
       { id: "view", label: "View", hint: "See orders and payments" },
       { id: "fulfil", label: "Fulfil", hint: "Pack and ship orders" },
       { id: "refund", label: "Refund", hint: "Refund or void a payment", sensitive: true },
-      { id: "hold", label: "Escrow hold", hint: "Place or release an escrow hold", sensitive: true },
+      { id: "hold", label: "Payment hold", hint: "Place or release a payment hold", sensitive: true },
     ],
   },
   {
     id: "customers",
-    label: "Customers & registries",
+    label: "Customers",
     icon: "lucide:contact-round",
     privileges: [
-      { id: "view", label: "View", hint: "See customer dossiers" },
+      { id: "view", label: "View", hint: "See customer records" },
       { id: "edit", label: "Edit", hint: "Change customer details and tiers" },
       { id: "export", label: "Export PII", hint: "Download personal data", sensitive: true },
       { id: "override", label: "Tax override", hint: "Mark a customer tax exempt", sensitive: true },
@@ -40,12 +40,12 @@ export const permissionModules: PermissionModule[] = [
   },
   {
     id: "inventory",
-    label: "Inventory & vault",
+    label: "Inventory & warehouses",
     icon: "lucide:warehouse",
     privileges: [
       { id: "view", label: "View", hint: "See stock levels" },
       { id: "adjust", label: "Stock adjust", hint: "Correct stock counts" },
-      { id: "quarantine", label: "Quarantine", hint: "Hold stock out of sale" },
+      { id: "hold", label: "Stock hold", hint: "Hold stock out of sale" },
       { id: "transfer", label: "Transfer", hint: "Move stock between locations" },
     ],
   },
@@ -61,7 +61,7 @@ export const permissionModules: PermissionModule[] = [
   },
   {
     id: "reports",
-    label: "Reports & telemetry",
+    label: "Reports & analytics",
     icon: "lucide:chart-no-axes-combined",
     privileges: [
       { id: "view", label: "View", hint: "See analytics" },
@@ -106,7 +106,7 @@ export const statusChoices = [
 
 export const scopeOptions = [
   { value: "Global", label: "Global" },
-  { value: "Lab-specific", label: "Lab-specific" },
+  { value: "Warehouse", label: "Warehouse" },
   { value: "Finance", label: "Finance" },
   { value: "Content", label: "Content" },
   { value: "Read-only", label: "Read-only" },

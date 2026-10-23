@@ -3,7 +3,7 @@
     <!-- The whole column stays in view while the page scrolls. If it is taller than the screen, it scrolls on its own. -->
     <div class="space-y-4 xl:sticky xl:top-24 xl:z-10 xl:max-h-[calc(100vh-7rem)] xl:overflow-y-auto xl:overscroll-contain">
       <LazyVPanel
-      title="Curatorial status"
+      title="Listing status"
       icon="lucide:eye"
     >
       <div class="space-y-4">
@@ -29,14 +29,14 @@
         </fieldset>
         <LazyVSelectInput
           v-model="form.status"
-          name="benchStatus"
-          label="Bench metrology status"
+          name="productStatus"
+          label="Product status"
           :options="statusOptions"
         />
       </div>
     </LazyVPanel>
 
-      <LazyVPanel title="Compatible media & chemistry" icon="lucide:link-2">
+      <LazyVPanel title="Compatible machines & supplies" icon="lucide:link-2">
       <template #actions>
         <span class="chip">{{ form.bundled.length }} paired</span>
       </template>
@@ -81,7 +81,7 @@
         <LazyVInput
           v-model="form.subType"
           name="subType"
-          label="Apparatus sub-type"
+          label="Product sub-type"
           optional
           maxlength="80"
         />
@@ -89,7 +89,7 @@
         <LazyVInput
           v-model="form.brand"
           name="brand"
-          label="Foundry / brand"
+          label="Brand"
           required
           rules="required|min:2|max:60"
           maxlength="60"
@@ -97,21 +97,21 @@
 
         <LazyVChipsInput
           v-model="form.collections"
-          label="Curated collections"
+          label="Collections"
           placeholder="Add a collection"
           :max="10"
         />
 
         <LazyVChipsInput
           v-model="form.tags"
-          label="Archival search tags"
+          label="Search tags"
           placeholder="#tag"
           :max="15"
         />
       </div>
     </LazyVPanel>
 
-    <LazyVPanel title="Ledger audit trail" icon="lucide:history">
+    <LazyVPanel title="Change history" icon="lucide:history">
       <template #actions>
         <span class="chip">{{ revisions.length }} revisions</span>
       </template>
@@ -152,16 +152,16 @@ const { currency } = useFormatters();
 
 const publicationOptions = [
   { value: "draft", label: "Draft (hidden)" },
-  { value: "published", label: "Active and available for requisition" },
+  { value: "published", label: "Active and available to order" },
   { value: "archived", label: "Archived" },
 ];
 
 const channels = [
-  { value: "storefront", label: "Online flagship storefront" },
-  { value: "institutional", label: "Institutional requisitions catalog" },
-  { value: "printLab", label: "Commercial print lab portal" },
-  { value: "depot", label: "Frankfurt depot POS node" },
-  { value: "vip", label: "VIP private treaty vault only" },
+  { value: "storefront", label: "Online storefront" },
+  { value: "business", label: "Business and school catalog" },
+  { value: "printLab", label: "Print Lab portal" },
+  { value: "depot", label: "Cairo showroom point of sale" },
+  { value: "wholesale", label: "Reseller and wholesale portal" },
 ];
 
 const categoryChoices = (Object.keys(categoryMeta) as ProductCategory[]).map(

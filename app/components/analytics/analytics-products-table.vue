@@ -1,6 +1,6 @@
 <template>
   <LazyVPanel
-    title="Best-selling apparatus & inventory telemetry"
+    title="Best-selling products & stock levels"
     subtitle="Stock velocity, revenue and margin by SKU, with days of buffer left"
     icon="lucide:package"
     body-class=""
@@ -55,7 +55,7 @@
       <div class="hidden xl:block">
         <table class="w-full text-sm" :aria-busy="pending || undefined">
           <caption class="sr-only">
-            Best-selling apparatus
+            Best-selling products
           </caption>
           <thead>
             <tr class="border-y border-line bg-ink">
@@ -63,7 +63,7 @@
                 scope="col"
                 class="label-caps px-4 py-3 text-start font-normal"
               >
-                Apparatus / SKU
+                Product / SKU
               </th>
               <th
                 scope="col"

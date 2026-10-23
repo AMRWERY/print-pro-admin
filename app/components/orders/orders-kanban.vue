@@ -14,7 +14,7 @@
       >
         <span class="flex items-center gap-1.5">
           <Icon
-            :name="stageMeta[col.stage].custodyIcon"
+            :name="stageMeta[col.stage].statusIcon"
             size="14"
             aria-hidden="true"
           />
@@ -30,7 +30,7 @@
         v-else-if="!col.rows.length"
         class="rounded-card border border-dashed border-line px-3 py-6 text-center text-xs text-mute"
       >
-        No requisitions on this page
+        No orders on this page
       </p>
       <ul v-else class="space-y-2">
         <li v-for="row in col.rows" :key="row.id">

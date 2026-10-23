@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-5">
     <LazyVPageHeader
-      title="Equipment & Substrate Metrology"
-      description="Precision inventory verification, MTF optical status, roll tension metrics and pigment batches for the ISO 5 cleanroom."
+      title="Products"
+      description="Printers, photocopiers, ink and toner: stock levels, prices and listing status."
       :breadcrumb="[{ label: 'Dashboard', to: '/' }, { label: 'Products' }]"
     >
       <template #actions>
@@ -96,7 +96,7 @@
           <LazyVEmptyState
             icon="lucide:package"
             title="The register is empty"
-            description="Add your first product or SKU to start tracking stock, valuation and metrology status."
+            description="Add your first product or SKU to start tracking stock, value and listing status."
             eyebrow="REGISTER :: EMPTY"
             tag="0 SKUS"
           >
@@ -393,6 +393,6 @@ definePageMeta({
 useSeoMeta({
   title: "Products",
   description:
-    "Catalog, stock levels and metrology status for cameras, lenses, printers and print supplies.",
+    "Catalog, stock levels and listing status for printers, photocopiers, ink and toner.",
 });
 </script>

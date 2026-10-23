@@ -183,7 +183,7 @@ const pct = (c: CouponRow) =>
 const badge = (c: CouponRow): { label: string; tone: Tone } | null =>
   c.tier !== "all"
     ? { label: `${c.tier} only`, tone: "warning" }
-    : c.type === "freight" || c.type === "labCredit"
+    : c.type === "freight" || c.type === "serviceCredit"
       ? { label: typeMeta[c.type].short, tone: "info" }
       : c.categories.length === 1
         ? { label: categoryMeta[c.categories[0]!].label, tone: "neutral" }
@@ -194,7 +194,7 @@ const thresholds = (c: CouponRow) =>
     c.minOrder ? `Min ${money(c.minOrder)}` : "No minimum",
     c.categories.length
       ? c.categories.map((x) => categoryMeta[x].label).join(", ")
-      : "All divisions",
+      : "All categories",
     c.perAccount === 1 ? "single use per account" : null,
   ]
     .filter(Boolean)

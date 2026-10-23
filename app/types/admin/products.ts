@@ -1,12 +1,7 @@
-export type ProductCategory =
-  | "cameras"
-  | "glass"
-  | "printers"
-  | "rag"
-  | "pigments"
-  | "metrology";
+export type ProductCategory = "printers" | "copiers" | "inks-toner";
 
-export type ProductStatus = "active" | "bench" | "quarantine" | "draft";
+/** testing = being tested before it is listed, hold = withdrawn or on hold. */
+export type ProductStatus = "active" | "testing" | "hold" | "draft";
 
 export type StockState = "ok" | "low" | "out";
 
@@ -36,7 +31,7 @@ export interface Product {
   stock: number;
   /** Reorder point: at or below this the product is low on stock. */
   min: number;
-  unit: "unit" | "roll";
+  unit: "unit" | "pack";
   status: ProductStatus;
   icon: string;
 }
@@ -59,12 +54,12 @@ export interface ProductsResponse {
   kpis: {
     registered: number;
     indexedThisCycle: number;
-    valuationEur: number;
+    valuation: number;
     depleted: number;
-    bench: number;
-    quarantine: number;
+    testing: number;
+    hold: number;
   };
-  presets: { hasselbladGlass: number; ragRolls: number; depleted: number };
+  presets: { a3Copiers: number; supplies: number; depleted: number };
 }
 
 export interface ProductInput {
@@ -87,7 +82,7 @@ export interface Template {
   category: ProductCategory;
   brand: string;
   price: number;
-  unit: "unit" | "roll";
+  unit: "unit" | "pack";
   min: number;
 }
 
@@ -97,7 +92,7 @@ export interface Template {
 
 export type Publication = "draft" | "published" | "archived";
 export type Backorder = "block" | "notify" | "allow";
-export type Packaging = "climate" | "standard";
+export type Packaging = "pallet" | "standard";
 export type VariantStatus = "active" | "preorder" | "hidden";
 
 export interface ProductMedia {

@@ -2,14 +2,14 @@
   <auth-shell>
     <template #aside>
       <auth-aside
-        eyebrow="Archival registry"
-        tag="Master colour calibration bench"
-        title="Calibrated optical registries and mechanical print escrows."
-        icon="lucide:aperture"
+        eyebrow="Admin sign-in"
+        tag="Orders, stock and customers"
+        title="Manage orders, stock and customers in one place."
+        icon="lucide:printer"
         :stats="[
-          { label: 'ISO standard', value: '12647-7' },
-          { label: 'Print substrate', value: '310 GSM Rag' },
-          { label: 'Order ledger', value: 'Verified' },
+          { label: 'Orders', value: 'Tracked' },
+          { label: 'Stock', value: 'Live' },
+          { label: 'Reports', value: 'Daily' },
         ]"
       />
     </template>
@@ -36,7 +36,7 @@
         <div class="flex flex-wrap gap-3">
           <LazyVButton variant="primary" :to="redirect || '/profile'">Continue</LazyVButton>
          
-          <LazyVButton variant="secondary" to="/profile" icon="lucide:layout-dashboard">Atelier Dashboard</LazyVButton>
+          <LazyVButton variant="secondary" to="/profile" icon="lucide:layout-dashboard">Dashboard</LazyVButton>
         
           <LazyVButton
             variant="secondary"
@@ -50,10 +50,10 @@
       <template v-else>
         <div class="space-y-2">
           <p class="eyebrow flex items-center gap-2">
-            <span class="pip" aria-hidden="true" />Studio account
+            <span class="pip" aria-hidden="true" />Admin account
           </p>
           <h1 id="login-title" class="font-display text-3xl sm:text-4xl">
-            Studio sign in
+            Sign in
           </h1>
           <p class="text-sm text-mute">
             Access your equipment orders, saved registry and delivery tracking.
@@ -145,7 +145,7 @@
             variant="tertiary"
             to="/auth/register"
             class="!text-accent"
-            >Create a studio account</LazyVButton
+            >Create an account</LazyVButton
           >
         </p>
 
@@ -237,7 +237,7 @@ const submit = async () => {
 
 useSeoMeta({
   title: "Sign In",
-  description: "Sign in to your studio account.",
+  description: "Sign in to your admin account.",
   robots: "noindex",
 });
 </script>

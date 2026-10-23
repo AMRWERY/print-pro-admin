@@ -22,54 +22,54 @@ const DEMO_NOW = Date.UTC(2026, 9, 31, 15, 0, 0);
 const DAY = 86_400_000;
 const TOTAL = 1420;
 
-const NODES = ["New York", "Paris", "London", "Tokyo", "Berlin", "Lyon", "Zurich", "Milan", "Amsterdam", "Vienna", "Stockholm", "Seoul"];
+const NODES = ["Cairo", "Giza", "Alexandria", "Riyadh", "Dubai", "Jeddah", "Amman", "Doha", "Mansoura", "Tanta", "Luxor", "Kuwait City"];
 
-type Seed = Omit<Customer, "id" | "initials" | "createdAt" | "lastActivity" | "taxId" | "depot" | "escrowTerms"> & {
+type Seed = Omit<Customer, "id" | "initials" | "createdAt" | "lastActivity" | "taxId" | "deliveryAddress" | "paymentTerms"> & {
   taxId?: string;
 };
 
 const seeds: Seed[] = [
-  { name: "Dr. Elena Vance", org: "The Metropolitan Museum of Art", role: "Chief Optical Conservator, Archival Imaging", email: "e.vance@metmuseum.org", phone: "+1 (212) 535-7710", node: "New York Node", segment: "institutional", tier: "AAA", status: "active", ltv: 142500, orders: 14, activeOrders: 1, escrowRating: 99.8, taxId: "US-EIN 13-1624021" },
-  { name: "Henri De Vries", org: "L'Atelier Luminescence Paris", role: "Master Printer & Lead", email: "h.devries@luminescence.fr", phone: "+33 1 42 68 55 00", node: "Paris Node", segment: "printmaker", tier: "AA", status: "active", ltv: 18200, orders: 6, activeOrders: 0, escrowRating: 99.1 },
-  { name: "Marcus Sterling", org: "Sterling Fine Art Archive London", role: "Director of Metrology", email: "m.sterling@sterling-archive.uk", phone: "+44 20 7946 0912", node: "London Node", segment: "institutional", tier: "AAA", status: "active", ltv: 36400, orders: 9, activeOrders: 0, escrowRating: 99.5 },
-  { name: "Sophia Lin", org: "Kroma Cine Lab Tokyo", role: "Principal Cinematographer", email: "s.lin@kromacine.jp", phone: "+81 3 5555 0143", node: "Tokyo / Zurich Node", segment: "commercial", tier: "AA", status: "active", ltv: 12800, orders: 5, activeOrders: 0, escrowRating: 98.7 },
-  { name: "Prof. Kenneth Bauer", org: "Bauhaus Heritage Berlin", role: "Head of Archival Preservation", email: "k.bauer@bauhaus-archive.de", phone: "+49 30 8892 4100", node: "Berlin Node", segment: "institutional", tier: "AAA", status: "active", ltv: 41200, orders: 11, activeOrders: 0, escrowRating: 99.6 },
-  { name: "Claire Delacroix", org: "Atelier Baryta & Pigment Lyon", role: "Founder & Master Printer", email: "c.delacroix@atelierbaryta.com", phone: "+33 4 72 00 11 88", node: "Lyon Node", segment: "printmaker", tier: "A", status: "active", ltv: 9600, orders: 4, activeOrders: 0, escrowRating: 98.2 },
+  { name: "Dr. Amal Fahmy", org: "Delta Architects", role: "Head of Operations", email: "a.fahmy@deltaarchitects.com", phone: "+20 2 3335 7710", node: "Cairo", segment: "enterprise", tier: "AAA", status: "active", ltv: 142500, orders: 9, activeOrders: 1, paymentRating: 99.8 },
+  { name: "Karim Mansour", org: "Nile Print House", role: "Owner & Production Manager", email: "k.mansour@nileprint.com", phone: "+20 2 2574 5500", node: "Cairo", segment: "printShop", tier: "AA", status: "active", ltv: 18200, orders: 6, activeOrders: 0, paymentRating: 99.1 },
+  { name: "Omar Sherif", org: "Sherif Accounting Group", role: "Managing Partner", email: "o.sherif@sherifgroup.com", phone: "+20 3 4865 0912", node: "Alexandria", segment: "enterprise", tier: "AAA", status: "active", ltv: 36400, orders: 7, activeOrders: 0, paymentRating: 99.4 },
+  { name: "Hala Youssef", org: "Cairo Language School", role: "Head of Administration", email: "h.youssef@cairolanguage.edu.eg", phone: "+20 2 2735 0143", node: "Giza", segment: "business", tier: "AA", status: "active", ltv: 12800, orders: 5, activeOrders: 1, paymentRating: 98.7 },
+  { name: "Prof. Mariam Adel", org: "Alexandria University Press", role: "Press Director", email: "m.adel@alexpress.edu.eg", phone: "+20 3 4883 4100", node: "Alexandria", segment: "enterprise", tier: "AAA", status: "active", ltv: 41200, orders: 8, activeOrders: 0, paymentRating: 99.6 },
+  { name: "Layla Haddad", org: "Haddad Design Co. Dubai", role: "Founder & Print Lead", email: "l.haddad@haddaddesign.ae", phone: "+971 4 555 1188", node: "Dubai", segment: "printShop", tier: "A", status: "active", ltv: 9600, orders: 4, activeOrders: 0, paymentRating: 98.2 },
 ];
 
-const FIRST = ["Amelie", "Jonas", "Ingrid", "Tomas", "Yuki", "Ravi", "Noor", "Lucas", "Mina", "Oskar", "Hana", "Pierre", "Sofia", "Daniel", "Aiko", "Marta", "Felix", "Leila", "Viktor", "Elise"];
-const LAST = ["Hartmann", "Moreau", "Ishikawa", "Lindqvist", "Rossi", "Okafor", "Novak", "Tanaka", "Bergman", "Dubois", "Weiss", "Kovacs", "Aalto", "Marini", "Fischer", "Ibrahim", "Larsen", "Costa", "Petrov", "Haas"];
+const FIRST = ["Mona", "Khaled", "Rania", "Tamer", "Yasmin", "Hossam", "Noor", "Ali", "Mina", "Sherif", "Heba", "Mostafa", "Salma", "Ziad", "Aya", "Marwan", "Farah", "Layla", "Waleed", "Dalia"];
+const LAST = ["Hassan", "Mahmoud", "Saleh", "Abdelrahman", "Khalil", "Fathy", "Nasser", "Ibrahim", "Zaki", "Darwish", "Samir", "Ghoneim", "Taha", "Mostafa", "Elsayed", "Kamel", "Hamdy", "Radwan", "Salem", "Anwar"];
 const ORG_BY_SEGMENT: Record<CustomerSegment, [string, string[]]> = {
-  institutional: ["Museum of Photography", ["Archive", "Conservation Institute"]],
-  commercial: ["Studio", ["Foundry", "Production House"]],
-  printmaker: ["Atelier", ["Print Works", "Editions"]],
-  collector: ["Private Collection", ["Foundation", "Vault"]],
-  highLtv: ["Gallery Group", ["Holdings", "Trust"]],
+  enterprise: ["Group", ["Holdings", "Corporation"]],
+  business: ["Office", ["Services", "Consultants"]],
+  printShop: ["Print", ["Works", "Copy Centre"]],
+  home: ["Home Office", ["Desk", "Workspace"]],
+  highLtv: ["Industries", ["Group", "Trading"]],
 };
 const ROLE_BY_SEGMENT: Record<CustomerSegment, string[]> = {
-  institutional: ["Head Conservator", "Collections Director", "Director of Imaging"],
-  commercial: ["Studio Director", "Head of Post-Production", "Technical Producer"],
-  printmaker: ["Master Printer", "Atelier Founder", "Print Studio Lead"],
-  collector: ["Private Collector", "Collection Manager", "Patron"],
-  highLtv: ["Managing Director", "Head of Acquisitions", "Chief Curator"],
+  enterprise: ["Head of Operations", "IT Director", "Procurement Manager"],
+  business: ["Office Manager", "Administration Lead", "Operations Coordinator"],
+  printShop: ["Print Room Manager", "Owner", "Production Lead"],
+  home: ["Freelancer", "Home Office Owner", "Consultant"],
+  highLtv: ["Managing Director", "Head of Purchasing", "Chief Operating Officer"],
 };
 
 // Segment sizes that add up to TOTAL once the six hand-picked clients are counted.
 const SIZES: [CustomerSegment, number][] = [
-  ["institutional", 240 - 3],
-  ["commercial", 512 - 1],
-  ["printmaker", 388 - 2],
-  ["collector", 194],
+  ["enterprise", 240 - 3],
+  ["business", 512 - 1],
+  ["printShop", 388 - 2],
+  ["home", 194],
   ["highLtv", 86],
 ];
 const segmentOrder = SIZES.flatMap(([s, n]) => Array<CustomerSegment>(n).fill(s));
 const GENERATED = TOTAL - seeds.length;
 
 const LTV_RANGE: Record<CustomerSegment, [number, number]> = {
-  institutional: [4000, 30000],
-  commercial: [1000, 14000],
-  printmaker: [800, 10000],
-  collector: [2000, 25000],
+  enterprise: [4000, 30000],
+  business: [1000, 14000],
+  printShop: [800, 10000],
+  home: [2000, 25000],
   highLtv: [50000, 110000],
 };
 
@@ -83,9 +83,9 @@ const finish = (n: number, s: Seed, extra: { createdDaysAgo: number; idleHours: 
     initials: initialsOf(s.name),
     lastActivity: new Date(DEMO_NOW - extra.idleHours * 3_600_000).toISOString(),
     createdAt: new Date(DEMO_NOW - extra.createdDaysAgo * DAY).toISOString(),
-    taxId: s.taxId ?? `EIN ${10 + (n % 80)}-${1000000 + ((n * 7919) % 8999999)}`,
-    depot: `Dock ${1 + (n % 9)}B, ${s.org}, ${city}`,
-    escrowTerms: "Net-30 escrow lock (Deutsche Bank Luxembourg)",
+    taxId: s.taxId ?? `Tax ID ${100 + (n % 800)}-${100000 + ((n * 7919) % 899999)}`,
+    deliveryAddress: `${10 + (n % 90)} Main Street, ${s.org}, ${city}`,
+    paymentTerms: "Net-30 invoice, bank transfer",
   };
 };
 
@@ -102,9 +102,9 @@ const store: Customer[] = [
     const [lo, hi] = LTV_RANGE[segment];
     const ltv = lo + ((k * 7919) % (hi - lo));
     const status: CustomerStatus = k % 33 === 7 ? "audit" : k % 10 === 3 ? "dormant" : "active";
-    // 139 more institutional clients carry the top tier, which makes 142 with the hand-picked ones.
+    // 139 more enterprise clients carry the top tier, which makes 142 with the hand-picked ones.
     const tier: CustomerTier =
-      segment === "institutional" ? (instCount++ < 139 ? "AAA" : "AA") : segment === "commercial" && k % 3 === 0 ? "AA" : "A";
+      segment === "enterprise" ? (instCount++ < 139 ? "AAA" : "AA") : segment === "business" && k % 3 === 0 ? "AA" : "A";
     const org = `${city} ${word} ${k % 2 ? endings[0] : endings[1]}`;
     return finish(
       n,
@@ -112,16 +112,16 @@ const store: Customer[] = [
         name: `${first} ${last}`,
         org,
         role: ROLE_BY_SEGMENT[segment][k % 3]!,
-        email: `${slug(`${first} ${last}`)}@${slug(org).replace(/\./g, "").slice(0, 18)}.org`,
-        phone: `+${[1, 33, 44, 81, 49][k % 5]} ${200 + (k % 700)} ${5000 + ((k * 31) % 4999)}`,
-        node: `${city} Node`,
+        email: `${slug(`${first} ${last}`)}@${slug(org).replace(/\./g, "").slice(0, 18)}.com`,
+        phone: `+${[20, 966, 971, 974, 962][k % 5]} ${200 + (k % 700)} ${5000 + ((k * 31) % 4999)}`,
+        node: city,
         segment,
         tier,
         status,
         ltv,
         orders: Math.round(ltv / 9000) + 1,
         activeOrders: k % 38 === 11 ? 1 : 0,
-        escrowRating: Math.round((97 + (k % 30) / 10) * 10) / 10,
+        paymentRating: Math.round((97 + (k % 30) / 10) * 10) / 10,
       },
       {
         // 41 clients joined within the last quarter.
@@ -144,7 +144,7 @@ export const parseCustomerQuery = (raw: Record<string, unknown>): CustomerQuery 
   const page = Number.parseInt(String(raw.page), 10);
   return {
     q: typeof raw.q === "string" ? raw.q.trim().slice(0, 80) : "",
-    segment: pick(raw.segment, ["all", "institutional", "commercial", "printmaker", "collector", "highLtv"] as const, "all"),
+    segment: pick(raw.segment, ["all", "enterprise", "business", "printShop", "home", "highLtv"] as const, "all"),
     status: pick(raw.status, ["all", "active", "audit", "dormant"] as const, "all"),
     activity: pick<CustomerActivity>(raw.activity, ["all", "7d", "30d", "90d"], "all"),
     sort: pick<CustomerSort>(raw.sort, ["spend", "spendLow", "name", "newest"], "spend"),
@@ -165,7 +165,7 @@ export const queryCustomers = (query: CustomerQuery): CustomersResponse => {
       Date.parse(c.lastActivity) >= since,
   );
 
-  const counts: CustomersResponse["counts"] = { all: base.length, institutional: 0, commercial: 0, printmaker: 0, collector: 0, highLtv: 0 };
+  const counts: CustomersResponse["counts"] = { all: base.length, enterprise: 0, business: 0, printShop: 0, home: 0, highLtv: 0 };
   for (const c of base) counts[c.segment]++;
 
   const filtered = query.segment === "all" ? base : base.filter((c) => c.segment === query.segment);
@@ -206,10 +206,10 @@ let noteSeq = 100;
 notes.set("cu-0", [
   {
     id: 1,
-    author: "COO Vanderbilt",
+    author: "COO Admin (Station-01)",
     urgent: true,
     at: new Date(DEMO_NOW - 9 * DAY).toISOString(),
-    text: "Client requires all lens assemblies (Hasselblad XCD) to be bench-tested for MTF over 99% and signed by station QA before nitrogen sealing. Do not dispatch without Brink's Armored Courier.",
+    text: "Customer requires every machine to be test-printed and signed off by a technician before dispatch. Deliveries go by insured courier only, and installation must be booked with reception first.",
   },
 ]);
 
@@ -261,13 +261,13 @@ export const validateCustomer = (body: unknown): CustomerInput | null => {
     role: str(b.role, 100),
     email,
     phone: str(b.phone, 30),
-    node: str(b.node, 60) || "Unassigned Node",
-    segment: pick<CustomerSegment>(b.segment, ["institutional", "commercial", "printmaker", "collector", "highLtv"], "commercial"),
+    node: str(b.node, 60) || "Unassigned",
+    segment: pick<CustomerSegment>(b.segment, ["enterprise", "business", "printShop", "home", "highLtv"], "business"),
     tier: pick<CustomerTier>(b.tier, ["AAA", "AA", "A"], "A"),
     status: pick<CustomerStatus>(b.status, ["active", "audit", "dormant"], "active"),
     taxId: str(b.taxId, 40),
-    depot: str(b.depot, 200),
-    escrowTerms: str(b.escrowTerms, 120) || "Net-30 escrow lock (Deutsche Bank Luxembourg)",
+    deliveryAddress: str(b.deliveryAddress, 200),
+    paymentTerms: str(b.paymentTerms, 120) || "Net-30 invoice, bank transfer",
   };
 };
 
@@ -286,7 +286,7 @@ export const createCustomer = (input: CustomerInput): Customer => {
     ltv: 0,
     orders: 0,
     activeOrders: 0,
-    escrowRating: 100,
+    paymentRating: 100,
   };
   store.unshift(customer);
   return customer;

@@ -6,10 +6,10 @@ export type Permission = string;
 export interface Role {
   id: string;
   name: string;
-  /** Short reference such as ROLE-METROLOGY-02. */
+  /** Short reference such as ROLE-WAREHOUSE-02. */
   code: string;
   description: string;
-  /** How far the role reaches, for example "Global" or "Lab-specific". */
+  /** How far the role reaches, for example "Global" or "Warehouse". */
   scope: string;
   /** The built-in root role: its permissions are locked. */
   system: boolean;

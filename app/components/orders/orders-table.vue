@@ -4,14 +4,14 @@
     <div class="hidden overflow-x-auto lg:block">
       <table class="w-full min-w-[960px] text-sm">
         <caption class="sr-only">
-          Requisition and escrow ledger
+          Orders
         </caption>
         <thead>
           <tr class="border-y border-line bg-ink">
             <th scope="col" class="w-10 px-4 py-3">
               <LazyVCheckboxImput
                 name="selectAll"
-                label="Select all requisitions on this page"
+                label="Select all orders on this page"
                 hide-label
                 size="sm"
                 :model-value="allSelected"
@@ -21,22 +21,22 @@
               />
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Requisition ID
+              Order ID
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
               Timestamp (UTC)
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Customer &amp; atelier tier
+              Customer &amp; account type
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Apparatus &amp; media allocation
+              Items ordered
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Escrow ledger
+              Payment
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Custody stage
+              Status
             </th>
             <th scope="col" class="px-4 py-3">
               <span class="sr-only">Actions</span>
@@ -81,7 +81,7 @@
             <td class="px-4 py-3.5">
               <LazyVCheckboxImput
                 :name="`select-${row.id}`"
-                :label="`Select requisition ${row.id}`"
+                :label="`Select order ${row.id}`"
                 hide-label
                 size="sm"
                 :model-value="selected.includes(row.id)"
@@ -153,19 +153,19 @@
 
               <LazyVStatusBadge
                 class="mt-1"
-                :tone="stageMeta[row.stage].escrowTone"
-                :icon="stageMeta[row.stage].escrowIcon"
-                >{{ stageMeta[row.stage].escrow }}</LazyVStatusBadge
+                :tone="stageMeta[row.stage].paymentTone"
+                :icon="stageMeta[row.stage].paymentIcon"
+                >{{ stageMeta[row.stage].payment }}</LazyVStatusBadge
               >
-              <p class="meta mt-1">{{ row.escrowNote }}</p>
+              <p class="meta mt-1">{{ row.paymentNote }}</p>
             </td>
             <td class="px-3 py-3.5">
               <LazyVStatusBadge
-                :tone="stageMeta[row.stage].custodyTone"
-                :icon="stageMeta[row.stage].custodyIcon"
-                >{{ stageMeta[row.stage].custody }}</LazyVStatusBadge
+                :tone="stageMeta[row.stage].statusTone"
+                :icon="stageMeta[row.stage].statusIcon"
+                >{{ stageMeta[row.stage].status }}</LazyVStatusBadge
               >
-              <p class="meta mt-1">{{ row.custodyNote }}</p>
+              <p class="meta mt-1">{{ row.statusNote }}</p>
             </td>
             <td class="px-4 py-3.5 text-end">
               <LazyVButton
@@ -181,7 +181,7 @@
       </table>
     </div>
 
-    <!-- Tablet / mobile: one card per requisition -->
+    <!-- Tablet / mobile: one card per order -->
     <ul class="divide-y divide-line border-t border-line lg:hidden">
       <template v-if="loading">
         <li v-for="n in perPage" :key="n" class="space-y-3 p-4">
@@ -201,7 +201,7 @@
         <div class="flex items-start gap-3">
           <LazyVCheckboxImput
             :name="`select-card-${row.id}`"
-            :label="`Select requisition ${row.id}`"
+            :label="`Select order ${row.id}`"
             hide-label
             size="sm"
             :model-value="selected.includes(row.id)"
@@ -242,15 +242,15 @@
         </p>
         <div class="flex flex-wrap items-center gap-2">
           <LazyVStatusBadge
-            :tone="stageMeta[row.stage].escrowTone"
-            :icon="stageMeta[row.stage].escrowIcon"
-            >{{ stageMeta[row.stage].escrow }}</LazyVStatusBadge
+            :tone="stageMeta[row.stage].paymentTone"
+            :icon="stageMeta[row.stage].paymentIcon"
+            >{{ stageMeta[row.stage].payment }}</LazyVStatusBadge
           >
 
           <LazyVStatusBadge
-            :tone="stageMeta[row.stage].custodyTone"
-            :icon="stageMeta[row.stage].custodyIcon"
-            >{{ stageMeta[row.stage].custody }}</LazyVStatusBadge
+            :tone="stageMeta[row.stage].statusTone"
+            :icon="stageMeta[row.stage].statusIcon"
+            >{{ stageMeta[row.stage].status }}</LazyVStatusBadge
           >
 
           <LazyVButton

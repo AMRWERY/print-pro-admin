@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-5">
     <LazyVPageHeader
-      :title="`Requisition ${orderId}`"
+      :title="`Order ${orderId}`"
       :breadcrumb="[
         { label: 'Dashboard', to: '/' },
         { label: 'Orders', to: '/orders' },
@@ -20,15 +20,15 @@
             }}</LazyVStatusBadge>
 
             <LazyVStatusBadge
-              :tone="stageMeta[detail.row.stage].escrowTone"
-              :icon="stageMeta[detail.row.stage].escrowIcon"
-              >{{ stageMeta[detail.row.stage].escrow }}</LazyVStatusBadge
+              :tone="stageMeta[detail.row.stage].paymentTone"
+              :icon="stageMeta[detail.row.stage].paymentIcon"
+              >{{ stageMeta[detail.row.stage].payment }}</LazyVStatusBadge
             >
 
             <LazyVStatusBadge
-              :tone="stageMeta[detail.row.stage].custodyTone"
-              :icon="stageMeta[detail.row.stage].custodyIcon"
-              >{{ stageMeta[detail.row.stage].custody }}</LazyVStatusBadge
+              :tone="stageMeta[detail.row.stage].statusTone"
+              :icon="stageMeta[detail.row.stage].statusIcon"
+              >{{ stageMeta[detail.row.stage].status }}</LazyVStatusBadge
             >
           </p>
           <p class="font-mono text-xs text-mute" dir="ltr">
@@ -80,12 +80,12 @@
 
         <LazyVButton
           icon="lucide:shield-check"
-          :disabled="!detail || detail.row.stage === 'settled'"
+          :disabled="!detail || detail.row.stage === 'completed'"
           @click="confirmOpen = true"
           >{{
-            detail?.row.stage === "settled"
-              ? "Escrow released"
-              : "Fulfill & release escrow"
+            detail?.row.stage === "completed"
+              ? "Order completed"
+              : "Complete order"
           }}</LazyVButton
         >
       </template>
@@ -95,8 +95,8 @@
     <LazyVEmptyState
       v-if="notFound"
       icon="lucide:search-x"
-      title="Requisition not found"
-      :description="`There is no requisition ${orderId} in the ledger. It may have been mistyped or removed.`"
+      title="Order not found"
+      :description="`There is no order ${orderId}. It may have been mistyped or removed.`"
       eyebrow="LEDGER :: NOT_FOUND"
       tag="404"
       tag-tone="accent"
@@ -111,7 +111,7 @@
 
     <LazyVErrorBanner
       v-else-if="error"
-      message="This requisition could not be loaded. Check your connection and try again."
+      message="This order could not be loaded. Check your connection and try again."
       @retry="() => refresh()"
     />
 
@@ -150,7 +150,7 @@
           <order-line-items
             :lines="detail.lines"
             :pricing="detail.pricing"
-            :vault-note="vaultNote"
+            :delivery-note="deliveryNote"
           />
           <order-shipment :shipment="detail.shipment" />
         </div>
@@ -162,7 +162,7 @@
           />
 
           <LazyVPanel
-            title="Client metrology directives"
+            title="Customer instructions"
             icon="lucide:file-check"
           >
             <blockquote
@@ -189,8 +189,8 @@
 
     <LazyVDialog
       v-model:open="confirmOpen"
-      title="Release escrow and fulfill?"
-      :description="`This moves ${orderId} to the final stage and releases ${detail ? currency(detail.pricing.total, cents) : 'the escrow value'} to the vendor. It is recorded in the ledger.`"
+      title="Mark this order as completed?"
+      :description="`This moves ${orderId} to the final stage and releases ${detail ? currency(detail.pricing.total, cents) : 'the order value'} to the books. It is recorded in the ledger.`"
     >
       <p class="callout">
         <Icon
@@ -199,8 +199,8 @@
           class="bullet-icon"
           aria-hidden="true"
         />
-        Make sure cleanroom QA and the conservator handoff are complete.
-        Releasing escrow cannot be undone from this screen.
+        Make sure the machine has been delivered and signed for.
+        Completing an order cannot be undone from this screen.
       </p>
 
       <template #footer>
@@ -208,14 +208,14 @@
           variant="secondary"
           :disabled="moving"
           @click="confirmOpen = false"
-          >Keep escrow locked</LazyVButton
+          >Keep order open</LazyVButton
         >
 
         <LazyVButton
           :loading="moving"
           icon="lucide:shield-check"
           @click="release"
-          >Fulfill & release escrow</LazyVButton
+          >Complete order</LazyVButton
         >
       </template>
     </LazyVDialog>
@@ -246,10 +246,10 @@ const {
 
 const notFound = computed(() => error.value?.statusCode === 404);
 
-const vaultNote = computed(() =>
-  detail.value?.row.stage === "settled"
-    ? "Vault status: escrow released"
-    : "Vault status: escrow secured (Deutsche Bank Luxembourg)",
+const deliveryNote = computed(() =>
+  detail.value?.row.stage === "completed"
+    ? "Delivery status: delivered and closed"
+    : "Delivery status: in progress",
 );
 
 // --- Moving the order along its pipeline ---
@@ -267,11 +267,11 @@ const moveTo = async (stage: OrderStage) => {
       },
     );
     toast.success(
-      stage === "settled" ? "Escrow released" : "Pipeline updated",
+      stage === "completed" ? "Order completed" : "Progress updated",
       { description: `${orderId.value} is now at: ${stageMeta[stage].tab}.` },
     );
   } catch {
-    toast.error("Couldn't update the requisition", {
+    toast.error("Couldn't update the order", {
       description: "Try again in a moment.",
     });
   } finally {
@@ -280,7 +280,7 @@ const moveTo = async (stage: OrderStage) => {
 };
 
 const release = async () => {
-  await moveTo("settled");
+  await moveTo("completed");
   confirmOpen.value = false;
 };
 
@@ -336,8 +336,8 @@ definePageMeta({
 });
 
 useSeoMeta({
-  title: () => `Requisition ${orderId.value}`,
+  title: () => `Order ${orderId.value}`,
   description:
-    "Custody pipeline, allocated equipment, shipment telemetry and escrow ledger for a requisition.",
+    "Order progress, items, shipment details and notes for a customer order.",
 });
 </script>

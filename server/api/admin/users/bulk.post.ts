@@ -1,7 +1,7 @@
 import { bulkOperators, isBulkAction } from "~/data/admin-users";
 
 // Suspend, restore, revoke sessions or delete several operators: { ids: string[], action }.
-// Protected operators (yourself, the last Super Curator) are skipped and counted.
+// Protected operators (yourself, the last Owner) are skipped and counted.
 export default defineEventHandler(async (event) => {
   const body = (await readBody(event)) as { ids?: unknown; action?: unknown } | null;
   const ids = Array.isArray(body?.ids) ? body.ids.filter((x): x is string => typeof x === "string") : [];

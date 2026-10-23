@@ -43,7 +43,7 @@
 /**
  * Modal dialog for focused short tasks (design.md §26).
  *
- *   <LazyVDialog v-model:open="show" title="Create requisition" size="lg">
+ *   <LazyVDialog v-model:open="show" title="Create order" size="lg">
  *     …
  *     <template #footer><LazyVButton>Save</LazyVButton></template>
  *   </LazyVDialog>

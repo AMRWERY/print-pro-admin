@@ -10,7 +10,7 @@
       <LazyVInput
         v-model="s.store.legalName"
         name="legalName"
-        label="Studio & foundry legal name"
+        label="Company legal name"
         required
         rules="required|min:2|max:120"
         maxlength="120"
@@ -30,7 +30,7 @@
     <LazyVInput
       v-model="s.store.address"
       name="address"
-      label="Primary cleanroom coordinates"
+      label="Head office address"
       required
       rules="required|min:3|max:200"
       maxlength="200"
@@ -96,8 +96,8 @@
   <settings-section
     id="contact"
     number="02"
-    title="Contact & escrow desk"
-    description="Where customers and carriers reach you, and the key used to encrypt escrow messages."
+    title="Contact & support desk"
+    description="Where customers and couriers reach you, and the key used to encrypt payment messages."
     :changed="changed.includes('contact')"
   >
     <div class="grid gap-4 md:grid-cols-2">
@@ -127,7 +127,7 @@
         v-model="s.contact.emergencyPhone"
         name="emergencyPhone"
         type="tel"
-        label="Armored-transit emergency line"
+        label="Delivery emergency line"
         optional
         :rules="phoneOptionalRule"
         maxlength="24"
@@ -137,7 +137,7 @@
       <LazyVInput
         v-model="s.contact.pgpKey"
         name="pgpKey"
-        label="PGP key ID for escrow release"
+        label="PGP key ID for payment messages"
         optional
         maxlength="80"
         input-class="font-mono"

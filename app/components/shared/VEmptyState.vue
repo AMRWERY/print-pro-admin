@@ -116,7 +116,7 @@ withDefaults(
     icon: "lucide:search-x",
     title: "No instruments match these constraints",
     description:
-      "Try removing a filter or widening the price range. Can’t find a specific model? Our bench team can source it.",
+      "Try removing a filter or widening the price range. Can’t find a specific model? Our team can source it.",
     tagTone: "neutral",
     as: "h2",
   },
