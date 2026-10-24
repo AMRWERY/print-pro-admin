@@ -56,6 +56,7 @@
           rules="required|min:2|max:120"
           maxlength="120"
         />
+
         <LazyVTextarea
           v-model="form.description"
           name="cpDescription"
@@ -147,6 +148,7 @@
               min="1"
               :disabled="form.unlimited"
             />
+
             <LazyVCheckboxImput
               v-model="form.unlimited"
               name="cpUnlimited"
@@ -155,6 +157,7 @@
               class="mt-1.5"
             />
           </div>
+
           <LazyVSelectInput
             v-model="form.perAccount"
             name="cpPerAccount"
@@ -230,6 +233,7 @@
             :min="form.startsAt || undefined"
           />
         </div>
+
         <LazyVSelectInput
           v-model="form.status"
           name="cpStatus"
@@ -307,15 +311,18 @@ const typeChoices = (Object.keys(typeMeta) as CouponType[]).map((value) => ({
   value,
   label: typeMeta[value].label,
 }));
+
 const categoryChoices = (Object.keys(categoryMeta) as ProductCategory[]).map(
   (value) => ({ value, label: categoryMeta[value].label }),
 );
+
 const tierChoices = tierOptions.map((o) => ({
   ...o,
   label: o.value === "all" ? "All customers" : o.label,
 }));
 
 const c = props.coupon ?? props.seed ?? null;
+
 const form = reactive({
   code: c?.code ?? "",
   campaign: c?.campaign ?? "",

@@ -44,7 +44,7 @@
 
     <coupons-kpis :kpis="data?.kpis" />
 
-    <div class="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_25rem]">
+    <div>
       <section class="card min-w-0" aria-label="Voucher ledger">
         <div class="border-b border-line p-4 sm:p-5">
           <coupons-toolbar
@@ -109,7 +109,7 @@
             :rows="rows"
             :loading="pending"
             :per-page="perPage"
-            :selected-id="editing?.id ?? null"
+            :selected-id="drawerOpen ? (editing?.id ?? null) : null"
             @select="openEdit"
             @duplicate="openDuplicate"
             @remove="(c) => askDelete([c.id], c.code)"
@@ -133,41 +133,31 @@
           />
         </div>
       </section>
-
-      <!-- Wide screens: the voucher form sits beside the ledger and stays in view -->
-      <aside
-        v-if="isWide"
-        class="min-w-0 xl:sticky xl:top-24 xl:max-h-[calc(100vh-7rem)] xl:overflow-y-auto"
-        aria-label="Voucher form"
-      >
-        <coupon-inspector
-          v-if="panel"
-          :key="panelKey"
-          :coupon="panel.coupon"
-          :seed="panel.seed"
-          :saving="saving"
-          :error="formError"
-          @save="save"
-          @remove="
-            panel.coupon && askDelete([panel.coupon.id], panel.coupon.code)
-          "
-          @close="closePanel"
-        />
-        <LazyVEmptyState
-          v-else
-          bare
-          icon="lucide:ticket-percent"
-          title="Select a voucher"
-          description="Choose a voucher to edit it, or create a new one."
-        />
-      </aside>
     </div>
 
-    <!-- Narrower screens: the same form in a dialog -->
-    <LazyVDialog
-      v-model:open="dialogOpen"
-      :title="panel?.coupon ? 'Edit voucher' : 'Create voucher'"
-      size="lg"
+    <!-- Voucher form: slides in from the end edge, like the notifications panel -->
+    <Transition name="fade">
+      <div
+        v-if="drawerOpen"
+        class="fixed inset-0 z-40 bg-ink/70 backdrop-blur-sm"
+        aria-hidden="true"
+        @click="closePanel"
+      />
+    </Transition>
+
+    <aside
+      id="voucher-drawer"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Voucher form"
+      class="fixed inset-y-0 end-0 z-50 w-full max-w-xl overflow-y-auto overscroll-contain border-s border-line bg-surface shadow-2xl shadow-black/50 transition-[transform,visibility] duration-normal ease-out motion-reduce:transition-none [&>section]:min-h-full [&>section]:rounded-none [&>section]:border-0 [&>section]:shadow-none"
+      :class="
+        drawerOpen
+          ? 'visible translate-x-0'
+          : 'invisible translate-x-full rtl:-translate-x-full'
+      "
+      :inert="drawerOpen ? undefined : ''"
+      @keydown.esc="closePanel"
     >
       <coupon-inspector
         v-if="panel"
@@ -182,7 +172,7 @@
         "
         @close="closePanel"
       />
-    </LazyVDialog>
+    </aside>
 
     <LazyVBulkBar :count="selected.length" @clear="selected = []">
       <LazyVButton
@@ -334,8 +324,9 @@ watch([page, query], () => {
   selected.value = [];
 });
 
-// --- Voucher form: side panel on wide screens, dialog below ---
-const isWide = useWideScreen();
+// --- Voucher form: a panel that slides in from the end edge ---
+const drawerOpen = ref(false);
+let opener: HTMLElement | null = null;
 
 // `coupon` is the voucher being edited, or null for a new one. A duplicate starts from a copy.
 const panel = ref<{ coupon: Coupon | null; seed?: Coupon } | null>(null);
@@ -348,24 +339,42 @@ const panelKey = computed(
     `${panel.value?.coupon?.id ?? (panel.value?.seed ? "copy" : "new")}-${nonce}`,
 );
 
-const dialogOpen = computed({
-  get: () => !isWide.value && !!panel.value,
-  set: (open) => {
-    if (!open) closePanel();
-  },
-});
-
-const open = (next: { coupon: Coupon | null; seed?: Coupon }) => {
+const open = async (next: { coupon: Coupon | null; seed?: Coupon }) => {
   panel.value = next;
   formError.value = "";
   nonce++;
+  if (!drawerOpen.value) opener = document.activeElement as HTMLElement | null;
+  drawerOpen.value = true;
+  await nextTick();
+  document
+    .querySelector<HTMLElement>("#voucher-drawer [aria-label='Close']")
+    ?.focus();
 };
 const openCreate = () => open({ coupon: null });
 const openEdit = (c: CouponRow) => open({ coupon: c });
+// The form stays in place until the panel has slid out, then it is cleared.
 const closePanel = () => {
-  panel.value = null;
-  formError.value = "";
+  if (!drawerOpen.value) return;
+  drawerOpen.value = false;
+  opener?.focus?.();
+  opener = null;
+  setTimeout(() => {
+    if (drawerOpen.value) return;
+    panel.value = null;
+    formError.value = "";
+  }, 300);
 };
+
+// The page shouldn't scroll underneath the open panel, and navigating away closes it.
+const scrollLock = useScrollLock(import.meta.client ? document.body : null);
+watch(drawerOpen, (isOpen) => {
+  scrollLock.value = isOpen;
+});
+onBeforeUnmount(() => {
+  scrollLock.value = false;
+});
+const route = useRoute();
+watch(() => route.fullPath, closePanel);
 
 // A duplicate is a new voucher that begins with the original's settings and its own code.
 const openDuplicate = (c: CouponRow) =>
