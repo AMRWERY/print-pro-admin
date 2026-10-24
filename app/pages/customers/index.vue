@@ -45,7 +45,6 @@
 
     <customers-kpis :kpis="data?.kpis" />
 
-    <div class="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_24rem]">
       <section class="card min-w-0" aria-label="Client registry">
         <div class="border-b border-line p-4 sm:p-5">
           <customers-toolbar
@@ -110,7 +109,7 @@
             :rows="rows"
             :loading="pending"
             :per-page="perPage"
-            :selected-id="selectedId"
+            :selected-id="drawerOpen ? selectedId : null"
             @select="openInspector"
             @edit="openForm"
             @remove="(c) => askDelete([c.id], c.name)"
@@ -133,33 +132,30 @@
         </div>
       </section>
 
-      <!-- Wide screens: the details sit beside the directory and stay in view -->
-      <aside
-        v-if="isWide"
-        class="min-w-0 xl:sticky xl:top-24 xl:max-h-[calc(100vh-7rem)] xl:overflow-y-auto"
-        aria-label="Customer details"
-      >
-        <customer-inspector
-          v-if="selectedId"
-          ref="inspector"
-          :key="selectedId"
-          :id="selectedId"
-          @edit="openForm"
-          @remove="(c) => askDelete([c.id], c.name)"
-          @close="selectedId = null"
-        />
-        <LazyVEmptyState
-          v-else
-          bare
-          icon="lucide:mouse-pointer-click"
-          title="Select a customer"
-          description="Choose a customer to open their details, or register a new one."
-        />
-      </aside>
-    </div>
+    <!-- Customer details: slides in from the end edge, like the notifications panel -->
+    <Transition name="fade">
+      <div
+        v-if="drawerOpen"
+        class="fixed inset-0 z-40 bg-ink/70 backdrop-blur-sm"
+        aria-hidden="true"
+        @click="closeDrawer"
+      />
+    </Transition>
 
-    <!-- Narrower screens: the same details in a dialog -->
-    <LazyVDialog v-model:open="dialogOpen" title="Customer details" size="lg">
+    <aside
+      id="customer-drawer"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Customer details"
+      class="fixed inset-y-0 end-0 z-50 w-full max-w-xl overflow-y-auto overscroll-contain border-s border-line bg-surface shadow-2xl shadow-black/50 transition-[transform,visibility] duration-normal ease-out motion-reduce:transition-none [&>section]:min-h-full [&>section]:rounded-none [&>section]:border-0 [&>section]:shadow-none"
+      :class="
+        drawerOpen
+          ? 'visible translate-x-0'
+          : 'invisible translate-x-full rtl:-translate-x-full'
+      "
+      :inert="drawerOpen ? undefined : ''"
+      @keydown.esc="closeDrawer"
+    >
       <customer-inspector
         v-if="selectedId"
         ref="inspector"
@@ -167,9 +163,9 @@
         :id="selectedId"
         @edit="openForm"
         @remove="(c) => askDelete([c.id], c.name)"
-        @close="selectedId = null"
+        @close="closeDrawer"
       />
-    </LazyVDialog>
+    </aside>
 
     <LazyVBulkBar :count="selected.length" @clear="selected = []">
       <LazyVButton
@@ -261,6 +257,7 @@ const filters = reactive({
   activity: "all" as CustomerActivity,
   sort: "spend" as CustomerSort,
 });
+
 const page = ref(1);
 const perPage = ref(10);
 const selected = ref<string[]>([]);
@@ -320,21 +317,41 @@ const selectedRows = computed(() =>
   rows.value.filter((r) => selected.value.includes(r.id)),
 );
 
-// --- Dossier: side panel on wide screens, dialog below ---
-const isWide = useWideScreen();
+// --- Dossier: a panel that slides in from the end edge ---
+// The id stays after closing so the content doesn't vanish during the slide-out.
 const selectedId = ref<string | null>(null);
+const drawerOpen = ref(false);
 const inspector = ref<{ refresh: () => void } | null>(null);
 
-const openInspector = (id: string) => {
+let opener: HTMLElement | null = null;
+
+const openInspector = async (id: string) => {
+  opener = document.activeElement as HTMLElement | null;
   selectedId.value = id;
+  drawerOpen.value = true;
+  await nextTick();
+  document
+    .querySelector<HTMLElement>("#customer-drawer [aria-label='Close inspector']")
+    ?.focus();
 };
 
-const dialogOpen = computed({
-  get: () => !isWide.value && !!selectedId.value,
-  set: (open) => {
-    if (!open) selectedId.value = null;
-  },
+const closeDrawer = () => {
+  if (!drawerOpen.value) return;
+  drawerOpen.value = false;
+  opener?.focus?.();
+  opener = null;
+};
+
+// The page shouldn't scroll underneath the open panel, and navigating away closes it.
+const scrollLock = useScrollLock(import.meta.client ? document.body : null);
+watch(drawerOpen, (open) => {
+  scrollLock.value = open;
 });
+onBeforeUnmount(() => {
+  scrollLock.value = false;
+});
+const route = useRoute();
+watch(() => route.fullPath, closeDrawer);
 
 // --- Register / edit ---
 const formOpen = ref(false);
@@ -351,7 +368,7 @@ const onSaved = (saved: Customer, mode: "create" | "edit") => {
     resetFilters();
     filters.sort = "newest";
     page.value = 1;
-    selectedId.value = saved.id;
+    openInspector(saved.id);
   } else {
     inspector.value?.refresh();
   }
@@ -378,8 +395,10 @@ const confirmDelete = async () => {
       body: { ids },
     });
     toast.success("Removed from the registry", { description: label });
-    if (selectedId.value && ids.includes(selectedId.value))
+    if (selectedId.value && ids.includes(selectedId.value)) {
+      closeDrawer();
       selectedId.value = null;
+    }
     selected.value = [];
     deleteOpen.value = false;
     await refresh();
