@@ -14,10 +14,7 @@
       @retry="() => refresh()"
     />
 
-    <div
-      v-else
-      class="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_23rem]"
-    >
+    <template v-else>
       <section class="card min-w-0" aria-label="Category tree">
         <div class="border-b border-line p-4 sm:p-5">
           <categories-toolbar
@@ -35,7 +32,7 @@
           :nodes="nodes"
           :filter="filter"
           :view="view"
-          :selected-id="selectedId"
+          :selected-id="drawerOpen ? selectedId : null"
           :reorder-mode="reorderMode"
           :loading="pending && !data"
           @select="openEdit"
@@ -74,43 +71,31 @@
           </template>
         </category-tree>
       </section>
+    </template>
 
-      <!-- Wide screens: the inspector sits beside the tree and stays in view -->
-      <aside
-        v-if="isWide"
-        class="min-w-0 xl:sticky xl:top-24"
-        aria-label="Category inspector"
-      >
-        <category-inspector
-          v-if="inspector"
-          :key="inspectorKey"
-          :category="inspector.category"
-          :new-parent-id="inspector.parentId"
-          :masters="masters"
-          :has-children="
-            inspector.category ? hasChildren(inspector.category.id) : false
-          "
-          :saving="saving"
-          :error="formError"
-          @save="save"
-          @remove="inspector.category && askDelete(inspector.category)"
-          @close="closeInspector"
-        />
-        <LazyVEmptyState
-          v-else
-          bare
-          icon="lucide:mouse-pointer-click"
-          title="Select a category"
-          description="Choose a node to inspect and edit it, or add a new category."
-        />
-      </aside>
-    </div>
+    <!-- Category inspector: slides in from the end edge, like the notifications panel -->
+    <Transition name="fade">
+      <div
+        v-if="drawerOpen"
+        class="fixed inset-0 z-40 bg-ink/70 backdrop-blur-sm"
+        aria-hidden="true"
+        @click="closeInspector"
+      />
+    </Transition>
 
-    <!-- Narrower screens: the same inspector in a dialog -->
-    <LazyVDialog
-      v-model:open="dialogOpen"
-      :title="inspector?.category ? 'Edit category' : 'New category'"
-      size="lg"
+    <aside
+      id="category-drawer"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Category inspector"
+      class="fixed inset-y-0 end-0 z-50 w-full max-w-xl overflow-y-auto overscroll-contain border-s border-line bg-surface shadow-2xl shadow-black/50 transition-[transform,visibility] duration-normal ease-out motion-reduce:transition-none [&>section]:min-h-full [&>section]:rounded-none [&>section]:border-0 [&>section]:shadow-none"
+      :class="
+        drawerOpen
+          ? 'visible translate-x-0'
+          : 'invisible translate-x-full rtl:-translate-x-full'
+      "
+      :inert="drawerOpen ? undefined : ''"
+      @keydown.esc="closeInspector"
     >
       <category-inspector
         v-if="inspector"
@@ -127,7 +112,7 @@
         @remove="inspector.category && askDelete(inspector.category)"
         @close="closeInspector"
       />
-    </LazyVDialog>
+    </aside>
 
     <LazyVDialog
       v-model:open="deleteOpen"
@@ -219,8 +204,9 @@ const expandAll = () => {
   expanded.value = masters.value.map((m) => m.id);
 };
 
-// --- Inspector (side panel on wide screens, dialog below) ---
-const isWide = useWideScreen();
+// --- Inspector: a panel that slides in from the end edge ---
+const drawerOpen = ref(false);
+let opener: HTMLElement | null = null;
 
 const selectedId = ref<string | null>(null);
 const creating = ref<{ parentId: string | null } | null>(null);
@@ -239,32 +225,55 @@ const inspectorKey = computed(
   () => `${creating.value ? "new" : selectedId.value}-${nonce}`,
 );
 
-const dialogOpen = computed({
-  get: () => !isWide.value && !!inspector.value,
-  set: (open) => {
-    if (!open) closeInspector();
-  },
-});
+const showDrawer = async () => {
+  if (!drawerOpen.value) opener = document.activeElement as HTMLElement | null;
+  drawerOpen.value = true;
+  await nextTick();
+  document
+    .querySelector<HTMLElement>("#category-drawer [aria-label='Close inspector']")
+    ?.focus();
+};
 
 const openEdit = (id: string) => {
   creating.value = null;
   selectedId.value = id;
   formError.value = "";
   nonce++;
+  showDrawer();
 };
 const openAdd = (parentId: string | null) => {
   selectedId.value = null;
   creating.value = { parentId };
   formError.value = "";
   nonce++;
+  showDrawer();
   if (parentId && !expanded.value.includes(parentId))
     expanded.value = [...expanded.value, parentId];
 };
+// The form stays in place until the panel has slid out, then the selection is cleared.
 const closeInspector = () => {
-  creating.value = null;
-  selectedId.value = null;
-  formError.value = "";
+  if (!drawerOpen.value) return;
+  drawerOpen.value = false;
+  opener?.focus?.();
+  opener = null;
+  setTimeout(() => {
+    if (drawerOpen.value) return;
+    creating.value = null;
+    selectedId.value = null;
+    formError.value = "";
+  }, 300);
 };
+
+// The page shouldn't scroll underneath the open panel, and navigating away closes it.
+const scrollLock = useScrollLock(import.meta.client ? document.body : null);
+watch(drawerOpen, (open) => {
+  scrollLock.value = open;
+});
+onBeforeUnmount(() => {
+  scrollLock.value = false;
+});
+const route = useRoute();
+watch(() => route.fullPath, closeInspector);
 
 const save = async (values: CategoryInput) => {
   saving.value = true;
