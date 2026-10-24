@@ -22,7 +22,7 @@
 
     <content-kpis :kpis="data?.kpis" />
 
-    <div class="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_27rem]">
+    <div>
       <section class="card min-w-0" aria-label="Content blocks">
         <div class="border-b border-line p-4 sm:p-5">
           <content-toolbar
@@ -86,7 +86,7 @@
             :loading="pending && !silent"
             :per-page="perPage"
             :view="view"
-            :selected-id="editing?.id ?? null"
+            :selected-id="drawerOpen ? (editing?.id ?? null) : null"
             @select="openEdit"
             @preview="openPreview"
             @duplicate="openDuplicate"
@@ -111,39 +111,31 @@
           />
         </div>
       </section>
-
-      <!-- Wide screens: the inspector sits beside the list and stays in view -->
-      <aside
-        v-if="isWide"
-        class="min-w-0 xl:sticky xl:top-24 xl:max-h-[calc(100vh-7rem)] xl:overflow-y-auto"
-        aria-label="Slot inspector"
-      >
-        <content-inspector
-          v-if="panel"
-          :key="panelKey"
-          :block="panel.block"
-          :seed="panel.seed"
-          :saving="saving"
-          :error="formError"
-          @save="save"
-          @remove="panel.block && askDelete(panel.block)"
-          @close="closePanel"
-        />
-        <LazyVEmptyState
-          v-else
-          bare
-          icon="lucide:mouse-pointer-click"
-          title="Select a content block"
-          description="Choose a block to edit and preview it, or create a new one."
-        />
-      </aside>
     </div>
 
-    <!-- Narrower screens: the same inspector in a dialog -->
-    <LazyVDialog
-      v-model:open="dialogOpen"
-      :title="panel?.block ? 'Edit content block' : 'New content block'"
-      size="lg"
+    <!-- Content inspector: slides in from the end edge, like the notifications panel -->
+    <Transition name="fade">
+      <div
+        v-if="drawerOpen"
+        class="fixed inset-0 z-40 bg-ink/70 backdrop-blur-sm"
+        aria-hidden="true"
+        @click="closePanel"
+      />
+    </Transition>
+
+    <aside
+      id="content-drawer"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Slot inspector"
+      class="fixed inset-y-0 end-0 z-50 w-full max-w-2xl overflow-y-auto overscroll-contain border-s border-line bg-surface shadow-2xl shadow-black/50 transition-[transform,visibility] duration-normal ease-out motion-reduce:transition-none [&>section]:min-h-full [&>section]:rounded-none [&>section]:border-0 [&>section]:shadow-none"
+      :class="
+        drawerOpen
+          ? 'visible translate-x-0'
+          : 'invisible translate-x-full rtl:-translate-x-full'
+      "
+      :inert="drawerOpen ? undefined : ''"
+      @keydown.esc="closePanel"
     >
       <content-inspector
         v-if="panel"
@@ -153,10 +145,12 @@
         :saving="saving"
         :error="formError"
         @save="save"
-        @remove="panel.block && askDelete(panel.block)"
+        @remove="
+          panel.block && askDelete(panel.block)
+        "
         @close="closePanel"
       />
-    </LazyVDialog>
+    </aside>
 
     <!-- Full preview -->
     <LazyVDialog
@@ -337,8 +331,9 @@ watch([debouncedQ, () => filters.tab, () => filters.state, perPage], () => {
   page.value = 1;
 });
 
-// --- Inspector: side panel on wide screens, dialog below ---
-const isWide = useWideScreen();
+// --- Inspector: a panel that slides in from the end edge ---
+const drawerOpen = ref(false);
+let opener: HTMLElement | null = null;
 
 // `block` is the block being edited, or null for a new one. A duplicate starts from a copy.
 const panel = ref<{ block: ContentBlock | null; seed?: ContentBlock } | null>(
@@ -353,24 +348,42 @@ const panelKey = computed(
     `${panel.value?.block?.id ?? (panel.value?.seed ? "copy" : "new")}-${nonce}`,
 );
 
-const dialogOpen = computed({
-  get: () => !isWide.value && !!panel.value,
-  set: (open) => {
-    if (!open) closePanel();
-  },
-});
-
-const open = (next: { block: ContentBlock | null; seed?: ContentBlock }) => {
+const open = async (next: { block: ContentBlock | null; seed?: ContentBlock }) => {
   panel.value = next;
   formError.value = "";
   nonce++;
+  if (!drawerOpen.value) opener = document.activeElement as HTMLElement | null;
+  drawerOpen.value = true;
+  await nextTick();
+  document
+    .querySelector<HTMLElement>("#content-drawer [aria-label='Close']")
+    ?.focus();
 };
 const openCreate = () => open({ block: null });
 const openEdit = (b: BlockRow) => open({ block: b });
+// The form stays in place until the panel has slid out, then it is cleared.
 const closePanel = () => {
-  panel.value = null;
-  formError.value = "";
+  if (!drawerOpen.value) return;
+  drawerOpen.value = false;
+  opener?.focus?.();
+  opener = null;
+  setTimeout(() => {
+    if (drawerOpen.value) return;
+    panel.value = null;
+    formError.value = "";
+  }, 300);
 };
+
+// The page shouldn't scroll underneath the open panel, and navigating away closes it.
+const scrollLock = useScrollLock(import.meta.client ? document.body : null);
+watch(drawerOpen, (isOpen) => {
+  scrollLock.value = isOpen;
+});
+onBeforeUnmount(() => {
+  scrollLock.value = false;
+});
+const route = useRoute();
+watch(() => route.fullPath, closePanel);
 
 // A duplicate is a new draft that begins with the original's content.
 const openDuplicate = (b: BlockRow) =>

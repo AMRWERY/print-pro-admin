@@ -86,7 +86,7 @@
       aria-labelledby="tab-operators"
       class="space-y-4"
     >
-      <div class="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_26rem]">
+      <div>
         <div class="min-w-0 space-y-4">
           <section class="card min-w-0" aria-label="Operator ledger">
             <div class="border-b border-line p-4 sm:p-5">
@@ -152,7 +152,7 @@
                 :rows="rows"
                 :loading="pending && !silent"
                 :per-page="perPage"
-                :selected-id="selectedOpId"
+                :selected-id="drawerOpen ? selectedOpId : null"
                 :super-role-id="SUPER_ROLE_ID"
                 @select="selectOperator"
                 @edit="openOperator"
@@ -205,32 +205,6 @@
             >
           </section>
         </div>
-
-        <!-- Wide screens: the role architect sits beside the ledger and stays in view -->
-        <aside
-          v-if="inspectorInAside"
-          class="min-w-0 xl:sticky xl:top-24 xl:max-h-[calc(100vh-7rem)] xl:overflow-y-auto"
-          aria-label="Role architect"
-        >
-          <role-inspector
-            v-if="activeRole"
-            :key="inspectorKey"
-            :role="activeRole"
-            :saving="savingRole"
-            :error="roleError"
-            @save="saveRole"
-            @clone="cloneRole(activeRole)"
-            @remove="askDeleteRole(activeRole)"
-            @close="closeRole"
-          />
-          <LazyVEmptyState
-            v-else
-            bare
-            icon="lucide:mouse-pointer-click"
-            title="Select an operator"
-            description="Choose an operator to see and edit the privileges of their role."
-          />
-        </aside>
       </div>
     </div>
 
@@ -278,12 +252,29 @@
       />
     </section>
 
-    <!-- Role architect in a dialog: narrow screens, and the matrix and roles tabs -->
-    <LazyVDialog
-      v-model:open="roleDialogOpen"
-      :title="activeRole?.name ?? 'Role'"
-      description="Edit the role's details and privileges."
-      size="lg"
+    <!-- Role architect: slides in from the end edge, like the notifications panel -->
+    <Transition name="fade">
+      <div
+        v-if="drawerOpen"
+        class="fixed inset-0 z-40 bg-ink/70 backdrop-blur-sm"
+        aria-hidden="true"
+        @click="closeRole"
+      />
+    </Transition>
+
+    <aside
+      id="role-drawer"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Role architect"
+      class="fixed inset-y-0 end-0 z-50 w-full max-w-2xl overflow-y-auto overscroll-contain border-s border-line bg-surface shadow-2xl shadow-black/50 transition-[transform,visibility] duration-normal ease-out motion-reduce:transition-none [&>section]:min-h-full [&>section]:rounded-none [&>section]:border-0 [&>section]:shadow-none"
+      :class="
+        drawerOpen
+          ? 'visible translate-x-0'
+          : 'invisible translate-x-full rtl:-translate-x-full'
+      "
+      :inert="drawerOpen ? undefined : ''"
+      @keydown.esc="closeRole"
     >
       <role-inspector
         v-if="activeRole"
@@ -296,7 +287,7 @@
         @remove="askDeleteRole(activeRole)"
         @close="closeRole"
       />
-    </LazyVDialog>
+    </aside>
 
     <!-- Operator form -->
     <LazyVDialog
@@ -584,7 +575,9 @@ const {
 } = useFetch<{ rows: RoleRow[] }>("/api/admin/roles", { lazy: true });
 const roles = computed(() => rolesData.value?.rows ?? []);
 
-const isWide = useWideScreen();
+// The role architect is a panel that slides in from the end edge.
+const drawerOpen = ref(false);
+let opener: HTMLElement | null = null;
 
 const activeRoleId = ref<string | null>(null);
 const selectedOpId = ref<string | null>(null);
@@ -599,28 +592,34 @@ let nonce = 0;
 
 const inspectorKey = computed(() => `${activeRoleId.value}-${nonce}`);
 
-// Beside the ledger on wide screens; a dialog everywhere else.
-const inspectorInAside = computed(
-  () => isWide.value && tab.value === "operators",
-);
-
-const roleDialogOpen = computed({
-  get: () => !inspectorInAside.value && !!activeRole.value,
-  set: (open) => {
-    if (!open) closeRole();
-  },
-});
+const showDrawer = async () => {
+  if (!drawerOpen.value) opener = document.activeElement as HTMLElement | null;
+  drawerOpen.value = true;
+  await nextTick();
+  document
+    .querySelector<HTMLElement>("#role-drawer [aria-label='Close']")
+    ?.focus();
+};
 
 const openRole = (r: RoleRow) => {
   activeRoleId.value = r.id;
   roleError.value = "";
   nonce++;
+  showDrawer();
 };
 
+// The form stays in place until the panel has slid out, then the selection is cleared.
 const closeRole = () => {
-  activeRoleId.value = null;
-  selectedOpId.value = null;
-  roleError.value = "";
+  if (!drawerOpen.value) return;
+  drawerOpen.value = false;
+  opener?.focus?.();
+  opener = null;
+  setTimeout(() => {
+    if (drawerOpen.value) return;
+    activeRoleId.value = null;
+    selectedOpId.value = null;
+    roleError.value = "";
+  }, 300);
 };
 
 const selectOperator = (o: OperatorRow) => {
@@ -628,12 +627,20 @@ const selectOperator = (o: OperatorRow) => {
   activeRoleId.value = o.roleId;
   roleError.value = "";
   nonce++;
+  showDrawer();
 };
 
-watch(tab, () => {
-  activeRoleId.value = null;
-  selectedOpId.value = null;
+// The page shouldn't scroll underneath the open panel, and navigating away closes it.
+const scrollLock = useScrollLock(import.meta.client ? document.body : null);
+watch(drawerOpen, (isOpen) => {
+  scrollLock.value = isOpen;
 });
+onBeforeUnmount(() => {
+  scrollLock.value = false;
+});
+const route = useRoute();
+watch(() => route.fullPath, closeRole);
+watch(tab, closeRole);
 
 const reasonOf = (e: unknown) =>
   (e as { data?: { data?: { reason?: string } } }).data?.data?.reason;
