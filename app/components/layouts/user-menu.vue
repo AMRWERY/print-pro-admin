@@ -7,14 +7,22 @@
         class="flex items-center gap-2.5 rounded-control p-1 transition duration-fast hover:bg-raised"
         @click="toggle"
       >
-        <span class="hidden text-end leading-tight md:block">
+        <span class="hidden text-center leading-tight md:block">
           <span class="block text-xs font-semibold">{{ name }}</span>
-          <span class="block font-mono text-2xs text-success">Administrator</span>
+          <span class="block font-mono text-2xs text-success"
+            >Administrator</span
+          >
         </span>
-        
+
         <LazyVAvatar :initials="initials" tone="accent" />
-       
-        <Icon name="lucide:chevron-down" size="14" class="hidden text-mute transition-transform duration-fast md:block" :class="open && 'rotate-180'" aria-hidden="true" />
+
+        <Icon
+          name="lucide:chevron-down"
+          size="14"
+          class="hidden text-mute transition-transform duration-fast md:block"
+          :class="open && 'rotate-180'"
+          aria-hidden="true"
+        />
         <span class="sr-only">Account menu</span>
       </button>
     </template>
@@ -30,7 +38,7 @@
       <nuxt-link-locale to="/profile" role="menuitem" class="menu-item">
         <Icon name="lucide:user-round" size="16" aria-hidden="true" /> Profile
       </nuxt-link-locale>
-      
+
       <nuxt-link-locale to="/settings" role="menuitem" class="menu-item">
         <Icon name="lucide:settings" size="16" aria-hidden="true" /> Settings
       </nuxt-link-locale>
@@ -51,5 +59,4 @@ const initials = computed(() =>
     .join("")
     .toUpperCase(),
 );
-
 </script>

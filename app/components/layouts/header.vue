@@ -13,29 +13,16 @@
         aria-label="Open navigation"
         @click="emit('openNav')"
       />
-      
+
       <LazyVBrandMark class="lg:hidden" />
 
-      <form
-        role="search"
-        class="relative order-last w-full md:order-none md:ms-auto md:w-72 lg:w-80"
-        @submit.prevent
-      >
-        <label for="admin-search" class="sr-only">Search orders, customers and products</label>
-        <Icon
-          name="lucide:search"
-          size="16"
-          class="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-mute"
-          aria-hidden="true"
-        />
-        <input
-          id="admin-search"
-          type="search"
-          autocomplete="off"
-          class="field !ps-9"
-          placeholder="Search orders, customers, products…"
-        />
-      </form>
+      <LazyVSearchInput
+        name="adminSearch"
+        label="Search orders, customers and products"
+        placeholder="Search orders, customers, products…"
+        to=""
+        class="order-last md:order-none md:ms-auto md:w-72 lg:w-80"
+      />
 
       <div class="ms-auto flex items-center gap-2 md:ms-0">
         <p
@@ -49,7 +36,8 @@
 
         <LazyVLocaleSwitcher />
 
-        <LazyVButton
+        <!-- notifications -->
+        <!-- <LazyVButton
           variant="icon"
           icon="lucide:bell"
           icon-class="icon-wiggle"
@@ -60,14 +48,13 @@
           :aria-expanded="notificationsOpen"
         >
           <span v-if="unread" class="count-badge" aria-hidden="true">{{ unread }}</span>
-        </LazyVButton>
+        </LazyVButton> -->
 
         <div class="ms-1 border-s border-line ps-3">
           <user-menu />
         </div>
       </div>
     </div>
-
   </header>
 </template>
 
