@@ -14,13 +14,31 @@
     <!-- Page-specific items go first, using class="menu-item w-full" and role="menuitem". -->
     <slot />
 
-    <button v-if="edit" type="button" role="menuitem" class="menu-item w-full" @click="emit('edit')">
+    <button
+      v-if="edit"
+      type="button"
+      role="menuitem"
+      class="menu-item w-full"
+      @click="emit('edit')"
+    >
       <Icon name="lucide:pencil" size="16" aria-hidden="true" /> Edit
     </button>
-    <button v-if="duplicate" type="button" role="menuitem" class="menu-item w-full" @click="emit('duplicate')">
+    <button
+      v-if="duplicate"
+      type="button"
+      role="menuitem"
+      class="menu-item w-full"
+      @click="emit('duplicate')"
+    >
       <Icon name="lucide:copy" size="16" aria-hidden="true" /> Duplicate
     </button>
-    <button v-if="remove" type="button" role="menuitem" class="menu-item w-full text-accent" @click="emit('remove')">
+    <button
+      v-if="remove"
+      type="button"
+      role="menuitem"
+      class="menu-item w-full text-accent"
+      @click="emit('remove')"
+    >
       <Icon name="lucide:trash-2" size="16" aria-hidden="true" /> Delete
     </button>
   </LazyVMenu>
@@ -33,6 +51,7 @@
  *
  *   <VRowActions label="Actions for Kopira Pro A3" duplicate @edit="…" @duplicate="…" @remove="…" />
  */
+
 withDefaults(
   defineProps<{
     /** Accessible name, for example "Actions for {name}". */

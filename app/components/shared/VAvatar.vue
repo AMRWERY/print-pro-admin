@@ -24,6 +24,7 @@ withDefaults(
 );
 
 const sizeClass = { sm: "h-8 w-8 text-2xs", md: "h-10 w-10 text-xs" };
+
 const toneClass = {
   neutral: "border border-line bg-raised",
   accent: "bg-accent text-onaccent",

@@ -101,6 +101,7 @@
 //                 show-per-page scroll-to="#results" />
 //
 // It owns no data. Page numbers collapse to "1 … 4 5 6 … 9" for long ranges.
+
 const props = withDefaults(
   defineProps<{
     page: number;

@@ -33,7 +33,8 @@
         </p>
       </div>
 
-      <LazyVButton variant="tertiary"
+      <LazyVButton
+        variant="tertiary"
         v-if="done && !current"
         class="text-sm underline-offset-4 hover:underline"
         :aria-label="`Edit ${title}`"
@@ -63,5 +64,6 @@ const state = useCheckoutState();
 const uid = useId();
 
 const current = computed(() => state.step === props.n);
+
 const done = computed(() => state.completed.includes(props.n));
 </script>

@@ -47,6 +47,7 @@
           name="email"
           type="email"
           label="Email"
+          placeholder="name@company.com"
           required
           rules="required|email"
           autocomplete="email"
@@ -60,6 +61,7 @@
           name="password"
           type="password"
           label="Password"
+          placeholder="*******"
           required
           revealable
           :rules="requiredText('Enter your password.')"

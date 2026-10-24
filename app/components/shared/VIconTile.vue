@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { Tone } from "~/types/admin/dashboard";
+import type { Tone } from "~/types/shared/VStatusBadge";
 
 /** A framed icon for list rows (product, notification kind…). Decorative. */
 withDefaults(defineProps<{ icon: string; tone?: Tone; size?: "sm" | "md" }>(), {

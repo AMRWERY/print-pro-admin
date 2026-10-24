@@ -70,14 +70,14 @@
 </template>
 
 <script lang="ts" setup>
+import type { Toast } from "~/types/shared/VToast";
+
 /**
  * The toast viewport. Mount once (app.vue) and trigger toasts with `useToast()`.
  * Tones: neutral, success, error, warning, info. Each toast can carry a description and an
  * action, closes itself after its duration (pausing while hovered or focused), and can be
  * dismissed with the X or Esc. Errors are announced assertively, the rest politely.
  */
-
-import type { Toast } from "~/types/shared/VToast";
 
 const { toasts, dismiss } = useToast();
 

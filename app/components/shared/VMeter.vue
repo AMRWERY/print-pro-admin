@@ -16,15 +16,15 @@
 </template>
 
 <script lang="ts" setup>
-import type { Tone } from "~/types/admin/dashboard";
+import type { Tone } from "~/types/shared/VStatusBadge";
 
 const props = withDefaults(
   defineProps<{ value: number; label: string; tone?: Tone }>(),
   { tone: "accent" },
 );
 
-const clamped = computed(() =>
-  Math.round(Math.min(100, Math.max(0, props.value)) * 10) / 10,
+const clamped = computed(
+  () => Math.round(Math.min(100, Math.max(0, props.value)) * 10) / 10,
 );
 
 const barClass: Record<Tone, string> = {

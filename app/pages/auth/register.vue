@@ -58,7 +58,8 @@
             "
           >
             <Icon v-if="step > i + 1" name="lucide:check" size="12" aria-hidden="true" />
-            <template v-else>{{ i + 1 }}</template>
+           
+              <template v-else>{{ i + 1 }}</template>
           </span>
           <span
             class="text-sm"
@@ -83,21 +84,21 @@
           <LazyVInput
             v-model="form.name"
             name="name"
+            placeholder="e.g. Elena Rostova"
             label="Full name"
             required
             :rules="requiredText('Enter your full name.')"
             autocomplete="name"
-            placeholder="e.g. Elena Rostova"
           />
 
           <LazyVInput
             v-model="form.studio"
             name="studio"
             label="Company name"
+            placeholder="e.g. Galerie Max Hetzler"
             required
             :rules="requiredText('Enter your company or organisation name.')"
             autocomplete="organization"
-            placeholder="e.g. Galerie Max Hetzler"
           />
 
           <LazyVInput
@@ -106,11 +107,11 @@
             name="email"
             type="email"
             label="Email"
+            placeholder="name@company.com"
             required
             rules="required|email"
             autocomplete="email"
             inputmode="email"
-            placeholder="name@company.com"
           />
         </fieldset>
 
@@ -144,6 +145,7 @@
               name="password"
               type="password"
               label="Password"
+              placeholder="*******"
               required
               revealable
               :rules="strongPasswordRule"
@@ -155,6 +157,7 @@
               name="confirm"
               type="password"
               label="Confirm password"
+              placeholder="*******"
               required
               revealable
               :rules="matchesRule(() => form.password)"
@@ -231,6 +234,7 @@
             @click="step = 1"
             >Back</LazyVButton
           >
+
           <LazyVButton
             type="submit"
             variant="primary"

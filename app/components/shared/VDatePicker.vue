@@ -290,6 +290,8 @@
 </template>
 
 <script lang="ts" setup>
+import type { Cell } from "~/types/shared/VDatePicker";
+
 /**
  * Date picker with the same vee-validate behaviour as <LazyVInput>. The value is an ISO
  * date string ("2026-10-12"), or "" when empty, so it round-trips with plain `ref("")`.
@@ -303,7 +305,6 @@
  * - Opens as a bottom sheet on phones and a popover (flipping above when needed) elsewhere.
  * - Follows the site locale (month names, digits, first day of the week).
  */
-import type { Cell } from "~/types/shared/VDatePicker";
 
 defineOptions({ inheritAttrs: false });
 
@@ -403,11 +404,15 @@ const fmtLong = computed(
       year: "numeric",
     }),
 );
+
 const fmtNum = computed(
   () => new Intl.NumberFormat(locale.value, { useGrouping: false }),
 );
+
 const num = (n: number) => fmtNum.value.format(n);
+
 const longLabel = (iso: string) => fmtLong.value.format(fromIso(iso));
+
 const monthName = (m: number, style: "long" | "short" = "long") =>
   new Intl.DateTimeFormat(locale.value, { month: style }).format(
     new Date(2024, m, 1),
@@ -427,6 +432,7 @@ const firstDay = computed(() => {
   }
   return locale.value.startsWith("ar") ? 6 : 0;
 });
+
 const weekdays = computed(() =>
   Array.from({ length: 7 }, (_, i) => {
     const d = new Date(2024, 0, 7 + ((firstDay.value + i) % 7)); // 2024-01-07 is a Sunday

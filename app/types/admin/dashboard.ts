@@ -1,5 +1,3 @@
-export type Tone = "success" | "accent" | "warning" | "info" | "neutral";
-
 export type RangeKey = "today" | "week" | "month" | "quarter" | "year";
 
 export type RevenueUnit = "hour" | "day" | "week" | "month";

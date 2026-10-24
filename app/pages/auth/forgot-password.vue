@@ -79,6 +79,7 @@
             name="email"
             type="email"
             label="Email"
+            placeholder="name@company.com"
             required
             rules="required|email"
             autocomplete="email"

@@ -1,13 +1,27 @@
 <template>
-  <div :class="inline ? 'flex items-center gap-2' : 'space-y-1.5'" v-bind="wrapperAttrs()">
-    <label v-if="label" :for="inputId" class="block" :class="[labelClass ?? 'text-sm font-medium', hideLabel && 'sr-only']">
+  <div
+    :class="inline ? 'flex items-center gap-2' : 'space-y-1.5'"
+    v-bind="wrapperAttrs()"
+  >
+    <label
+      v-if="label"
+      :for="inputId"
+      class="block"
+      :class="[labelClass ?? 'text-sm font-medium', hideLabel && 'sr-only']"
+    >
       {{ label }}
       <span v-if="required" class="text-accent" aria-hidden="true">*</span>
       <span v-else-if="optional" class="font-normal text-mute">(optional)</span>
     </label>
 
     <div :class="(icon || revealable) && 'relative'">
-      <Icon v-if="icon" :name="icon" size="16" class="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-mute" aria-hidden="true" />
+      <Icon
+        v-if="icon"
+        :name="icon"
+        size="16"
+        class="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-mute"
+        aria-hidden="true"
+      />
       <input
         v-bind="controlAttrs()"
         :id="inputId"
@@ -15,6 +29,7 @@
         :type="inputType"
         :name="fieldName"
         :value="display"
+        :placeholder="placeholder"
         :class="controlClass"
         :aria-invalid="errorMessage ? 'true' : undefined"
         :aria-describedby="describedBy"
@@ -31,18 +46,40 @@
         :aria-pressed="shown"
         @click="shown = !shown"
       >
-        <Icon :name="shown ? 'lucide:eye-off' : 'lucide:eye'" size="16" aria-hidden="true" />
+        <Icon
+          :name="shown ? 'lucide:eye-off' : 'lucide:eye'"
+          size="16"
+          aria-hidden="true"
+        />
       </VButton>
     </div>
 
-    <p v-if="hint && !errorMessage" :id="`${inputId}-hint`" class="text-xs text-mute">{{ hint }}</p>
-    <p v-if="errorMessage" :id="`${inputId}-error`" class="flex items-start gap-1.5 text-xs text-accent" role="alert">
-      <Icon name="lucide:circle-alert" size="14" class="mt-px shrink-0" aria-hidden="true" />{{ errorMessage }}
+    <p
+      v-if="hint && !errorMessage"
+      :id="`${inputId}-hint`"
+      class="text-xs text-mute"
+    >
+      {{ hint }}
+    </p>
+    <p
+      v-if="errorMessage"
+      :id="`${inputId}-error`"
+      class="flex items-start gap-1.5 text-xs text-accent"
+      role="alert"
+    >
+      <Icon
+        name="lucide:circle-alert"
+        size="14"
+        class="mt-px shrink-0"
+        aria-hidden="true"
+      />{{ errorMessage }}
     </p>
   </div>
 </template>
 
 <script lang="ts" setup>
+import type { FieldType } from "~/types/shared/VInput";
+
 /**
  * Text-like inputs. Checkboxes live in <LazyVCheckboxImput>, radios in <LazyVRadioInput>, selects live in <LazyVSelectInput> and
  * multi-line text in <LazyVTextarea>; all three share the same vee-validate wiring.
@@ -52,12 +89,10 @@
  * - Works on its own, and inside a `useForm()` (it registers by `name`).
  * - Validates on blur, then re-checks while typing once an error is showing.
  * - `class` styles the wrapper; `inputClass` styles the control. Native attrs
- *   (autocomplete, placeholder, min, max, @keydown…) go to the control.
+ *   (autocomplete, min, max, @keydown…) go to the control.
  */
-defineOptions({ inheritAttrs: false });
 
-type FieldType =
-  | "text" | "email" | "tel" | "password" | "search" | "number" | "url" | "range";
+defineOptions({ inheritAttrs: false });
 
 const props = withDefaults(
   defineProps<{
@@ -70,6 +105,8 @@ const props = withDefaults(
     /** vee-validate rules: "required|email", an object, or a function. */
     rules?: unknown;
     hint?: string;
+    /** Hint text shown inside the empty field. Not a replacement for the label. */
+    placeholder?: string;
     /** Shows the asterisk. */
     required?: boolean;
     /** Shows "(optional)". */
@@ -96,16 +133,36 @@ const props = withDefaults(
 const emit = defineEmits<{ "update:modelValue": [value: unknown] }>();
 
 const {
-  el, fieldName, inputId, value, errorMessage, validate, describedBy, controlAttrs, wrapperAttrs, commit, recheck, onBlur,
+  el,
+  fieldName,
+  inputId,
+  value,
+  errorMessage,
+  validate,
+  describedBy,
+  controlAttrs,
+  wrapperAttrs,
+  commit,
+  recheck,
+  onBlur,
 } = useFormField(props, (v) => emit("update:modelValue", v));
 
 const shown = ref(false);
-const inputType = computed(() => (props.revealable && props.type === "password" && shown.value ? "text" : props.type));
+const inputType = computed(() =>
+  props.revealable && props.type === "password" && shown.value
+    ? "text"
+    : props.type,
+);
 
 const display = computed(() => (value.value ?? "") as string | number);
 
 const controlClass = computed(() => [
-  props.variant === "field" && ["field", props.icon && "!ps-10", props.revealable && "!pe-11", errorMessage.value && "!border-accent"],
+  props.variant === "field" && [
+    "field",
+    props.icon && "!ps-10",
+    props.revealable && "!pe-11",
+    errorMessage.value && "!border-accent",
+  ],
   props.inputClass,
 ]);
 

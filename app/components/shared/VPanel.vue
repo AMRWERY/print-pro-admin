@@ -1,4 +1,3 @@
-
 <template>
   <section class="card flex flex-col" :aria-labelledby="id">
     <header
@@ -39,6 +38,7 @@
  *     …
  *   </VPanel>
  */
+
 withDefaults(
   defineProps<{
     title: string;

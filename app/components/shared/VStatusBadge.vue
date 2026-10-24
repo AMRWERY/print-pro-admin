@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { Tone } from "~/types/admin/dashboard";
+import type { Tone } from "~/types/shared/VStatusBadge";
 
 /**
  * Status chip. Colour is never the only signal: pass an icon and always put the
