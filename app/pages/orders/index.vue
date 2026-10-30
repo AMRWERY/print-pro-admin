@@ -226,14 +226,11 @@ const query = computed(() => ({
   perPage: perPage.value,
 }));
 
-// lazy: the screen renders at once and the KPIs and table show their own skeletons.
-const { data, pending, error, refresh } = useFetch<OrdersResponse>(
-  "/api/admin/orders",
-  {
-    lazy: true,
-    query,
-  },
-);
+// The screen renders at once and the KPIs and table show their own skeletons.
+const store = useOrdersStore();
+const { list: data, pending, error } = storeToRefs(store);
+const refresh = () => store.refresh();
+watch(query, (q) => store.fetchList(q), { immediate: true });
 
 const rows = computed(() => data.value?.rows ?? []);
 

@@ -192,30 +192,23 @@ const submit = async () => {
   loading.value = true;
   error.value = "";
   try {
-    const updated = await $fetch<InventoryItem>(
+    const inventory = useInventoryStore();
+    const updated =
       tab.value === "adjust"
-        ? "/api/admin/inventory/adjust"
-        : "/api/admin/inventory/transfer",
-      {
-        method: "POST",
-        body:
-          tab.value === "adjust"
-            ? {
-                productId: product.value.id,
-                mode: mode.value,
-                qty: qty.value,
-                reason: reason.value,
-              }
-            : { productId: product.value.id, warehouse: warehouse.value },
-      },
-    );
+        ? await inventory.adjust({
+            productId: product.value.id,
+            mode: mode.value,
+            qty: qty.value,
+            reason: reason.value,
+          })
+        : await inventory.transfer({ productId: product.value.id, warehouse: warehouse.value });
     toast.success(tab.value === "adjust" ? "Stock adjusted" : "Item moved", {
       description: updated.name,
     });
     emit("done", updated);
     open.value = false;
   } catch (e) {
-    const status = (e as { statusCode?: number }).statusCode;
+    const status = statusOf(e);
     error.value =
       status === 409
         ? "That would put the stock below zero or over the limit."

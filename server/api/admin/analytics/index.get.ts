@@ -1,6 +1,1 @@
-import { buildAnalytics, parseAnalyticsQuery } from "~/data/admin-analytics";
-
-export default defineEventHandler(async (event) => {
-  await simulateLatency(350);
-  return buildAnalytics(parseAnalyticsQuery(getQuery(event)));
-});
+export default defineEventHandler((event) => forward(event, "/api/admin/analytics"));

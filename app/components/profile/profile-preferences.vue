@@ -57,8 +57,12 @@ const appearance = computed<Theme>({
   },
 });
 
-const setNewsletter = (value: unknown) => {
-  auth.updateProfile({ newsletter: value === true });
+const setNewsletter = async (value: unknown) => {
+  const res = await auth.updateProfile({ newsletter: value === true });
+  if (!res.ok) {
+    toast.error("Couldn't update preferences");
+    return;
+  }
   toast.success(
     value === true
       ? "Subscribed to announcements"

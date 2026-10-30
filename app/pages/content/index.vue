@@ -269,7 +269,6 @@ import type {
   BlockRow,
   BlockStatusFilter,
   BlockTab,
-  BlocksResponse,
   ContentBlock,
   PreviewDevice,
 } from "~/types/admin/content";
@@ -297,12 +296,12 @@ const query = computed(() => ({
   perPage: perPage.value,
 }));
 
-// lazy: the screen renders at once; the cards and the list show their own skeletons.
-// deep: reordering updates the rows on screen before the server confirms.
-const { data, pending, error, refresh } = useFetch<BlocksResponse>(
-  "/api/admin/content",
-  { lazy: true, deep: true, query },
-);
+// The screen renders at once; the cards and the list show their own skeletons.
+// Reordering updates the rows on screen (in the store) before the server confirms.
+const store = useContentStore();
+const { data, pending, error } = storeToRefs(store);
+const refresh = () => store.refresh();
+watch(query, (q) => store.fetchList(q), { immediate: true });
 
 const rows = computed(() => data.value?.rows ?? []);
 
@@ -404,10 +403,7 @@ const save = async (values: BlockInput) => {
   formError.value = "";
   const target = panel.value?.block;
   try {
-    const saved = await $fetch<BlockRow>(
-      target ? `/api/admin/content/${target.id}` : "/api/admin/content",
-      { method: target ? "PATCH" : "POST", body: values },
-    );
+    const saved = await store.save(target ? target.id : null, values);
     toast.success(target ? "Content block updated" : "Content block created", {
       description: saved.title,
     });
@@ -419,7 +415,7 @@ const save = async (values: BlockInput) => {
     await reload();
     open({ block: saved });
   } catch (e) {
-    const status = (e as { statusCode?: number }).statusCode;
+    const status = statusOf(e);
     formError.value =
       status === 404
         ? "This block no longer exists. Close the form and refresh the list."
@@ -435,10 +431,7 @@ const setPublished = async (b: BlockRow, publish: boolean) => {
   const before = b.status;
   b.status = status; // the switch moves at once
   try {
-    const saved = await $fetch<BlockRow>(`/api/admin/content/${b.id}/status`, {
-      method: "POST",
-      body: { status },
-    });
+    const saved = await store.setStatus(b.id, status);
     toast.success(publish ? "Published" : "Unpublished", {
       description:
         publish && saved.state === "scheduled"
@@ -457,18 +450,8 @@ const setPublished = async (b: BlockRow, publish: boolean) => {
 // --- Reorder: the rows move at once; a failed save puts them back ---
 const reorder = async (ids: string[]) => {
   if (!data.value) return;
-  const byId = new Map(data.value.rows.map((r) => [r.id, r]));
-  const positions = data.value.rows
-    .map((r) => r.position)
-    .sort((a, c) => a - c);
-  const next = ids.map((id) => byId.get(id)!);
-  next.forEach((r, i) => (r.position = positions[i]!));
-  data.value.rows = next;
   try {
-    await $fetch("/api/admin/content/reorder", {
-      method: "POST",
-      body: { ids },
-    });
+    await store.reorder(ids);
     toast.success("Order saved", {
       description: "The storefront follows the new sequence.",
     });
@@ -514,7 +497,7 @@ const confirmDelete = async () => {
   if (!b) return;
   deleting.value = true;
   try {
-    await $fetch(`/api/admin/content/${b.id}`, { method: "DELETE" });
+    await store.remove(b.id);
     toast.success("Content block deleted", { description: b.title });
     if (panel.value?.block?.id === b.id) closePanel();
     deleteOpen.value = false;
@@ -533,7 +516,7 @@ const flushing = ref(false);
 const flushCache = async () => {
   flushing.value = true;
   try {
-    await $fetch("/api/admin/content/flush", { method: "POST" });
+    await store.flush();
     toast.success("Edge cache flushed", {
       description: "Visitors see the latest content within a minute.",
     });

@@ -175,9 +175,7 @@ import { warehouseLabel } from "~/data/inventory-meta";
 import type {
   InventoryFilter,
   InventoryItem,
-  InventoryResponse,
   InventorySort,
-  Movement,
   Warehouse,
 } from "~/types/admin/inventory";
 import type { ProductCategory } from "~/types/admin/products";
@@ -206,20 +204,14 @@ const query = computed(() => ({
 }));
 
 // lazy: the screen renders at once; the cards, ledger and feed show their own skeletons.
-const { data, pending, error, refresh } = useFetch<InventoryResponse>(
-  "/api/admin/inventory",
-  {
-    lazy: true,
-    query,
-  },
-);
-const { data: movements, refresh: refreshMovements } = useFetch<Movement[]>(
-  "/api/admin/inventory/movements",
-  {
-    lazy: true,
-    query: { limit: 8 },
-  },
-);
+const store = useInventoryStore();
+const { list: data, error, movements } = storeToRefs(store);
+const pending = computed(() => store.status === "pending");
+const refresh = () => store.refresh();
+const refreshMovements = () => store.fetchMovements();
+
+watch(query, (q) => store.fetchList(q), { immediate: true });
+store.fetchMovements();
 
 const rows = computed(() => data.value?.rows ?? []);
 
@@ -294,7 +286,7 @@ const confirmDelete = async () => {
   if (!target) return;
   deleting.value = true;
   try {
-    await $fetch(`/api/admin/inventory/items/${target.id}`, { method: "DELETE" });
+    await store.removeItem(target.id);
     toast.success("Item deleted", { description: target.name });
     deleteOpen.value = false;
     onChanged();

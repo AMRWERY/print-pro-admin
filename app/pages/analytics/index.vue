@@ -209,15 +209,12 @@ const filters = reactive({
   cohort: "all" as Cohort,
 });
 
-// lazy: the page renders at once; the cards and charts show their own skeletons.
+// The page renders at once; the cards and charts show their own skeletons.
 // Changing any filter fetches again, and the previous numbers stay on screen until the new ones land.
-const { data, pending, error, refresh } = useFetch<AnalyticsResponse>(
-  "/api/admin/analytics",
-  {
-    lazy: true,
-    query: computed(() => ({ ...filters })),
-  },
-);
+const store = useAnalyticsStore();
+const { report: data, pending, error } = storeToRefs(store);
+const refresh = () => store.refresh();
+watch(() => ({ ...filters }), (q) => store.fetchReport(q), { immediate: true });
 
 const sync = async () => {
   await refresh();
@@ -234,17 +231,12 @@ const exportReport = async (format: "pdf" | "excel") => {
   if (!data.value) return;
   exporting.value = true;
   try {
-    const top = await $fetch<TopProductsResponse>(
-      "/api/admin/analytics/top-products",
-      {
-        query: {
-          range: filters.range,
-          from: filters.from,
-          to: filters.to,
-          perPage: 25,
-        },
-      },
-    );
+    const top = await store.loadTopForExport({
+      range: filters.range,
+      from: filters.from,
+      to: filters.to,
+      perPage: 25,
+    });
     await (format === "pdf" ? downloadAnalyticsPdf : downloadAnalyticsExcel)(
       data.value,
       top.rows,

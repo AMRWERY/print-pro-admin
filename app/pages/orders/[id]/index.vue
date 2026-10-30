@@ -235,16 +235,13 @@ const cents = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
 const slug = computed(() => String(route.params.id));
 const orderId = computed(() => `#${slug.value}`);
 
-// lazy: the header shows at once and the panels show their skeleton.
-const {
-  data: detail,
-  error,
-  refresh,
-} = useFetch<OrderDetail>(() => `/api/admin/orders/${slug.value}`, {
-  lazy: true,
-});
+// The header shows at once and the panels show their skeleton.
+const store = useOrdersStore();
+const { detail, detailError: error } = storeToRefs(store);
+const refresh = () => store.refreshDetail();
+watch(slug, (s) => store.fetchDetail(s), { immediate: true });
 
-const notFound = computed(() => error.value?.statusCode === 404);
+const notFound = computed(() => statusOf(error.value) === 404);
 
 const deliveryNote = computed(() =>
   detail.value?.row.stage === "completed"
@@ -259,13 +256,7 @@ const confirmOpen = ref(false);
 const moveTo = async (stage: OrderStage) => {
   moving.value = true;
   try {
-    detail.value = await $fetch<OrderDetail>(
-      `/api/admin/orders/${slug.value}`,
-      {
-        method: "PATCH",
-        body: { stage },
-      },
-    );
+    await store.moveStage(slug.value, stage);
     toast.success(
       stage === "completed" ? "Order completed" : "Progress updated",
       { description: `${orderId.value} is now at: ${stageMeta[stage].tab}.` },
@@ -291,13 +282,7 @@ const savingNote = ref(false);
 const addNote = async (payload: { text: string; urgent: boolean }) => {
   savingNote.value = true;
   try {
-    detail.value = await $fetch<OrderDetail>(
-      `/api/admin/orders/${slug.value}/notes`,
-      {
-        method: "POST",
-        body: payload,
-      },
-    );
+    await store.addNote(slug.value, payload);
     notesRef.value?.reset();
     toast.success("Note saved");
   } catch {

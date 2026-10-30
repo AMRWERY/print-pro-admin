@@ -133,21 +133,20 @@ const token = computed(() =>
 );
 
 const ready = ref(false);
+const state = ref<{ valid: true; expires: number } | { valid: false }>({ valid: false });
 
 onMounted(async () => {
-  await nextTick(); // let the store read this browser's saved reset tokens
+  state.value = await auth.tokenState(token.value);
   ready.value = true;
 });
 
 // Re-evaluated every second so the page notices when the link runs out.
 const now = ref(Date.now());
 
-useIntervalFn(() => (now.value = Date.now()), 1000);
-
-const state = computed(() => {
-  void now.value;
-  return auth.tokenState(token.value);
-});
+useIntervalFn(() => {
+  now.value = Date.now();
+  if (state.value.valid && state.value.expires <= now.value) state.value = { valid: false };
+}, 1000);
 
 const remaining = computed(() => {
   if (!state.value.valid) return "0:00";

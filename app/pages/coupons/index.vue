@@ -256,7 +256,6 @@ import type {
   CouponTab,
   CouponTier,
   CouponType,
-  CouponsResponse,
 } from "~/types/admin/coupons";
 
 const toast = useToast();
@@ -283,11 +282,11 @@ const query = computed(() => ({
   perPage: perPage.value,
 }));
 
-// lazy: the screen renders at once; the cards and the ledger show their own skeletons.
-const { data, pending, error, refresh } = useFetch<CouponsResponse>(
-  "/api/admin/coupons",
-  { lazy: true, query },
-);
+// The screen renders at once; the cards and the ledger show their own skeletons.
+const store = useCouponsStore();
+const { data, pending, error } = storeToRefs(store);
+const refresh = () => store.refresh();
+watch(query, (q) => store.fetchList(q), { immediate: true });
 
 const rows = computed(() => data.value?.rows ?? []);
 
@@ -394,13 +393,7 @@ const save = async (values: CouponInput) => {
   formError.value = "";
   const target = panel.value?.coupon;
   try {
-    const saved = await $fetch<CouponRow>(
-      target ? `/api/admin/coupons/${target.id}` : "/api/admin/coupons",
-      {
-        method: target ? "PATCH" : "POST",
-        body: values,
-      },
-    );
+    const saved = await store.save(target ? target.id : null, values);
     toast.success(target ? "Voucher updated" : "Voucher created", {
       description: saved.code,
     });
@@ -413,7 +406,7 @@ const save = async (values: CouponInput) => {
     await refresh();
     open({ coupon: saved });
   } catch (e) {
-    const status = (e as { statusCode?: number }).statusCode;
+    const status = statusOf(e);
     formError.value =
       status === 409
         ? "Another voucher already uses that code. Choose a different one."
@@ -435,10 +428,7 @@ const runBulk = async (
   action: Exclude<CouponBulkAction, "delete">,
 ) => {
   try {
-    const { changed } = await $fetch<{ changed: number }>(
-      "/api/admin/coupons/bulk",
-      { method: "POST", body: { ids, action } },
-    );
+    const { changed } = await store.bulk(ids, action);
     if (changed)
       toast.success(
         `${changed} voucher${changed > 1 ? "s" : ""} ${bulkWords[action]}`,
@@ -474,10 +464,7 @@ const confirmDelete = async () => {
   deleting.value = true;
   try {
     const { ids, label } = pendingDelete.value;
-    await $fetch("/api/admin/coupons/bulk", {
-      method: "POST",
-      body: { ids, action: "delete" },
-    });
+    await store.remove(ids);
     toast.success("Voucher deleted", { description: label });
     if (panel.value?.coupon && ids.includes(panel.value.coupon.id))
       closePanel();

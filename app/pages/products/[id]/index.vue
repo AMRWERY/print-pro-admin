@@ -48,20 +48,18 @@
 </template>
 
 <script lang="ts" setup>
-import type { ProductDetail, ProductFormValues } from "~/types/admin/products";
+import type { ProductFormValues } from "~/types/admin/products";
 
 const route = useRoute();
 const id = computed(() => String(route.params.id));
 
-const {
-  data: detail,
-  error,
-  refresh,
-} = useFetch<ProductDetail>(() => `/api/admin/products/${id.value}`, {
-  lazy: true,
-});
+const store = useProductsStore();
+const { detail, detailError: error } = storeToRefs(store);
+const refresh = () => store.refreshDetail();
 
-const notFound = computed(() => error.value?.statusCode === 404);
+watch(id, (v) => store.fetchDetail(v), { immediate: true });
+
+const notFound = computed(() => !!error.value && statusOf(error.value) === 404);
 
 // Only the form's fields go to the editor; the rest (EAN, revisions…) are display-only.
 const initial = computed<ProductFormValues>(() => {

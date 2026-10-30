@@ -77,11 +77,20 @@ const item = defineModel<InventoryItem | null>({ default: null });
 const q = ref("");
 const debounced = refDebounced(q, 250);
 
-const { data: results } = useFetch<InventoryItem[]>(
-  "/api/admin/inventory/search",
-  {
-    query: { q: debounced },
-    lazy: true,
+const productsStore = useProductsStore();
+const results = ref<InventoryItem[] | null>(null);
+let ticket = 0;
+watch(
+  debounced,
+  async (term) => {
+    const mine = ++ticket;
+    try {
+      const rows = await productsStore.searchStock(term);
+      if (mine === ticket) results.value = rows;
+    } catch {
+      // keep the previous suggestions
+    }
   },
+  { immediate: true },
 );
 </script>

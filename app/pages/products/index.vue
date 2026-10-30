@@ -205,7 +205,6 @@ import type {
   ProductCategory,
   ProductSort,
   ProductStatus,
-  ProductsResponse,
   StockFilter,
 } from "~/types/admin/products";
 
@@ -236,14 +235,12 @@ const query = computed(() => ({
 }));
 
 // lazy: the screen renders at once; the KPIs and the register show their own skeletons.
-const { data, pending, error, refresh } = useFetch<ProductsResponse>(
-  "/api/admin/products",
-  {
-    lazy: true,
-    deep: true,
-    query,
-  },
-);
+const store = useProductsStore();
+const { list: data, error } = storeToRefs(store);
+const pending = computed(() => store.status === "pending");
+const refresh = () => store.refresh();
+
+watch(query, (q) => store.fetchList(q), { immediate: true });
 
 const rows = computed(() => data.value?.rows ?? []);
 
@@ -294,12 +291,8 @@ const adjustStock = async (p: Product, next: number) => {
   const previous = p.stock;
   p.stock = next;
   try {
-    await $fetch(`/api/admin/products/${p.id}`, {
-      method: "PATCH",
-      body: { stock: next },
-    });
+    await store.adjustStock(p, next);
   } catch {
-    p.stock = previous;
     toast.error("Couldn't update stock", {
       description: `${p.name} is back to ${previous}.`,
     });
@@ -321,14 +314,10 @@ const confirmDelete = async () => {
   deleting.value = true;
   try {
     const { ids, label } = pendingDelete.value;
-    await $fetch("/api/admin/products/bulk-delete", {
-      method: "POST",
-      body: { ids },
-    });
+    await store.removeMany(ids);
     toast.success("Removed from the register", { description: label });
     selected.value = [];
     deleteOpen.value = false;
-    await refresh();
   } catch {
     toast.error("Couldn't delete", {
       description: "Nothing was removed. Try again.",

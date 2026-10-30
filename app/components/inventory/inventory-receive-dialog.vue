@@ -115,17 +115,11 @@ const submit = async () => {
   loading.value = true;
   error.value = "";
   try {
-    const updated = await $fetch<InventoryItem>(
-      "/api/admin/inventory/receive",
-      {
-        method: "POST",
-        body: {
-          productId: product.value.id,
-          qty: qty.value,
-          reference: reference.value,
-        },
-      },
-    );
+    const updated = await useInventoryStore().receive({
+      productId: product.value.id,
+      qty: qty.value,
+      reference: reference.value,
+    });
     toast.success("Delivery received", {
       description: `${updated.name}: now ${updated.stock} in stock.`,
     });

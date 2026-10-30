@@ -122,15 +122,17 @@ const submit = async () => {
   const { valid } = await validate();
   if (!valid) return;
   saving.value = true;
-  // The store works in this browser, so a short pause stands in for the save.
-  await new Promise((r) => setTimeout(r, 250));
-  auth.updateProfile({
+  const res = await auth.updateProfile({
     name: form.name.trim(),
     studio: form.studio.trim(),
     title: form.title.trim() || undefined,
     phone: form.phone.trim() || undefined,
   });
   saving.value = false;
+  if (!res.ok) {
+    toast.error("Couldn't update profile");
+    return;
+  }
   toast.success("Profile updated");
 };
 </script>

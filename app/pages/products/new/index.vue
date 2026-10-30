@@ -13,7 +13,7 @@
 
 <script lang="ts" setup>
 import { buildVariants } from "~/utils/product-variants";
-import type { ProductDetail, ProductFormValues } from "~/types/admin/products";
+import type { ProductFormValues } from "~/types/admin/products";
 
 const route = useRoute();
 const from = typeof route.query.from === "string" ? route.query.from : "";
@@ -57,7 +57,7 @@ const initial = ref<ProductFormValues | null>(from ? null : blank());
 // "Duplicate" arrives as ?from=<id>: start from a copy that needs its own SKU.
 if (from) {
   try {
-    const source = await $fetch<ProductDetail>(`/api/admin/products/${from}`);
+    const source = await useProductsStore().loadDetail(String(from));
     const {
       id: _id,
       ean: _ean,

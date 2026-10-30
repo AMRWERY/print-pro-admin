@@ -272,11 +272,11 @@ const query = computed(() => ({
   perPage: perPage.value,
 }));
 
-// lazy: the screen renders at once; the cards and the registry show their own skeletons.
-const { data, pending, error, refresh } = useFetch<CustomersResponse>(
-  "/api/admin/customers",
-  { lazy: true, query },
-);
+// The screen renders at once; the cards and the registry show their own skeletons.
+const store = useCustomersStore();
+const { list: data, pending, error } = storeToRefs(store);
+const refresh = () => store.refresh();
+watch(query, (q) => store.fetchList(q), { immediate: true });
 
 const rows = computed(() => data.value?.rows ?? []);
 
@@ -390,10 +390,7 @@ const confirmDelete = async () => {
   deleting.value = true;
   try {
     const { ids, label } = pendingDelete.value;
-    await $fetch("/api/admin/customers/bulk-delete", {
-      method: "POST",
-      body: { ids },
-    });
+    await store.bulkDelete(ids);
     toast.success("Removed from the registry", { description: label });
     if (selectedId.value && ids.includes(selectedId.value)) {
       closeDrawer();

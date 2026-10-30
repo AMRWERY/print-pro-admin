@@ -169,10 +169,7 @@ const submit = async () => {
   loading.value = true;
   error.value = "";
   try {
-    const row = await $fetch<OrderRow>("/api/admin/orders", {
-      method: "POST",
-      body: { ...form },
-    });
+    const row = await useOrdersStore().create({ ...form });
     toast.success(`Order ${row.id} created`, {
       description: "The order is waiting for payment.",
     });

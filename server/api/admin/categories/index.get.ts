@@ -1,6 +1,1 @@
-import { listCategories } from "~/data/admin-categories";
-
-export default defineEventHandler(async () => {
-  await simulateLatency(300);
-  return listCategories();
-});
+export default defineEventHandler((event) => forward(event, "/api/admin/categories"));

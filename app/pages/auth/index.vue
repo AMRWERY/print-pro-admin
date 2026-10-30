@@ -107,16 +107,6 @@
           {{ lockedFor > 0 ? `Try again in ${lockedFor}s` : "Sign in" }}
         </LazyVButton>
       </form>
-
-      <p class="text-center text-sm text-mute">
-        New to PrintPro?
-        <LazyVButton
-          variant="tertiary"
-          to="/auth/register"
-          class="!text-accent"
-          >Create an account</LazyVButton
-        >
-      </p>
     </section>
   </auth-shell>
 </template>
@@ -133,7 +123,6 @@ const redirect = computed(() => safeRedirect(route.query.redirect));
 const notice = computed(() => {
   if (route.query.reset)
     return "Password updated. Sign in with your new password.";
-  if (route.query.registered) return "Account created. Sign in to continue.";
   return "";
 });
 

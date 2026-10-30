@@ -12,6 +12,12 @@ export default defineNuxtConfig({
   // Rendering on the client keeps protected pages from flashing before the auth guard runs.
   ssr: false,
   devtools: { enabled: true },
+  // The admin dev server runs on 3001 so it doesn't collide with the storefront on 3000.
+  devServer: { port: 3001 },
+  runtimeConfig: {
+    // Where the PrintPro API lives (server-only). Override with NUXT_API_BASE.
+    apiBase: "http://localhost:4000",
+  },
   postcss: {
     plugins: {
       tailwindcss: {},

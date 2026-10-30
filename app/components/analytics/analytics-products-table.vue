@@ -280,10 +280,10 @@ const query = computed(() => ({
   to: props.period.to,
 }));
 
-const { data, pending, error, refresh } = useFetch<TopProductsResponse>(
-  "/api/admin/analytics/top-products",
-  { lazy: true, query },
-);
+const store = useAnalyticsStore();
+const { top: data, topPending: pending, topError: error } = storeToRefs(store);
+const refresh = () => store.refreshTop();
+watch(query, (q) => store.fetchTop(q), { immediate: true });
 
 watch(
   [

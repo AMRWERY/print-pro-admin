@@ -24,6 +24,7 @@
         </div>
 
         <div
+          v-if="sent.token"
           class="space-y-3 rounded-card border border-yellow/40 bg-yellow-soft p-4 text-sm"
           role="note"
         >
@@ -35,7 +36,7 @@
             />Demo mode
           </p>
           <p class="text-mute">
-            No email is sent from this demo. Use the link below to continue.
+            No email service is connected in this environment. Use the link below to continue.
           </p>
           <LazyVButton
             variant="primary"
@@ -129,7 +130,8 @@ const auth = useAuthStore();
 const email = ref("");
 const emailField = ref<Validatable>();
 const loading = ref(false);
-const sent = ref<{ token: string; expires: number } | null>(null);
+// `token` is only present outside production, where no mail service is connected.
+const sent = ref<{ token?: string; expires?: number } | null>(null);
 const heading = ref<HTMLElement>();
 
 const submit = async () => {
@@ -137,9 +139,12 @@ const submit = async () => {
   if (!check?.valid) return;
 
   loading.value = true;
-  await new Promise((r) => setTimeout(r, 500)); // there is no mail server; keep the feedback brief
-  // The same answer whether or not the email is registered, so this form can't be used to find accounts.
-  sent.value = auth.requestReset(email.value);
+  try {
+    // The same answer whether or not the email is registered, so this form can't be used to find accounts.
+    sent.value = await auth.requestReset(email.value);
+  } catch {
+    sent.value = {};
+  }
   loading.value = false;
 
   await nextTick();

@@ -217,15 +217,15 @@ const submit = async () => {
   error.value = "";
   const target = editing.value ? props.item : null;
   try {
-    const saved = await $fetch<InventoryItem>(
-      target ? `/api/admin/inventory/items/${target.id}` : "/api/admin/inventory/items",
-      { method: target ? "PATCH" : "POST", body: { ...form } },
-    );
+    const store = useInventoryStore();
+    const saved = target
+      ? await store.updateItem(target.id, { ...form })
+      : await store.createItem({ ...form });
     toast.success(target ? "Item updated" : "Item added", { description: saved.name });
     emit("done", saved, target ? "edit" : "create");
     open.value = false;
   } catch (e) {
-    const status = (e as { statusCode?: number }).statusCode;
+    const status = statusOf(e);
     error.value =
       status === 409
         ? "An item with that SKU already exists. Use a different SKU."

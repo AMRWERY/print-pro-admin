@@ -1,75 +1,24 @@
-# Nuxt Minimal Starter
+# PrintPro Admin
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Nuxt 4 admin dashboard. It has no backend of its own: every `/api/**` request is proxied to the PrintPro API (`../api`), so browser calls stay same-origin.
 
-## Setup
-
-Make sure to install dependencies:
+## Run with the API
 
 ```bash
-# npm
-npm install
+# 1. API on http://localhost:4000
+cd ../api && npm install && cp .env.example .env && npm run dev
 
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
+# 2. Admin on http://localhost:3001
+cd ../admin && npm install && npm run dev
 ```
 
-## Development Server
+Sign in at http://localhost:3001 with `amr@example.com` / `Studio#2026Pass` (the `SEED_ADMIN_*` values in `api/.env.example`).
+Only admin accounts can sign in; there is no self-service registration.
 
-Start the development server on `http://localhost:3000`:
+The API address defaults to `http://localhost:4000`. Override it with `NUXT_API_BASE` (set it when running `dev` or `build`).
 
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
+## Build
 
 ```bash
-# npm
 npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
 ```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.

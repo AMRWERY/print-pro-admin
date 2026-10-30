@@ -1,6 +1,1 @@
-import { readSettings } from "~/data/admin-settings";
-
-export default defineEventHandler(async () => {
-  await simulateLatency(300);
-  return readSettings();
-});
+export default defineEventHandler((event) => forward(event, "/api/admin/settings"));

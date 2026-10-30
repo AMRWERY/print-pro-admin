@@ -84,24 +84,16 @@ useSeoMeta({
     "Revenue, orders, customers, best-selling products and inventory alerts at a glance.",
 });
 
-// lazy: the page renders straight away and each section shows its own skeleton.
-const {
-  data: summary,
-  error: summaryError,
-  refresh: refreshSummary,
-} = useFetch<DashboardSummary>("/api/admin/dashboard", { lazy: true });
+// The page renders straight away and each section shows its own skeleton.
+const store = useDashboardStore();
+const { summary, summaryError, series, seriesPending, seriesError } = storeToRefs(store);
+const refreshSummary = () => store.refreshSummary();
+const refreshSeries = () => store.refreshSeries();
+store.fetchSummary();
 
 // One period selector drives both charts.
 const range = ref<RangeKey>("month");
-const {
-  data: series,
-  pending: seriesPending,
-  error: seriesError,
-  refresh: refreshSeries,
-} = useFetch<RevenueSeries>("/api/admin/revenue", {
-  lazy: true,
-  query: { range },
-});
+watch(range, (r) => store.fetchSeries(r), { immediate: true });
 
 const rangeOptions: { value: RangeKey; label: string }[] = [
   { value: "today", label: "Today" },

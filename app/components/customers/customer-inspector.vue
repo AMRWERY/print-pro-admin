@@ -214,14 +214,10 @@ const emit = defineEmits<{
 const { number, currency, percent } = useFormatters();
 const toast = useToast();
 
-const {
-  data: detail,
-  error,
-  refresh,
-} = useFetch<CustomerDetail>(() => `/api/admin/customers/${props.id}`, {
-  lazy: true,
-  watch: [() => props.id],
-});
+const store = useCustomersStore();
+const { detail, detailError: error } = storeToRefs(store);
+const refresh = () => store.refreshDetail();
+watch(() => props.id, (id) => store.fetchDetail(id), { immediate: true });
 
 // The order screen's notes panel expects `ago`; show the note's UTC time there.
 const notes = computed<OrderNote[]>(() =>
@@ -240,10 +236,7 @@ const saving = ref(false);
 const addNote = async (payload: { text: string; urgent: boolean }) => {
   saving.value = true;
   try {
-    detail.value = await $fetch<CustomerDetail>(
-      `/api/admin/customers/${props.id}/notes`,
-      { method: "POST", body: payload },
-    );
+    await store.addNote(props.id, payload);
     notesRef.value?.reset();
     toast.success("Note saved");
   } catch {

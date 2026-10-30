@@ -183,27 +183,14 @@ const jump = (id: string) =>
     ?.scrollIntoView({ behavior: "smooth", block: "start" });
 
 // Items that can be paired with this product (machines and supplies).
-const { data: pairable } = useFetch<{ rows: Product[] }>(
-  "/api/admin/products",
-  {
-    lazy: true,
-    query: { category: "inks-toner", perPage: 10 },
-  },
-);
-
-const { data: pairableInks } = useFetch<{ rows: Product[] }>(
-  "/api/admin/products",
-  {
-    lazy: true,
-    query: { category: "copiers", perPage: 10 },
-  },
-);
+const productsStore = useProductsStore();
+const pairable = ref<Product[]>([]);
+const pairableInks = ref<Product[]>([]);
+productsStore.fetchPairable("inks-toner").then((rows) => (pairable.value = rows));
+productsStore.fetchPairable("copiers").then((rows) => (pairableInks.value = rows));
 
 const bundledOptions = computed(() =>
-  [
-    ...(pairable.value?.rows ?? []).slice(0, 3),
-    ...(pairableInks.value?.rows ?? []).slice(0, 3),
-  ].filter((p) => p.id !== props.productId),
+  [...pairable.value.slice(0, 3), ...pairableInks.value.slice(0, 3)].filter((p) => p.id !== props.productId),
 );
 
 const discard = () => {
@@ -238,12 +225,10 @@ const save = async (publication: Publication) => {
 
   saving.value = publication;
   try {
-    const saved = await $fetch<Product>(
+    const saved =
       props.mode === "edit"
-        ? `/api/admin/products/${props.productId}`
-        : "/api/admin/products",
-      { method: props.mode === "edit" ? "PATCH" : "POST", body: clone(form) },
-    );
+        ? await productsStore.update(props.productId!, clone(form))
+        : await productsStore.create(clone(form));
     snapshot = JSON.stringify(form);
     allowLeave = true;
     toast.success(
@@ -259,7 +244,7 @@ const save = async (publication: Publication) => {
       await navigateTo(localePath(`/products/${saved.id}`));
     else allowLeave = false;
   } catch (e) {
-    const status = (e as { statusCode?: number }).statusCode;
+    const status = statusOf(e);
     allowLeave = false;
     formError.value =
       status === 409

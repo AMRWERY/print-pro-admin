@@ -184,16 +184,16 @@ import { sectionKeyLabel, sectionList } from "~/data/settings-meta";
 import type {
   Settings,
   SettingsKey,
-  SettingsResponse,
 } from "~/types/admin/settings";
 
 const toast = useToast();
 
-// lazy: the page renders at once and shows a skeleton until the settings arrive.
-const { data, error, refresh } = useFetch<SettingsResponse>(
-  "/api/admin/settings",
-  { lazy: true },
-);
+// The page renders at once and shows a skeleton until the settings arrive.
+const store = useSettingsStore();
+const { data, error } = storeToRefs(store);
+data.value = null; // never build the form from a previous visit's copy
+const refresh = () => store.refresh();
+onMounted(() => store.fetchSettings());
 
 // The form is a copy, so edits never touch the saved values until they are saved.
 const form = ref<Settings | null>(null);
@@ -259,11 +259,7 @@ const save = async () => {
   }
   saving.value = true;
   try {
-    const res = await $fetch<SettingsResponse>("/api/admin/settings", {
-      method: "PUT",
-      body: form.value,
-    });
-    data.value = res;
+    const res = await store.save(form.value);
     form.value = clone(res.settings);
     resetForm();
     toast.success("Settings saved", {
@@ -291,11 +287,7 @@ const rotating = ref(false);
 const rotateSecret = async () => {
   rotating.value = true;
   try {
-    const res = await $fetch<SettingsResponse>(
-      "/api/admin/settings/rotate-secret",
-      { method: "POST" },
-    );
-    data.value = res;
+    const res = await store.rotateSecret();
     rotateOpen.value = false;
     toast.success("Signing secret rotated", {
       description: `The new secret ends in ${res.secretLast4}.`,

@@ -230,20 +230,17 @@ const submit = async () => {
   error.value = "";
   const editing = props.customer;
   try {
-    const saved = await $fetch<Customer>(
-      editing ? `/api/admin/customers/${editing.id}` : "/api/admin/customers",
-      {
-        method: editing ? "PATCH" : "POST",
-        body: { ...form },
-      },
-    );
+    const customers = useCustomersStore();
+    const saved = await (editing
+      ? customers.update(editing.id, { ...form })
+      : customers.create({ ...form }));
     toast.success(editing ? "Client updated" : "Client registered", {
       description: saved.name,
     });
     emit("saved", saved, editing ? "edit" : "create");
     open.value = false;
   } catch (e) {
-    const status = (e as { statusCode?: number }).statusCode;
+    const status = statusOf(e);
     error.value =
       status === 409
         ? "A client with that email is already registered."

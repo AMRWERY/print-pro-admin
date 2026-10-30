@@ -158,20 +158,17 @@
 </template>
 
 <script lang="ts" setup>
-import type {
-  CategoriesResponse,
-  Category,
-  CategoryInput,
-} from "~/types/admin/categories";
+import type { Category, CategoryInput } from "~/types/admin/categories";
 
 const toast = useToast();
 const { number } = useFormatters();
 
 // lazy: the page renders at once; the KPIs and the tree show their own skeletons.
-const { data, pending, error, refresh } = useFetch<CategoriesResponse>(
-  "/api/admin/categories",
-  { lazy: true, deep: true },
-);
+const store = useCategoriesStore();
+const { data, error } = storeToRefs(store);
+const pending = computed(() => store.status === "pending");
+const refresh = () => store.refresh();
+store.fetchAll();
 
 const nodes = computed(() => data.value?.nodes ?? []);
 const masters = computed(() =>
@@ -280,13 +277,9 @@ const save = async (values: CategoryInput) => {
   formError.value = "";
   const editing = inspector.value?.category;
   try {
-    const saved = await $fetch<Category>(
-      editing ? `/api/admin/categories/${editing.id}` : "/api/admin/categories",
-      {
-        method: editing ? "PATCH" : "POST",
-        body: values,
-      },
-    );
+    const saved = editing
+      ? await store.update(editing.id, values)
+      : await store.create(values);
     toast.success(editing ? "Category updated" : "Category created", {
       description: saved.name,
     });
@@ -297,7 +290,7 @@ const save = async (values: CategoryInput) => {
     if (saved.parentId && !expanded.value.includes(saved.parentId))
       expanded.value = [...expanded.value, saved.parentId];
   } catch (e) {
-    const status = (e as { statusCode?: number }).statusCode;
+    const status = statusOf(e);
     formError.value =
       status === 409
         ? "Another category already uses that URL slug. Choose a different one."
@@ -321,20 +314,13 @@ const toInput = (c: Category): CategoryInput => ({
 
 // --- Storefront switch: updates at once, rolls back if the save fails ---
 const setVisibility = async (c: Category, on: boolean) => {
-  const previous = c.visibility;
-  c.visibility = on ? "active" : "hidden";
   try {
-    await $fetch(`/api/admin/categories/${c.id}`, {
-      method: "PATCH",
-      body: toInput(c),
-    });
+    await store.setVisibility(c, on, toInput(c));
     toast.success(
       on ? "Visible on the storefront" : "Hidden from the storefront",
       { description: c.name },
     );
-    refresh();
   } catch {
-    c.visibility = previous;
     toast.error("Couldn't change visibility", {
       description: `${c.name} is unchanged.`,
     });
@@ -343,20 +329,9 @@ const setVisibility = async (c: Category, on: boolean) => {
 
 // --- Reorder: shows the new order straight away, restores it if saving fails ---
 const reorder = async (parentId: string | null, ids: string[]) => {
-  const before = new Map(nodes.value.map((n) => [n.id, n.order]));
-  ids.forEach((id, order) => {
-    const n = nodes.value.find((x) => x.id === id);
-    if (n) n.order = order;
-  });
   try {
-    await $fetch("/api/admin/categories/reorder", {
-      method: "POST",
-      body: { parentId, ids },
-    });
+    await store.reorder(parentId, ids);
   } catch {
-    nodes.value.forEach((n) => {
-      if (before.has(n.id)) n.order = before.get(n.id)!;
-    });
     toast.error("Couldn't save the new order", {
       description: "The previous order was restored.",
     });
@@ -383,7 +358,7 @@ const confirmDelete = async () => {
   if (!target) return;
   deleting.value = true;
   try {
-    await $fetch(`/api/admin/categories/${target.id}`, { method: "DELETE" });
+    await store.remove(target.id);
     toast.success("Category deleted", { description: target.name });
     if (
       selectedId.value === target.id ||
@@ -391,7 +366,6 @@ const confirmDelete = async () => {
     )
       closeInspector();
     deleteOpen.value = false;
-    await refresh();
   } catch {
     toast.error("Couldn't delete the category", {
       description: "Nothing was removed. Try again.",

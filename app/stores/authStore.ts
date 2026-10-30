@@ -1,144 +1,135 @@
-import { skipHydrate } from "pinia";
-import type { Account, LoginResult, ResetToken, Tier } from "~/types/auth";
-
-const MAX_FAILURES = 5;
-const LOCK_MS = 30_000;
-const TOKEN_TTL_MS = 15 * 60_000;
+import type { Account, LoginResult } from "~/types/auth";
 
 const norm = (email: string) => email.trim().toLowerCase();
 
+const statusOf = (e: unknown): number =>
+  (e as { statusCode?: number; status?: number })?.statusCode ?? (e as { status?: number })?.status ?? 0;
+
+/** Seconds to wait, read from a message like "Try again in 30s". */
+const retrySeconds = (e: unknown): number => {
+  const msg = String(
+    (e as { data?: { message?: string } })?.data?.message ?? (e as { message?: string })?.message ?? "",
+  );
+  const m = /Try again in (\d+)\s*s/i.exec(msg);
+  return m ? Number(m[1]) : 30;
+};
+
 /**
- * Demo accounts, kept in this browser only. Passwords are salted and hashed (see utils/crypto.ts),
- * but a real deployment needs a server for accounts, sessions and password-reset emails.
+ * The admin session. The API token lives in an httpOnly cookie handled by this app's server
+ * (server/api/auth/*); the browser only knows who is signed in. `ensureLoaded` asks the server
+ * once at startup (plugins/auth.ts), so route guards can read `isSignedIn` synchronously.
  */
 export const useAuthStore = defineStore("auth", () => {
-  // Read synchronously: the app is client-rendered, and the route guard needs the session
-  // before the first page mounts.
-  const users = useLocalStorage<Account[]>("auth-users", []);
-  const tokens = useLocalStorage<ResetToken[]>("auth-reset-tokens", []);
-  /** "Remember this terminal" lives in localStorage, otherwise the session ends with the tab. */
-  const remembered = useLocalStorage<string | null>("auth-session", null);
-  const tabSession = useSessionStorage<string | null>("auth-session", null);
-
-  const sessionEmail = computed(() => remembered.value ?? tabSession.value);
-  const user = computed(() => users.value.find((u) => u.email === sessionEmail.value) ?? null);
+  const user = ref<Account | null>(null);
+  const loaded = ref(false);
   const isSignedIn = computed(() => !!user.value);
 
-  // Repeated wrong passwords pause sign-in for a short while. In memory: a reload resets it,
-  // which is fine for a demo (a server must enforce this for real).
-  const failures = reactive<Record<string, { count: number; until: number }>>({});
-
-  const register = async (input: {
-    name: string;
-    studio: string;
-    email: string;
-    tier: Tier;
-    newsletter: boolean;
-    password: string;
-  }): Promise<{ ok: true } | { ok: false; reason: "exists" }> => {
-    const email = norm(input.email);
-    if (users.value.some((u) => u.email === email)) return { ok: false, reason: "exists" };
-
-    const salt = randomSalt();
-    users.value.push({
-      id: crypto.randomUUID(),
-      name: input.name.trim(),
-      studio: input.studio.trim(),
-      email,
-      tier: input.tier,
-      newsletter: input.newsletter,
-      salt,
-      hash: await hashPassword(input.password, salt),
-      createdAt: new Date().toISOString(),
-    });
-    return { ok: true };
+  let loading: Promise<void> | null = null;
+  const ensureLoaded = () => {
+    if (loaded.value) return Promise.resolve();
+    loading ??= $fetch<{ user: Account }>("/api/auth/me")
+      .then((res) => {
+        user.value = res.user;
+      })
+      .catch(() => {
+        user.value = null;
+      })
+      .finally(() => {
+        loaded.value = true;
+        loading = null;
+      });
+    return loading;
   };
 
   const login = async (emailRaw: string, password: string, remember: boolean): Promise<LoginResult> => {
-    const email = norm(emailRaw);
-    const f = failures[email];
-    if (f && f.until > Date.now()) {
-      return { ok: false, reason: "locked", retryInSeconds: Math.ceil((f.until - Date.now()) / 1000) };
-    }
-
-    const account = users.value.find((u) => u.email === email);
-    // Hash even when the account doesn't exist, so timing doesn't reveal which emails are registered.
-    const hash = await hashPassword(password, account?.salt ?? "AAAAAAAAAAAAAAAAAAAAAA==");
-
-    if (!account || account.hash !== hash) {
-      const count = (f?.count ?? 0) + 1;
-      failures[email] = { count, until: count >= MAX_FAILURES ? Date.now() + LOCK_MS : 0 };
-      if (count >= MAX_FAILURES) failures[email] = { count: 0, until: Date.now() + LOCK_MS };
+    try {
+      const res = await $fetch<{ user: Account }>("/api/auth/login", {
+        method: "POST",
+        body: { email: norm(emailRaw), password, remember },
+      });
+      user.value = res.user;
+      loaded.value = true;
+      return { ok: true };
+    } catch (e) {
+      if (statusOf(e) === 429) return { ok: false, reason: "locked", retryInSeconds: retrySeconds(e) };
       return { ok: false, reason: "invalid" };
     }
+  };
 
-    delete failures[email];
-    if (remember) {
-      remembered.value = email;
-      tabSession.value = null;
-    } else {
-      tabSession.value = email;
-      remembered.value = null;
+  const logout = async () => {
+    user.value = null;
+    try {
+      await $fetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      // the cookie is also dropped by the server on the next rejected request
     }
-    return { ok: true };
   };
 
-  const logout = () => {
-    remembered.value = null;
-    tabSession.value = null;
+  /** Always succeeds from the user's side, whether or not the email is registered. */
+  const requestReset = async (emailRaw: string): Promise<{ token?: string; expires?: number }> => {
+    const res = await $fetch<{ ok: boolean; expires?: number; devToken?: string }>("/api/auth/forgot-password", {
+      method: "POST",
+      body: { email: norm(emailRaw) },
+    });
+    return { token: res.devToken, expires: res.expires };
   };
 
-  /** Always succeeds, whether or not the email is registered, so the form can't be used to probe for accounts. */
-  const requestReset = (emailRaw: string) => {
-    const token = randomToken();
-    tokens.value = [
-      { token, email: norm(emailRaw), expires: Date.now() + TOKEN_TTL_MS },
-      ...tokens.value.filter((t) => t.expires > Date.now()),
-    ];
-    return { token, expires: Date.now() + TOKEN_TTL_MS };
-  };
-
-  const tokenState = (token: string): { valid: true; expires: number } | { valid: false } => {
-    const t = tokens.value.find((x) => x.token === token);
-    return t && t.expires > Date.now() ? { valid: true, expires: t.expires } : { valid: false };
-  };
-
-  const resetPassword = async (token: string, password: string): Promise<{ ok: boolean }> => {
-    const t = tokens.value.find((x) => x.token === token);
-    if (!t || t.expires <= Date.now()) return { ok: false };
-
-    const account = users.value.find((u) => u.email === t.email);
-    // No account for this email: behave the same as success, so nothing is revealed.
-    if (account) {
-      account.salt = randomSalt();
-      account.hash = await hashPassword(password, account.salt);
+  const tokenState = async (value: string): Promise<{ valid: true; expires: number } | { valid: false }> => {
+    try {
+      const res = await $fetch<{ valid: boolean; expires?: number }>(
+        `/api/auth/reset-token/${encodeURIComponent(value)}`,
+      );
+      return res.valid ? { valid: true, expires: Number(res.expires ?? 0) } : { valid: false };
+    } catch {
+      return { valid: false };
     }
-    tokens.value = tokens.value.filter((x) => x.token !== token);
-    delete failures[t.email];
-    return { ok: true };
+  };
+
+  const resetPassword = async (value: string, password: string): Promise<{ ok: boolean }> => {
+    try {
+      await $fetch("/api/auth/reset-password", { method: "POST", body: { token: value, password } });
+      return { ok: true };
+    } catch {
+      return { ok: false };
+    }
   };
 
   /** Updates the signed-in account's profile fields. The email is the account's identity, so it isn't editable here. */
-  const updateProfile = (patch: Partial<Pick<Account, "name" | "studio" | "title" | "phone" | "newsletter">>) => {
-    const account = user.value;
-    if (account) Object.assign(account, patch);
+  const updateProfile = async (
+    patch: Partial<Pick<Account, "name" | "studio" | "title" | "phone" | "newsletter">>,
+  ): Promise<{ ok: boolean }> => {
+    try {
+      const res = await $fetch<{ user: Account }>("/api/auth/profile", { method: "PATCH", body: patch });
+      user.value = res.user;
+      return { ok: true };
+    } catch {
+      return { ok: false };
+    }
   };
 
-  /** Changes the password after checking the current one. */
-  const changePassword = async (current: string, next: string): Promise<{ ok: true } | { ok: false; reason: "wrong-password" }> => {
-    const account = user.value;
-    if (!account) return { ok: false, reason: "wrong-password" };
-    if ((await hashPassword(current, account.salt)) !== account.hash) return { ok: false, reason: "wrong-password" };
-    account.salt = randomSalt();
-    account.hash = await hashPassword(next, account.salt);
-    return { ok: true };
+  /** Changes the password after the API checks the current one. */
+  const changePassword = async (
+    current: string,
+    next: string,
+  ): Promise<{ ok: true } | { ok: false; reason: "wrong-password" }> => {
+    try {
+      await $fetch("/api/auth/change-password", { method: "POST", body: { current, next } });
+      return { ok: true };
+    } catch {
+      return { ok: false, reason: "wrong-password" };
+    }
+  };
+
+  /** Called when any request comes back 401: the session is gone, so show the signed-out state. */
+  const expire = () => {
+    user.value = null;
   };
 
   return {
-    users: skipHydrate(users),
     user,
+    loaded,
     isSignedIn,
-    register,
+    ensureLoaded,
     login,
     logout,
     requestReset,
@@ -146,5 +137,6 @@ export const useAuthStore = defineStore("auth", () => {
     resetPassword,
     updateProfile,
     changePassword,
+    expire,
   };
 });
