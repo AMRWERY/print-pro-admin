@@ -5,9 +5,8 @@ import type {
   ProductDetail,
   ProductsQuery,
   ProductsResponse,
+  RequestStatus,
 } from "~/types/admin/products";
-
-export type RequestStatus = "idle" | "pending" | "success" | "error";
 
 const BASE = "/api/admin/products";
 
@@ -61,16 +60,22 @@ export const useProductsStore = defineStore("products", () => {
       detailStatus.value = "error";
     }
   };
-  const refreshDetail = () => (detail.value ? fetchDetail(detail.value.id) : Promise.resolve());
+  const refreshDetail = () =>
+    detail.value ? fetchDetail(detail.value.id) : Promise.resolve();
 
   /** One product's detail without touching the page state (used to duplicate a product). Throws on failure. */
   const loadDetail = (id: string) => api<ProductDetail>(`${BASE}/${id}`);
 
   // --- Reads for other screens ---
   /** A few products of one category the editor can pair with (bundles). Returns [] on failure. */
-  const fetchPairable = async (category: ProductCategory, perPage = 10): Promise<Product[]> => {
+  const fetchPairable = async (
+    category: ProductCategory,
+    perPage = 10,
+  ): Promise<Product[]> => {
     try {
-      const res = await api<{ rows: Product[] }>(BASE, { query: { category, perPage } });
+      const res = await api<{ rows: Product[] }>(BASE, {
+        query: { category, perPage },
+      });
       return res.rows;
     } catch {
       return [];
@@ -78,11 +83,14 @@ export const useProductsStore = defineStore("products", () => {
   };
 
   /** Stock-item search for the inventory product picker. */
-  const searchStock = (q: string) => api<InventoryItem[]>("/api/admin/inventory/search", { query: { q } });
+  const searchStock = (q: string) =>
+    api<InventoryItem[]>("/api/admin/inventory/search", { query: { q } });
 
   // --- Mutations ---
-  const create = (body: unknown) => api<Product>(BASE, { method: "POST", body });
-  const update = (id: string, body: unknown) => api<Product>(`${BASE}/${id}`, { method: "PATCH", body });
+  const create = (body: unknown) =>
+    api<Product>(BASE, { method: "POST", body });
+  const update = (id: string, body: unknown) =>
+    api<Product>(`${BASE}/${id}`, { method: "PATCH", body });
 
   /** Changes the stock shown at once, restoring it and rethrowing if the save fails. */
   const adjustStock = async (p: Product, next: number) => {

@@ -91,6 +91,7 @@ import type { ProductFormValues } from "~/types/admin/products";
 const props = defineProps<{ form: ProductFormValues }>();
 
 const { currency } = useFormatters();
+
 const cents = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
 
 const num = (v: unknown) =>

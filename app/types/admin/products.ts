@@ -91,8 +91,11 @@ export interface Template {
 // ---------------------------------------------------------------------------
 
 export type Publication = "draft" | "published" | "archived";
+
 export type Backorder = "block" | "notify" | "allow";
+
 export type Packaging = "pallet" | "standard";
+
 export type VariantStatus = "active" | "preorder" | "hidden";
 
 export interface ProductMedia {
@@ -159,3 +162,7 @@ export type ProductFormValues = ProductInput & ProductExtras;
 export interface ProductDetail extends Product, ProductExtras {
   revisions: ProductRevision[];
 }
+
+export type RequestStatus = "idle" | "pending" | "success" | "error";
+
+export type PresetKey = "a3Copiers" | "supplies" | "depleted";

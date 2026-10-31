@@ -16,6 +16,7 @@
         min="0"
         step="0.01"
       />
+      
       <LazyVInput
         v-model="form.hsCode"
         name="hsCode"

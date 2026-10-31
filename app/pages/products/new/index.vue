@@ -7,6 +7,7 @@
   />
   <div v-else class="space-y-4" aria-busy="true">
     <LazyVSkeletonLoader variant="line" class="w-64" />
+   
     <LazyVSkeletonLoader class="h-96" />
   </div>
 </template>
@@ -16,6 +17,7 @@ import { buildVariants } from "~/utils/product-variants";
 import type { ProductFormValues } from "~/types/admin/products";
 
 const route = useRoute();
+
 const from = typeof route.query.from === "string" ? route.query.from : "";
 
 const blank = (): ProductFormValues => ({

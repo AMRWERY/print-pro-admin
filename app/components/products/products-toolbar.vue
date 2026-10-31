@@ -109,6 +109,7 @@ import type {
   ProductStatus,
   ProductsResponse,
   StockFilter,
+  PresetKey,
 } from "~/types/admin/products";
 
 const props = defineProps<{
@@ -138,14 +139,15 @@ const brandOptions = computed(() => [
   ...(props.brands ?? []).map((b) => ({ value: b, label: b })),
 ]);
 
-type PresetKey = "a3Copiers" | "supplies" | "depleted";
-
 const presetList = computed(() => [
   {
     key: "a3Copiers" as const,
     label: "A3 photocopiers",
     count: props.presets?.a3Copiers ?? 0,
-    active: category.value === "copiers" && brand.value === "all" && stock.value === "all",
+    active:
+      category.value === "copiers" &&
+      brand.value === "all" &&
+      stock.value === "all",
   },
   {
     key: "supplies" as const,
