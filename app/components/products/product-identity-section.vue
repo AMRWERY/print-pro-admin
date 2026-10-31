@@ -15,6 +15,15 @@
         maxlength="120"
       />
 
+      <LazyVInput
+        v-model="form.brand"
+        name="brand"
+        label="Brand"
+        required
+        rules="required|min:2|max:60"
+        maxlength="60"
+      />
+
       <div>
         <LazyVInput
           v-model="form.slug"

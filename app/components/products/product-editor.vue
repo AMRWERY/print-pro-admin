@@ -35,7 +35,7 @@
       <template #actions>
         <LazyVButton
           variant="tertiary"
-          :disabled="!dirty || saving"
+          :disabled="!dirty || !!saving"
           @click="discard"
           >Discard changes</LazyVButton
         >
@@ -241,7 +241,7 @@ const save = async (publication: Publication) => {
     );
     emit("saved", saved);
     if (props.mode === "create")
-      await navigateTo(localePath(`/products/${saved.id}`));
+      await navigateTo(localePath("/products"));
     else allowLeave = false;
   } catch (e) {
     const status = statusOf(e);
