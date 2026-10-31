@@ -92,10 +92,11 @@
 </template>
 
 <script lang="ts" setup>
-import { orderProducts, customers } from "~/data/admin-orders";
 import { orderPricing } from "~/data/order-pricing";
 import { priorityMeta } from "~/data/order-meta";
-import type { OrderPriority, OrderRow } from "~/types/admin/orders";
+import type { AccountTier, OrderPriority, OrderRow } from "~/types/admin/orders";
+import type { Customer, CustomerTier } from "~/types/admin/customers";
+import type { Product } from "~/types/admin/products";
 
 const emit = defineEmits<{ created: [row: OrderRow] }>();
 
@@ -104,15 +105,21 @@ const open = defineModel<boolean>("open", { default: false });
 const { currency } = useFormatters();
 const toast = useToast();
 
-const customerOptions = [
-  { value: "", label: "Select a customer…" },
-  ...customers.map((c, value) => ({ value, label: `${c.name} · ${c.org}` })),
-];
+// Same rating-to-discount tier the server prices the order with.
+const tierOf: Record<CustomerTier, AccountTier> = { AAA: "enterprise", AA: "business", A: "home" };
 
-const productOptions = [
+const customers = ref<Customer[]>([]);
+const products = ref<Product[]>([]);
+
+const customerOptions = computed(() => [
+  { value: "", label: "Select a customer…" },
+  ...customers.value.map((c) => ({ value: c.id, label: `${c.name} · ${c.org}` })),
+]);
+
+const productOptions = computed(() => [
   { value: "", label: "Select equipment or media…" },
-  ...orderProducts.map((a, value) => ({ value, label: a.title })),
-];
+  ...products.value.map((p) => ({ value: p.id, label: p.name })),
+]);
 
 const priorityOptions = (Object.keys(priorityMeta) as OrderPriority[]).map(
   (value) => ({
@@ -122,8 +129,8 @@ const priorityOptions = (Object.keys(priorityMeta) as OrderPriority[]).map(
 );
 
 const blank = () => ({
-  customerId: "" as number | "",
-  productId: "" as number | "",
+  customerId: "",
+  productId: "",
   quantity: 1 as number | null,
   priority: "standard" as OrderPriority,
 });
@@ -131,27 +138,27 @@ const form = reactive(blank());
 
 // One form for the dialog's lifetime: reset whenever it opens.
 const { validate, resetForm } = useForm();
-watch(open, (isOpen) => {
+watch(open, async (isOpen) => {
   if (!isOpen) return;
   Object.assign(form, blank());
   error.value = "";
   resetForm();
+  // Loaded when the dialog opens so the lists are never stale.
+  const [c, p] = await Promise.all([useCustomersStore().fetchPicker(), useProductsStore().fetchPicker()]);
+  customers.value = c;
+  products.value = p;
 });
 
 // Same pricing rule as the ledger: QA, courier, institutional discount and VAT included.
-const total = computed(() =>
-  form.productId === "" || form.customerId === ""
-    ? 0
-    : orderPricing(
-        [
-          {
-            unitPrice: orderProducts[form.productId]!.price,
-            quantity: Number(form.quantity) || 0,
-          },
-        ],
-        customers[form.customerId]!.tier,
-      ).total,
-);
+const total = computed(() => {
+  const customer = customers.value.find((c) => c.id === form.customerId);
+  const product = products.value.find((p) => p.id === form.productId);
+  if (!customer || !product) return 0;
+  return orderPricing(
+    [{ unitPrice: product.price, quantity: Number(form.quantity) || 0 }],
+    tierOf[customer.tier],
+  ).total;
+});
 
 const loading = ref(false);
 const error = ref("");

@@ -20,7 +20,7 @@
           label="Products listed"
           icon="lucide:archive"
           :value="number(data.kpis.registered)"
-          :hint="`+${data.kpis.indexedThisCycle} added this month`"
+          :hint="`+${data.kpis.indexedThisCycle} added to the catalog`"
         />
       </li>
       <li>

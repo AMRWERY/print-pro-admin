@@ -82,6 +82,15 @@ export const useProductsStore = defineStore("products", () => {
     }
   };
 
+  /** Products to choose from in other screens (the order dialog). Returns [] on failure. */
+  const fetchPicker = async (): Promise<Product[]> => {
+    try {
+      return (await api<ProductsResponse>(BASE, { query: { perPage: 50 } })).rows;
+    } catch {
+      return [];
+    }
+  };
+
   /** Stock-item search for the inventory product picker. */
   const searchStock = (q: string) =>
     api<InventoryItem[]>("/api/admin/inventory/search", { query: { q } });
@@ -122,6 +131,7 @@ export const useProductsStore = defineStore("products", () => {
     refreshDetail,
     loadDetail,
     fetchPairable,
+    fetchPicker,
     searchStock,
     create,
     update,

@@ -103,12 +103,7 @@
             icon="lucide:receipt-text"
             title="No orders yet"
             description="New orders and their payment status appear here as soon as they are placed."
-            eyebrow="LEDGER :: EMPTY"
-            tag="0 ORDERS"
           >
-            <LazyVButton icon="lucide:circle-plus" @click="createOpen = true"
-              >Create manual order</LazyVButton
-            >
           </LazyVEmptyState>
         </div>
 

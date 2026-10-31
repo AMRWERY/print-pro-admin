@@ -64,6 +64,15 @@ export const useCustomersStore = defineStore("customers", () => {
     return detail.value;
   };
 
+  /** Customers to choose from in other screens (the order dialog). Returns [] on failure. */
+  const fetchPicker = async (): Promise<Customer[]> => {
+    try {
+      return (await api<CustomersResponse>("/api/admin/customers", { query: { sort: "name", perPage: 50 } })).rows;
+    } catch {
+      return [];
+    }
+  };
+
   // --- mutations (throw on failure; callers toast / map 409 via statusOf) ---
   const create = (input: CustomerInput) => api<Customer>("/api/admin/customers", { method: "POST", body: input });
 
@@ -85,6 +94,7 @@ export const useCustomersStore = defineStore("customers", () => {
     fetchDetail,
     refreshDetail,
     addNote,
+    fetchPicker,
     create,
     update,
     bulkDelete,
