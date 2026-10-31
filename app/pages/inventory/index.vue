@@ -89,10 +89,9 @@
 
           <div v-else-if="!pending && data && !rows.length" class="p-5">
             <LazyVEmptyState
+              bare
               title="No stock matches these filters"
               description="Try a different SKU or bin, another warehouse, or the All inventory tab."
-              eyebrow="QUERY :: NO_RESULTS"
-              tag="0 RESULTS"
             >
               <LazyVButton variant="secondary" @click="resetFilters"
                 >Clear all filters</LazyVButton
@@ -154,16 +153,38 @@
       :description="deleteTarget ? deleteTarget.name : ''"
     >
       <p class="callout">
-        <Icon name="lucide:triangle-alert" size="14" class="bullet-icon" aria-hidden="true" />
+        <Icon
+          name="lucide:triangle-alert"
+          size="14"
+          class="bullet-icon"
+          aria-hidden="true"
+        />
         <span v-if="deleteTarget">
-          This removes {{ deleteTarget.sku }} and its {{ number(deleteTarget.stock) }} unit{{ deleteTarget.stock === 1 ? "" : "s" }}
-          ({{ currency(deleteTarget.price * deleteTarget.stock, { maximumFractionDigits: 0 }) }}) from the register and the Products list.
-          The removal is recorded in the movement ledger. It cannot be undone from this screen.
+          This removes {{ deleteTarget.sku }} and its
+          {{ number(deleteTarget.stock) }} unit{{
+            deleteTarget.stock === 1 ? "" : "s"
+          }}
+          ({{
+            currency(deleteTarget.price * deleteTarget.stock, {
+              maximumFractionDigits: 0,
+            })
+          }}) from the register and the Products list. The removal is recorded
+          in the movement ledger. It cannot be undone from this screen.
         </span>
       </p>
       <template #footer>
-        <LazyVButton variant="secondary" :disabled="deleting" @click="deleteOpen = false">Keep</LazyVButton>
-        <LazyVButton :loading="deleting" icon="lucide:trash-2" @click="confirmDelete">Delete</LazyVButton>
+        <LazyVButton
+          variant="secondary"
+          :disabled="deleting"
+          @click="deleteOpen = false"
+          >Keep</LazyVButton
+        >
+        <LazyVButton
+          :loading="deleting"
+          icon="lucide:trash-2"
+          @click="confirmDelete"
+          >Delete</LazyVButton
+        >
       </template>
     </LazyVDialog>
   </div>
@@ -291,7 +312,9 @@ const confirmDelete = async () => {
     deleteOpen.value = false;
     onChanged();
   } catch {
-    toast.error("Couldn't delete the item", { description: "Nothing was removed. Try again." });
+    toast.error("Couldn't delete the item", {
+      description: "Nothing was removed. Try again.",
+    });
   } finally {
     deleting.value = false;
   }

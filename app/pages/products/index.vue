@@ -94,13 +94,12 @@
 
         <div v-else-if="!pending && data && !rows.length" class="p-5">
           <LazyVEmptyState
+            bare
             icon="lucide:package"
             title="The register is empty"
             description="Add your first product or SKU to start tracking stock, value and listing status."
-            eyebrow="REGISTER :: EMPTY"
-            tag="0 SKUS"
           >
-            <LazyVButton icon="lucide:circle-plus" to="/products/new"
+          <LazyVButton icon="lucide:circle-plus" to="/products/new"
               >Add new product / SKU</LazyVButton
             >
           </LazyVEmptyState>

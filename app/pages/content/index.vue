@@ -68,11 +68,10 @@
 
           <div v-else-if="!pending && data && !rows.length" class="p-5">
             <LazyVEmptyState
+            bare
               icon="lucide:panels-top-left"
               title="No content blocks yet"
               description="Create a banner, a featured category or a brand section to shape what visitors see on the storefront."
-              eyebrow="CONTENT :: EMPTY"
-              tag="0 BLOCKS"
             >
               <LazyVButton icon="lucide:circle-plus" @click="openCreate()"
                 >Create content block</LazyVButton

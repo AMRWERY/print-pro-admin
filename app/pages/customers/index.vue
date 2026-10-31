@@ -36,7 +36,7 @@
             Excel · this page
           </button>
         </LazyVMenu>
-        
+
         <LazyVButton icon="lucide:user-plus" @click="openForm(null)"
           >Register customer</LazyVButton
         >
@@ -45,92 +45,87 @@
 
     <customers-kpis :kpis="data?.kpis" />
 
-      <section class="card min-w-0" aria-label="Client registry">
-        <div class="border-b border-line p-4 sm:p-5">
-          <customers-toolbar
-            v-model:q="filters.q"
-            v-model:segment="filters.segment"
-            v-model:status="filters.status"
-            v-model:activity="filters.activity"
-            v-model:sort="filters.sort"
-            :counts="data?.counts"
-          />
-        </div>
+    <section class="card min-w-0" aria-label="Client registry">
+      <div class="border-b border-line p-4 sm:p-5">
+        <customers-toolbar
+          v-model:q="filters.q"
+          v-model:segment="filters.segment"
+          v-model:status="filters.status"
+          v-model:activity="filters.activity"
+          v-model:sort="filters.sort"
+          :counts="data?.counts"
+        />
+      </div>
 
-        <div id="registry" class="scroll-mt-24">
-          <div v-if="error" class="p-5">
-            <LazyVEmptyState
-              icon="lucide:triangle-alert"
-              title="Registry sync failed"
-              description="The client registry could not be reached. Your filters are kept, so retrying picks up where you left off."
-              eyebrow="REGISTRY :: SYNC_ERROR"
-              tag="OFFLINE"
-              tag-tone="accent"
-            >
-              <LazyVButton icon="lucide:refresh-cw" @click="() => refresh()"
-                >Retry sync</LazyVButton
-              >
-            </LazyVEmptyState>
-          </div>
-
-          <div
-            v-else-if="!pending && data && !rows.length && hasFilters"
-            class="p-5"
+      <div id="registry" class="scroll-mt-24">
+        <div v-if="error" class="p-5">
+          <LazyVEmptyState
+            icon="lucide:triangle-alert"
+            title="Registry sync failed"
+            description="The client registry could not be reached. Your filters are kept, so retrying picks up where you left off."
+            eyebrow="REGISTRY :: SYNC_ERROR"
+            tag="OFFLINE"
+            tag-tone="accent"
           >
-            <LazyVEmptyState
-              title="No clients match these filters"
-              description="Try a different name or email, another segment or status, or a wider activity window."
-              eyebrow="QUERY :: NO_RESULTS"
-              tag="0 RESULTS"
+            <LazyVButton icon="lucide:refresh-cw" @click="() => refresh()"
+              >Retry sync</LazyVButton
             >
-              <LazyVButton variant="secondary" @click="resetFilters"
-                >Clear all filters</LazyVButton
-              >
-            </LazyVEmptyState>
-          </div>
-
-          <div v-else-if="!pending && data && !rows.length" class="p-5">
-            <LazyVEmptyState
-              icon="lucide:users"
-              title="No clients registered yet"
-              description="Register your first business, school or print shop to start building the directory."
-              eyebrow="REGISTRY :: EMPTY"
-              tag="0 CLIENTS"
-            >
-              <LazyVButton icon="lucide:user-plus" @click="openForm(null)"
-                >Register customer</LazyVButton
-              >
-            </LazyVEmptyState>
-          </div>
-
-          <customers-list
-            v-else
-            v-model:selected="selected"
-            :rows="rows"
-            :loading="pending"
-            :per-page="perPage"
-            :selected-id="drawerOpen ? selectedId : null"
-            @select="openInspector"
-            @edit="openForm"
-            @remove="(c) => askDelete([c.id], c.name)"
-          />
+          </LazyVEmptyState>
         </div>
 
         <div
-          v-if="!error && (pending || rows.length)"
-          class="border-t border-line p-4 sm:px-5"
+          v-else-if="!pending && data && !rows.length && hasFilters"
+          class="p-5"
         >
-          <LazyVPagination
-            v-model:page="page"
-            v-model:per-page="perPage"
-            :total="data?.total ?? 0"
-            :per-page-options="[10, 25, 50]"
-            show-per-page
-            item-label="registered customers"
-            scroll-to="#registry"
+          <LazyVEmptyState
+            title="No clients match these filters"
+            description="Try a different name or email, another segment or status, or a wider activity window."
+            eyebrow="QUERY :: NO_RESULTS"
+            tag="0 RESULTS"
+          >
+            <LazyVButton variant="secondary" @click="resetFilters"
+              >Clear all filters</LazyVButton
+            >
+          </LazyVEmptyState>
+        </div>
+
+        <div v-else-if="!pending && data && !rows.length" class="p-5">
+          <LazyVEmptyState
+            bare
+            icon="lucide:users"
+            title="No clients registered yet"
+            description="Register your first business, school or print shop to start building the directory."
           />
         </div>
-      </section>
+
+        <customers-list
+          v-else
+          v-model:selected="selected"
+          :rows="rows"
+          :loading="pending"
+          :per-page="perPage"
+          :selected-id="drawerOpen ? selectedId : null"
+          @select="openInspector"
+          @edit="openForm"
+          @remove="(c) => askDelete([c.id], c.name)"
+        />
+      </div>
+
+      <div
+        v-if="!error && (pending || rows.length)"
+        class="border-t border-line p-4 sm:px-5"
+      >
+        <LazyVPagination
+          v-model:page="page"
+          v-model:per-page="perPage"
+          :total="data?.total ?? 0"
+          :per-page-options="[10, 25, 50]"
+          show-per-page
+          item-label="registered customers"
+          scroll-to="#registry"
+        />
+      </div>
+    </section>
 
     <!-- Customer details: slides in from the end edge, like the notifications panel -->
     <Transition name="fade">
@@ -215,8 +210,8 @@
           class="bullet-icon"
           aria-hidden="true"
         />
-        This removes the customer record and its notes. Past orders keep
-        their history. It cannot be undone from this screen.
+        This removes the customer record and its notes. Past orders keep their
+        history. It cannot be undone from this screen.
       </p>
       <template #footer>
         <LazyVButton
@@ -331,7 +326,9 @@ const openInspector = async (id: string) => {
   drawerOpen.value = true;
   await nextTick();
   document
-    .querySelector<HTMLElement>("#customer-drawer [aria-label='Close inspector']")
+    .querySelector<HTMLElement>(
+      "#customer-drawer [aria-label='Close inspector']",
+    )
     ?.focus();
 };
 

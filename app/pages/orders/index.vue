@@ -100,11 +100,11 @@
         <!-- The ledger itself is empty -->
         <div v-else-if="!pending && data && !rows.length" class="p-5">
           <LazyVEmptyState
+            bare
             icon="lucide:receipt-text"
-            title="No orders yet"
+            title="No orders yet "
             description="New orders and their payment status appear here as soon as they are placed."
-          >
-          </LazyVEmptyState>
+          />
         </div>
 
         <template v-else>
@@ -150,8 +150,8 @@
         <span class="pip" aria-hidden="true" />SHA-256 block #8849-01 verified
       </li>
       <li class="flex items-center gap-2">
-        <Icon name="lucide:database" size="12" aria-hidden="true" />Node:
-        Order system (synced 12ms)
+        <Icon name="lucide:database" size="12" aria-hidden="true" />Node: Order
+        system (synced 12ms)
       </li>
       <li class="flex items-center gap-2">
         <Icon name="lucide:gauge" size="12" aria-hidden="true" />Illuminant: D50
@@ -193,7 +193,11 @@ import type {
   OrderSort,
   OrdersResponse,
 } from "~/types/admin/orders";
-import type { AccountTier, PaymentState, OrderStage } from "~/types/admin/orders";
+import type {
+  AccountTier,
+  PaymentState,
+  OrderStage,
+} from "~/types/admin/orders";
 
 const toast = useToast();
 
@@ -323,9 +327,7 @@ const exportRows = async (list: OrderRow[], format: "pdf" | "excel") => {
       ]),
       moneyCols: [5],
     });
-    toast.success(
-      `Exported ${list.length} order${list.length > 1 ? "s" : ""}`,
-    );
+    toast.success(`Exported ${list.length} order${list.length > 1 ? "s" : ""}`);
   } catch {
     toast.error("Couldn't create the file", {
       description: "Try again in a moment.",
@@ -339,7 +341,6 @@ definePageMeta({
 
 useSeoMeta({
   title: "Orders",
-  description:
-    "Customer orders for printers, photocopiers, ink and toner.",
+  description: "Customer orders for printers, photocopiers, ink and toner.",
 });
 </script>
