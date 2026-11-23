@@ -20,8 +20,6 @@
       </template>
     </LazyVPageHeader>
 
-    <content-kpis :kpis="data?.kpis" />
-
     <div>
       <section class="card min-w-0" aria-label="Content blocks">
         <div class="border-b border-line p-4 sm:p-5">

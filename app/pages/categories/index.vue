@@ -2,11 +2,9 @@
   <div class="space-y-5">
     <LazyVPageHeader
       title="Categories"
-      description="Organise the catalog into master categories and sub-categories. Reorder them, control what shows on the storefront, and edit each node's URL and listing."
+      description="Organise the catalog into categories. Reorder them, control what shows on the storefront, and edit each category's URL and listing."
       :breadcrumb="[{ label: 'Dashboard', to: '/' }, { label: 'Categories' }]"
     />
-
-    <categories-kpis :kpis="data?.kpis" />
 
     <LazyVErrorBanner
       v-if="error"
@@ -36,7 +34,6 @@
           :reorder-mode="reorderMode"
           :loading="pending && !data"
           @select="openEdit"
-          @add-child="openAdd"
           @remove="askDelete"
           @visibility="setVisibility"
           @reorder="reorder"
@@ -284,11 +281,8 @@ const save = async (values: CategoryInput) => {
       description: saved.name,
     });
     await refresh();
-    creating.value = null;
-    selectedId.value = saved.id;
-    nonce++;
-    if (saved.parentId && !expanded.value.includes(saved.parentId))
-      expanded.value = [...expanded.value, saved.parentId];
+    // Saved: slide the panel away, whether this was a new category or an edit.
+    closeInspector();
   } catch (e) {
     const status = statusOf(e);
     formError.value =
@@ -381,6 +375,6 @@ definePageMeta({
 
 useSeoMeta({
   title: "Categories",
-  description: "Organise the catalog into categories and sub-categories.",
+  description: "Organise the catalog into categories.",
 });
 </script>

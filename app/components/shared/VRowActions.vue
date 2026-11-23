@@ -1,5 +1,5 @@
 <template>
-  <LazyVMenu :label="label" width="w-44">
+  <LazyVMenu :label="label" width="w-max min-w-44 max-w-xs">
     <template #trigger="{ attrs, toggle }">
       <LazyVButton
         v-bind="attrs"
@@ -21,7 +21,7 @@
       class="menu-item w-full"
       @click="emit('edit')"
     >
-      <Icon name="lucide:pencil" size="16" aria-hidden="true" /> Edit
+      <span class="grid h-4 w-4 shrink-0 place-items-center" aria-hidden="true"><Icon name="lucide:pencil" size="16" /></span> Edit
     </button>
     <button
       v-if="duplicate"
@@ -30,7 +30,7 @@
       class="menu-item w-full"
       @click="emit('duplicate')"
     >
-      <Icon name="lucide:copy" size="16" aria-hidden="true" /> Duplicate
+      <span class="grid h-4 w-4 shrink-0 place-items-center" aria-hidden="true"><Icon name="lucide:copy" size="16" /></span> Duplicate
     </button>
     <button
       v-if="remove"
@@ -39,7 +39,7 @@
       class="menu-item w-full text-accent"
       @click="emit('remove')"
     >
-      <Icon name="lucide:trash-2" size="16" aria-hidden="true" /> Delete
+      <span class="grid h-4 w-4 shrink-0 place-items-center" aria-hidden="true"><Icon name="lucide:trash-2" size="16" /></span> Delete
     </button>
   </LazyVMenu>
 </template>

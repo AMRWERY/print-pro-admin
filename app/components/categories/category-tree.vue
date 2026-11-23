@@ -98,11 +98,7 @@
               :label="`Actions for ${root.name}`"
               @edit="emit('select', root.id)"
               @remove="emit('remove', root)"
-            >
-              <button type="button" role="menuitem" class="menu-item w-full" @click="emit('addChild', root.id)">
-                <Icon name="lucide:folder-plus" size="16" aria-hidden="true" /> Add sub-category
-              </button>
-            </LazyVRowActions>
+            />
           </div>
         </div>
 
@@ -276,7 +272,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   select: [id: string];
-  addChild: [parentId: string];
   remove: [category: Category];
   visibility: [category: Category, on: boolean];
   reorder: [parentId: string | null, ids: string[]];

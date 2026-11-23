@@ -4,9 +4,7 @@
     :subtitle="
       category
         ? `${category.code}`
-        : parentName
-          ? `Sub-category of ${parentName}`
-          : 'Top-level category'
+        : 'Top-level category'
     "
     :icon="category ? 'lucide:folder-tree' : 'lucide:folder-plus'"
   >
@@ -44,20 +42,6 @@
         input-class="font-mono"
         hint="Lowercase letters, numbers, dashes and slashes."
         @update:model-value="slugTouched = true"
-      />
-
-      <LazyVSelectInput
-        :model-value="form.parentId ?? ''"
-        name="catParent"
-        @update:model-value="(v) => (form.parentId = v ? String(v) : null)"
-        label="Parent category node"
-        :options="parentOptions"
-        :disabled="hasChildren"
-        :hint="
-          hasChildren
-            ? 'A category with sub-categories stays top-level.'
-            : undefined
-        "
       />
 
       <LazyVSelectInput
@@ -228,17 +212,6 @@ watch(
   },
   { immediate: !c },
 );
-
-const parentName = computed(
-  () => props.masters.find((m) => m.id === form.parentId)?.name,
-);
-
-const parentOptions = computed(() => [
-  { value: "", label: "Root (top level, no parent)" },
-  ...props.masters
-    .filter((m) => m.id !== props.category?.id)
-    .map((m) => ({ value: m.id, label: m.name })),
-]);
 
 const { validate } = useForm();
 
