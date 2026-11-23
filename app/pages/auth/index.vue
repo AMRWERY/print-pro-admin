@@ -5,7 +5,6 @@
         eyebrow="Admin sign-in"
         tag="Orders, stock and customers"
         title="Manage orders, stock and customers in one place."
-        icon="lucide:printer"
         :stats="[
           { label: 'Orders', value: 'Tracked' },
           { label: 'Stock', value: 'Live' },

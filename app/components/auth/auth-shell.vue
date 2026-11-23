@@ -1,5 +1,12 @@
 <template>
   <div class="container-page py-8 lg:py-12">
+    <!-- Same two controls as the admin header, so they work before signing in too. -->
+    <div class="mx-auto mb-4 flex max-w-5xl items-center justify-end gap-2">
+      <LazyVThemeToggle />
+
+      <LazyVLocaleSwitcher />
+    </div>
+
     <div
       class="mx-auto grid max-w-5xl gap-6"
       :class="$slots.aside && 'lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]'"

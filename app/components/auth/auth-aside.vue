@@ -5,11 +5,17 @@
     <div
       class="pointer-events-none absolute inset-0 [background:radial-gradient(70%_60%_at_20%_20%,rgb(var(--c-accent)/0.16),transparent_70%)]"
     />
-    <Icon
-      :name="icon"
-      size="220"
-      class="pointer-events-none absolute -bottom-6 -end-8 text-line/60"
+    <img
+      src="/img/auth-printers.png"
+      alt=""
+      width="1920"
+      height="962"
+      decoding="async"
+      class="pointer-events-none absolute inset-0 h-full w-full object-cover object-[70%_center] opacity-70"
       aria-hidden="true"
+    />
+    <div
+      class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink via-ink/80 to-ink/30"
     />
 
     <p class="eyebrow relative flex items-center gap-2">
@@ -64,7 +70,6 @@ defineProps<{
   tag: string;
   title: string;
   body?: string;
-  icon: string;
   points?: { icon: string; title: string; body: string }[];
   stats: { label: string; value: string }[];
 }>();
