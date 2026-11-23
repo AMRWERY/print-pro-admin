@@ -70,7 +70,7 @@
       />
       <div v-else>
         <p class="label">Behaves like</p>
-        <p class="field mt-1.5 text-sm text-mute">{{ kindOptions.find((k) => k.value === category.kind)?.label }}</p>
+        <p class="field mt-1.5 text-sm text-mute">{{ kindLabel }}</p>
       </div>
 
       <LazyVSelectInput
@@ -221,6 +221,8 @@ const kindOptions = [
   { value: "copier", label: "Photocopiers" },
   { value: "supply", label: "Ink & toner" },
 ];
+
+const kindLabel = computed(() => kindOptions.find((k) => k.value === props.category?.kind)?.label ?? "");
 
 const form = reactive<CategoryInput>({
   key: "",

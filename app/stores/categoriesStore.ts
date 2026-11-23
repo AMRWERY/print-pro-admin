@@ -1,5 +1,5 @@
 import type { CategoriesResponse, Category, CategoryInput } from "~/types/admin/categories";
-import type { RequestStatus } from "~/stores/productsStore";
+import type { RequestStatus } from "~/types/admin/products";
 
 const BASE = "/api/admin/categories";
 
