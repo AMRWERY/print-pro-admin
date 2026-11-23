@@ -1,6 +1,8 @@
 import { cohortLabel, funnelLabel, pointLabel, regionLabel, velocityMeta } from "~/data/analytics-meta";
-import { categoryMeta } from "~/data/product-meta";
 import type { AnalyticsResponse, TopProductRow } from "~/types/admin/analytics";
+
+/** A category's name for the report, from the shared list (the raw key if it is gone). */
+const categoryName = (key: string) => useCategoriesStore().label(key);
 
 // The analytics report as a PDF or an Excel workbook. The libraries load on demand. Client only.
 
@@ -57,7 +59,7 @@ export const downloadAnalyticsPdf = async (a: AnalyticsResponse, top: TopProduct
   );
   table(
     ["Division", "Revenue", "Share", "YoY", "Margin"],
-    a.categories.map((c) => [categoryMeta[c.category].label, egp(c.revenue), pct(c.share), pct(c.yoy), pct(c.margin)]),
+    a.categories.map((c) => [categoryName(c.category), egp(c.revenue), pct(c.share), pct(c.yoy), pct(c.margin)]),
     [1, 2, 3, 4],
   );
   table(
@@ -117,7 +119,7 @@ export const downloadAnalyticsExcel = async (a: AnalyticsResponse, top: TopProdu
   );
   add(
     "Divisions",
-    [["Division", "Revenue", "Share (%)", "YoY (%)", "Margin (%)"], ...a.categories.map((c) => [categoryMeta[c.category].label, c.revenue, c.share, c.yoy, c.margin])],
+    [["Division", "Revenue", "Share (%)", "YoY (%)", "Margin (%)"], ...a.categories.map((c) => [categoryName(c.category), c.revenue, c.share, c.yoy, c.margin])],
     [30, 14, 12, 10, 12],
   );
   add(
@@ -127,7 +129,7 @@ export const downloadAnalyticsExcel = async (a: AnalyticsResponse, top: TopProdu
   );
   add(
     "Best sellers",
-    [["Rank", "SKU", "Name", "Division", "Units", "Revenue", "Margin (%)", "Days of buffer", "Status"], ...top.map((t) => [t.rank, t.sku, t.name, categoryMeta[t.category].label, t.units, t.revenue, t.margin, t.daysLeft, velocityMeta[t.status].label])],
+    [["Rank", "SKU", "Name", "Division", "Units", "Revenue", "Margin (%)", "Days of buffer", "Status"], ...top.map((t) => [t.rank, t.sku, t.name, categoryName(t.category), t.units, t.revenue, t.margin, t.daysLeft, velocityMeta[t.status].label])],
     [6, 18, 40, 24, 8, 14, 10, 14, 12],
   );
 

@@ -19,7 +19,7 @@
         name="productCategory"
         label="Category"
         hide-label
-        :options="categoryOptions"
+        :options="categories.options(true)"
       />
 
       <LazyVSelectInput
@@ -98,7 +98,6 @@
 
 <script lang="ts" setup>
 import {
-  categoryOptions,
   sortOptions,
   statusOptions,
   stockOptions,
@@ -111,6 +110,8 @@ import type {
   StockFilter,
   PresetKey,
 } from "~/types/admin/products";
+
+const categories = useCategories();
 
 const props = defineProps<{
   presets?: ProductsResponse["presets"] | null;

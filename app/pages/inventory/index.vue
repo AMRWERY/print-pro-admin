@@ -191,7 +191,6 @@
 </template>
 
 <script lang="ts" setup>
-import { categoryMeta } from "~/data/product-meta";
 import { warehouseLabel } from "~/data/inventory-meta";
 import type {
   InventoryFilter,
@@ -200,6 +199,8 @@ import type {
   Warehouse,
 } from "~/types/admin/inventory";
 import type { ProductCategory } from "~/types/admin/products";
+
+const categories = useCategories();
 
 const toast = useToast();
 const { number, currency } = useFormatters();
@@ -349,7 +350,7 @@ const exportRows = async (format: "pdf" | "excel") => {
       body: list.map((i) => [
         i.sku,
         i.name,
-        categoryMeta[i.category].label,
+        categories.label(i.category),
         warehouseLabel[i.warehouse],
         i.bin,
         i.stock,

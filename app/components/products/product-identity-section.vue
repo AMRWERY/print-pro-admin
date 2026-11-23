@@ -97,17 +97,15 @@
 </template>
 
 <script lang="ts" setup>
-import { categoryMeta } from "~/data/product-meta";
-import type { ProductCategory, ProductFormValues } from "~/types/admin/products";
+import type { ProductFormValues } from "~/types/admin/products";
+
+const categories = useCategories();
 
 const props = defineProps<{ form: ProductFormValues }>();
 
 const editor = ref<HTMLElement | null>(null);
 
-const categoryChoices = (Object.keys(categoryMeta) as ProductCategory[]).map((value) => ({
-  value,
-  label: categoryMeta[value].label,
-}));
+const categoryChoices = computed(() => categories.options());
 
 // Wraps the selected text (or a placeholder) in markdown syntax.
 const wrap = (before: string, after: string, placeholder: string) => {

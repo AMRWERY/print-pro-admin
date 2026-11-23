@@ -124,17 +124,13 @@
           aria-hidden="true"
         />
         <span v-if="deleteTarget">
-          This removes the category<span v-if="deleteChildren">
-            and its {{ deleteChildren }} sub-categor{{
-              deleteChildren === 1 ? "y" : "ies"
-            }}</span
-          >
-          from the storefront tree. {{ number(deleteTarget.skus) }} SKU{{
-            deleteTarget.skus === 1 ? "" : "s"
-          }}
-          will lose this category. Products themselves are not deleted. This
+          This removes the category from the shop menu and from reports. It
           cannot be undone from this screen.
         </span>
+      </p>
+      <p v-if="deleteError" class="callout-accent mt-3" role="alert">
+        <Icon name="lucide:circle-alert" size="16" class="bullet-icon" aria-hidden="true" />
+        {{ deleteError }}
       </p>
       <template #footer>
         <LazyVButton
@@ -285,8 +281,10 @@ const save = async (values: CategoryInput) => {
     closeInspector();
   } catch (e) {
     const status = statusOf(e);
-    formError.value =
-      status === 409
+    const keyMessage = fieldErrorsOf(e).key;
+    formError.value = keyMessage
+      ? `Key: ${keyMessage}`
+      : status === 409
         ? "Another category already uses that URL slug. Choose a different one."
         : "The category could not be saved. Check the details and try again.";
   } finally {
@@ -336,14 +334,11 @@ const reorder = async (parentId: string | null, ids: string[]) => {
 const deleteOpen = ref(false);
 const deleting = ref(false);
 const deleteTarget = ref<Category | null>(null);
-const deleteChildren = computed(() =>
-  deleteTarget.value
-    ? nodes.value.filter((n) => n.parentId === deleteTarget.value!.id).length
-    : 0,
-);
+const deleteError = ref("");
 
 const askDelete = (c: Category) => {
   deleteTarget.value = c;
+  deleteError.value = "";
   deleteOpen.value = true;
 };
 
@@ -351,6 +346,7 @@ const confirmDelete = async () => {
   const target = deleteTarget.value;
   if (!target) return;
   deleting.value = true;
+  deleteError.value = "";
   try {
     await store.remove(target.id);
     toast.success("Category deleted", { description: target.name });
@@ -360,10 +356,9 @@ const confirmDelete = async () => {
     )
       closeInspector();
     deleteOpen.value = false;
-  } catch {
-    toast.error("Couldn't delete the category", {
-      description: "Nothing was removed. Try again.",
-    });
+  } catch (e) {
+    // 409: products or coupons still use it. The reason stays in the dialog so it can be read and acted on.
+    deleteError.value = statusOf(e) === 409 ? messageOf(e) : "Nothing was removed. Try again.";
   } finally {
     deleting.value = false;
   }

@@ -150,10 +150,11 @@
 </template>
 
 <script lang="ts" setup>
-import { categoryMeta } from "~/data/product-meta";
 import { stateMeta, typeMeta, valueLabel } from "~/data/coupon-meta";
 import type { Tone } from "~/types/admin/dashboard";
 import type { CouponRow } from "~/types/admin/coupons";
+
+const categories = useCategories();
 
 const props = defineProps<{
   rows: CouponRow[];
@@ -186,14 +187,14 @@ const badge = (c: CouponRow): { label: string; tone: Tone } | null =>
     : c.type === "freight" || c.type === "serviceCredit"
       ? { label: typeMeta[c.type].short, tone: "info" }
       : c.categories.length === 1
-        ? { label: categoryMeta[c.categories[0]!].label, tone: "neutral" }
+        ? { label: categories.label(c.categories[0]!), tone: "neutral" }
         : null;
 
 const thresholds = (c: CouponRow) =>
   [
     c.minOrder ? `Min ${money(c.minOrder)}` : "No minimum",
     c.categories.length
-      ? c.categories.map((x) => categoryMeta[x].label).join(", ")
+      ? c.categories.map((x) => categories.label(x)).join(", ")
       : "All categories",
     c.perAccount === 1 ? "single use per account" : null,
   ]

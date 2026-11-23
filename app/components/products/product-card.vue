@@ -35,7 +35,7 @@
           {{ product.name }}
         </h3>
         <p class="meta">
-          {{ categoryMeta[product.category].label }} · {{ product.brand }}
+          {{ categories.label(product.category) }} · {{ product.brand }}
         </p>
       </div>
     </div>
@@ -98,12 +98,13 @@
 
 <script lang="ts" setup>
 import {
-  categoryMeta,
   statusMeta,
   stockMeta,
   stockStateOf,
 } from "~/data/product-meta";
 import type { Product } from "~/types/admin/products";
+
+const categories = useCategories();
 
 const props = defineProps<{ product: Product; selected?: boolean }>();
 

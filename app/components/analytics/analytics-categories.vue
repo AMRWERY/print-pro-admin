@@ -37,7 +37,7 @@
           />
           <div class="min-w-0 flex-1 basis-44">
             <p class="font-medium leading-snug">
-              {{ categoryMeta[c.category].label }}
+              {{ categoryNames.label(c.category) }}
             </p>
             <p class="meta">
               {{ percent(c.share) }} share ·
@@ -68,8 +68,9 @@
 </template>
 
 <script lang="ts" setup>
-import { categoryMeta } from "~/data/product-meta";
 import type { CategoryRow } from "~/types/admin/analytics";
+
+const categoryNames = useCategories();
 
 defineProps<{ categories?: CategoryRow[] | null; portfolioMargin: number }>();
 

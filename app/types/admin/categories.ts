@@ -1,9 +1,16 @@
+/** What the storefront does with a category's products: the three built-ins keep their specs and filters. */
+export type CategoryKind = "printer" | "copier" | "supply" | "general";
+
 export type CategoryVisibility = "active" | "staging" | "hidden";
 
 export type CategorySort = "curated" | "newest" | "priceAsc" | "priceDesc";
 
 export interface Category {
   id: string;
+  /** Stable identifier products, coupons and links use. Never changes. */
+  key: string;
+  /** Set when the category is created. */
+  kind: CategoryKind;
   /** Catalog code such as CAT-CAM-01. */
   code: string;
   name: string;
@@ -35,6 +42,10 @@ export interface CategoriesResponse {
 }
 
 export interface CategoryInput {
+  /** Only used when a category is created. */
+  key?: string;
+  /** Only used when a category is created. */
+  kind?: CategoryKind;
   name: string;
   slug: string;
   parentId: string | null;

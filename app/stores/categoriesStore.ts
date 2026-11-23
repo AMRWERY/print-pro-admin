@@ -27,6 +27,23 @@ export const useCategoriesStore = defineStore("categories", () => {
   };
   const refresh = fetchAll;
 
+  // --- Lookups every screen shares: what is this category called, which icon, what are the choices ---
+  const items = computed(() => [...(data.value?.nodes ?? [])].sort((a, b) => a.order - b.order));
+  const byKey = computed(() => new Map(items.value.map((c) => [c.key, c])));
+  let loading: Promise<void> | null = null;
+  /** Loads the categories the first time anything asks; later calls reuse them. */
+  const load = () => {
+    if (status.value === "idle") loading = fetchAll();
+    return loading ?? Promise.resolve();
+  };
+  /** The category's name, or the raw key when it no longer exists (or has not loaded yet). */
+  const label = (key: string) => byKey.value.get(key)?.name ?? key;
+  const icon = (key: string) => byKey.value.get(key)?.icon ?? "lucide:package";
+  const options = (withAll = false) => [
+    ...(withAll ? [{ value: "all", label: "Category: all" }] : []),
+    ...items.value.map((c) => ({ value: c.key, label: c.name })),
+  ];
+
   const create = (body: CategoryInput) => api<Category>(BASE, { method: "POST", body });
   const update = (id: string, body: CategoryInput) => api<Category>(`${BASE}/${id}`, { method: "PATCH", body });
 
@@ -66,5 +83,5 @@ export const useCategoriesStore = defineStore("categories", () => {
     await refresh();
   };
 
-  return { data, status, error, fetchAll, refresh, create, update, setVisibility, reorder, remove };
+  return { data, status, error, items, load, label, icon, options, fetchAll, refresh, create, update, setVisibility, reorder, remove };
 });

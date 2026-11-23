@@ -280,7 +280,6 @@
 </template>
 
 <script lang="ts" setup>
-import { categoryMeta } from "~/data/product-meta";
 import {
   perAccountOptions,
   statusOptions,
@@ -289,6 +288,8 @@ import {
 } from "~/data/coupon-meta";
 import type { Coupon, CouponInput, CouponType } from "~/types/admin/coupons";
 import type { ProductCategory } from "~/types/admin/products";
+
+const categories = useCategories();
 
 const props = defineProps<{
   /** The voucher being edited; null when creating. */
@@ -312,9 +313,7 @@ const typeChoices = (Object.keys(typeMeta) as CouponType[]).map((value) => ({
   label: typeMeta[value].label,
 }));
 
-const categoryChoices = (Object.keys(categoryMeta) as ProductCategory[]).map(
-  (value) => ({ value, label: categoryMeta[value].label }),
-);
+const categoryChoices = computed(() => categories.options());
 
 const tierChoices = tierOptions.map((o) => ({
   ...o,

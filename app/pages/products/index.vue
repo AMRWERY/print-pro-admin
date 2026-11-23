@@ -198,7 +198,7 @@
 </template>
 
 <script lang="ts" setup>
-import { categoryMeta, statusMeta } from "~/data/product-meta";
+import { statusMeta } from "~/data/product-meta";
 import type {
   Product,
   ProductCategory,
@@ -206,6 +206,8 @@ import type {
   ProductStatus,
   StockFilter,
 } from "~/types/admin/products";
+
+const categories = useCategories();
 
 const toast = useToast();
 const localePath = useLocalePath();
@@ -352,7 +354,7 @@ const exportRows = async (list: Product[], format: "pdf" | "excel") => {
       body: list.map((p) => [
         p.sku,
         p.name,
-        categoryMeta[p.category].label,
+        categories.label(p.category),
         p.brand,
         p.price,
         p.stock,

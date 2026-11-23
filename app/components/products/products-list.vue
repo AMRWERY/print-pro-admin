@@ -115,11 +115,11 @@
             <td class="px-3 py-3.5">
               <p class="flex items-center gap-1.5 text-xs">
                 <Icon
-                  :name="categoryMeta[p.category].icon"
+                  :name="categories.icon(p.category)"
                   size="14"
                   class="text-accent"
                   aria-hidden="true"
-                />{{ categoryMeta[p.category].label }}
+                />{{ categories.label(p.category) }}
               </p>
               <p class="meta mt-0.5">{{ p.brand }}</p>
             </td>
@@ -202,12 +202,13 @@
 
 <script lang="ts" setup>
 import {
-  categoryMeta,
   stockMeta,
   stockStateOf,
   statusMeta,
 } from "~/data/product-meta";
 import type { Product } from "~/types/admin/products";
+
+const categories = useCategories();
 
 const props = defineProps<{
   rows: Product[];

@@ -131,9 +131,10 @@
 
 <script lang="ts" setup>
 import { warehouseLabel } from "~/data/inventory-meta";
-import { categoryMeta } from "~/data/product-meta";
 import type { InventoryItem, ItemInput, Warehouse } from "~/types/admin/inventory";
 import type { ProductCategory } from "~/types/admin/products";
+
+const categories = useCategories();
 
 const props = defineProps<{
   item: InventoryItem | null;
@@ -149,12 +150,7 @@ const open = defineModel<boolean>("open", { default: false });
 
 const toast = useToast();
 
-const categoryChoices = (Object.keys(categoryMeta) as ProductCategory[]).map(
-  (value) => ({
-    value,
-    label: categoryMeta[value].label,
-  }),
-);
+const categoryChoices = computed(() => categories.options());
 
 const warehouseChoices = (Object.keys(warehouseLabel) as Warehouse[]).map((value) => ({
   value,

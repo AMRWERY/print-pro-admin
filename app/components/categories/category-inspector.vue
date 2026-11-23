@@ -44,6 +44,35 @@
         @update:model-value="slugTouched = true"
       />
 
+      <LazyVInput
+        v-if="!category"
+        v-model="form.key"
+        name="catKey"
+        label="Key"
+        optional
+        input-class="font-mono"
+        maxlength="40"
+        hint="Used in links and reports. Letters, numbers and dashes. Leave empty to create it from the name. It cannot be changed later."
+      />
+      <div v-else>
+        <p class="label">Key</p>
+        <p class="field mt-1.5 font-mono text-sm text-mute" dir="ltr">{{ category.key }}</p>
+        <p class="mt-1 text-xs text-mute">The key cannot be changed.</p>
+      </div>
+
+      <LazyVSelectInput
+        v-if="!category"
+        v-model="form.kind"
+        name="catKind"
+        label="Behaves like"
+        :options="kindOptions"
+        hint="Decides which specifications and filters its products get on the shop. It cannot be changed later."
+      />
+      <div v-else>
+        <p class="label">Behaves like</p>
+        <p class="field mt-1.5 text-sm text-mute">{{ kindOptions.find((k) => k.value === category.kind)?.label }}</p>
+      </div>
+
       <LazyVSelectInput
         v-model="form.visibility"
         name="catVisibility"
@@ -186,7 +215,16 @@ const slugify = (s: string) =>
     .slice(0, 60);
 
 const c = props.category;
+const kindOptions = [
+  { value: "general", label: "General (no technical filters)" },
+  { value: "printer", label: "Printers" },
+  { value: "copier", label: "Photocopiers" },
+  { value: "supply", label: "Ink & toner" },
+];
+
 const form = reactive<CategoryInput>({
+  key: "",
+  kind: c?.kind ?? "general",
   name: c?.name ?? "",
   slug: c?.slug ?? "",
   parentId: c ? c.parentId : (props.newParentId ?? null),
@@ -218,6 +256,6 @@ const { validate } = useForm();
 const submit = async () => {
   const { valid } = await validate();
   if (!valid) return;
-  emit("save", { ...form, parentId: form.parentId || null });
+  emit("save", { ...form, key: form.key?.trim() || undefined, parentId: null });
 };
 </script>

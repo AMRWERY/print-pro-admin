@@ -19,7 +19,7 @@
         name="inventoryDivision"
         label="Division"
         hide-label
-        :options="categoryOptions"
+        :options="categories.options(true)"
       />
 
       <LazyVSelectInput
@@ -67,7 +67,6 @@
 </template>
 
 <script lang="ts" setup>
-import { categoryOptions } from "~/data/product-meta";
 import { filterTabs, sortOptions, warehouseOptions } from "~/data/inventory-meta";
 import type {
   InventoryFilter,
@@ -76,6 +75,8 @@ import type {
   Warehouse,
 } from "~/types/admin/inventory";
 import type { ProductCategory } from "~/types/admin/products";
+
+const categories = useCategories();
 
 defineProps<{ counts?: InventoryResponse["counts"] | null }>();
 

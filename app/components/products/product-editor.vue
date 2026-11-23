@@ -177,6 +177,7 @@ const { validate, setErrors } = useForm();
 // Plain names for the fields the server can complain about.
 const fieldLabels: Record<string, string> = {
   name: "Product title",
+  category: "Category",
   sku: "SKU",
   brand: "Brand",
   price: "Price",

@@ -24,7 +24,7 @@
           name="analyticsCategory"
           label="Division"
           hide-label
-          :options="categoryOptions"
+          :options="categories.options(true)"
           class="w-44"
         />
       </div>
@@ -122,7 +122,7 @@
                 </div>
               </td>
               <td class="px-3 py-3.5 text-xs text-mute">
-                {{ categoryMeta[r.category].label }}
+                {{ categories.label(r.category) }}
               </td>
               <td class="px-3 py-3.5 text-end font-mono text-xs tabular-nums">
                 {{ number(r.units) }}
@@ -251,12 +251,13 @@
 
 <script lang="ts" setup>
 import { velocityMeta } from "~/data/analytics-meta";
-import { categoryMeta, categoryOptions } from "~/data/product-meta";
 import type {
   AnalyticsQuery,
   TopProductsResponse,
 } from "~/types/admin/analytics";
 import type { ProductCategory } from "~/types/admin/products";
+
+const categories = useCategories();
 
 const props = defineProps<{
   period: Pick<AnalyticsQuery, "range" | "from" | "to">;
