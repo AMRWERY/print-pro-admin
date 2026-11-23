@@ -53,7 +53,9 @@ const appearanceOptions = [
 const appearance = computed<Theme>({
   get: () => theme.value,
   set: (next) => {
-    if (next !== theme.value) toggle();
+    if (next === theme.value) return;
+    toggle();
+    toast.success(next === "dark" ? "Dark theme on" : "Light theme on");
   },
 });
 

@@ -41,11 +41,43 @@
         class="lg:sticky lg:top-24"
       >
         <div class="flex flex-col items-center gap-3 text-center">
-          <LazyVAvatar
-            :initials="initials"
-            tone="accent"
-            size="md"
-            class="!h-16 !w-16 !text-lg"
+          <div class="relative">
+            <LazyVAvatar
+              :initials="initials"
+              :src="account.avatar"
+              tone="accent"
+              size="md"
+              class="!h-24 !w-24 !text-2xl"
+            />
+            <!-- Removing sits on the photo itself, at its corner. -->
+            <button
+              v-if="account.avatar"
+              type="button"
+              class="absolute -end-0 -top-0 grid h-5 w-5 place-items-center rounded-full border border-line bg-surface text-mute shadow transition duration-fast hover:border-accent hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent disabled:opacity-50"
+              :disabled="photoBusy"
+              aria-label="Remove profile photo"
+              @click="removePhoto"
+            >
+              <Icon name="lucide:x" size="14" aria-hidden="true" />
+            </button>
+          </div>
+
+          <LazyVButton
+            size="sm"
+            variant="secondary"
+            icon="lucide:camera"
+            :loading="photoBusy"
+            @click="photoInput?.click()"
+            >{{ account.avatar ? "Change photo" : "Add photo" }}</LazyVButton
+          >
+          <input
+            ref="photoInput"
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            class="sr-only"
+            tabindex="-1"
+            aria-label="Choose a profile photo"
+            @change="onPhoto"
           />
           <div class="min-w-0">
             <p class="font-display text-xl font-bold leading-tight">
@@ -130,6 +162,40 @@ const memberSince = computed(() =>
       })
     : "",
 );
+
+// --- Profile photo: shrunk to a small square-friendly JPEG in the browser, then saved with the profile ---
+const toast = useToast();
+const photoInput = ref<HTMLInputElement | null>(null);
+const photoBusy = ref(false);
+
+const savePhoto = async (avatar: string, done: string) => {
+  photoBusy.value = true;
+  const res = await auth.updateProfile({ avatar });
+  photoBusy.value = false;
+  if (res.ok) toast.success(done);
+  else toast.warning("Photo not saved", { description: "The server could not be reached or refused the image. Try again." });
+};
+
+const onPhoto = async (e: Event) => {
+  const input = e.target as HTMLInputElement;
+  const file = input.files?.[0];
+  input.value = ""; // so choosing the same file again still fires
+  if (!file) return;
+  if (!file.type.startsWith("image/")) {
+    toast.warning("Not an image", { description: "Choose a JPG, PNG or WebP photo." });
+    return;
+  }
+  photoBusy.value = true;
+  try {
+    const { url } = await toWebImage(file, 320, 40_000);
+    await savePhoto(url, "Profile photo updated");
+  } catch {
+    photoBusy.value = false;
+    toast.warning("Photo not added", { description: "That file could not be read as an image. Try another one." });
+  }
+};
+
+const removePhoto = () => savePhoto("", "Profile photo removed");
 
 const signOut = async () => {
   auth.logout();

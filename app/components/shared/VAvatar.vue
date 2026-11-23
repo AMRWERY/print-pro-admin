@@ -1,21 +1,25 @@
 <template>
   <span
-    class="grid shrink-0 place-items-center font-mono font-bold"
+    class="relative grid shrink-0 place-items-center overflow-hidden font-mono font-bold"
     :class="[sizeClass[size], shape === 'circle' ? 'rounded-full' : 'rounded-control', toneClass[tone]]"
     aria-hidden="true"
-    >{{ initials }}</span
   >
+    <img v-if="src" :src="src" alt="" class="absolute inset-0 h-full w-full object-cover" />
+    <template v-else>{{ initials }}</template>
+  </span>
 </template>
 
 <script lang="ts" setup>
 /**
- * Initials in a circle or rounded square. Decorative: the person's name always sits
+ * A photo, or the initials when there is none, in a circle or rounded square. Decorative: the person's name always sits
  * next to it, so it is hidden from assistive tech.
  */
 
 withDefaults(
   defineProps<{
     initials: string;
+    /** A photo; shown instead of the initials when there is one. */
+    src?: string;
     size?: "sm" | "md";
     shape?: "circle" | "square";
     tone?: "neutral" | "accent";

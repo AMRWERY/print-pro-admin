@@ -14,7 +14,7 @@
           >
         </span>
 
-        <LazyVAvatar :initials="initials" tone="accent" />
+        <LazyVAvatar :initials="initials" :src="auth.user?.avatar" tone="accent" />
 
         <Icon
           name="lucide:chevron-down"
@@ -43,11 +43,23 @@
         <Icon name="lucide:settings" size="16" aria-hidden="true" /> Settings
       </nuxt-link-locale>
     </div>
+
+    <div class="border-t border-line py-1">
+      <button type="button" role="menuitem" class="menu-item w-full text-accent" @click="signOut">
+        <Icon name="lucide:log-out" size="16" aria-hidden="true" /> Sign out
+      </button>
+    </div>
   </LazyVMenu>
 </template>
 
 <script lang="ts" setup>
 const auth = useAuthStore();
+const localePath = useLocalePath();
+
+const signOut = async () => {
+  auth.logout();
+  await navigateTo(localePath("/auth"));
+};
 
 const name = computed(() => auth.user?.name ?? "Admin");
 const email = computed(() => auth.user?.email ?? "Not signed in");

@@ -83,6 +83,7 @@ const submit = async () => {
 
   if (!result.ok) {
     error.value = "The current password is wrong. Check it and try again.";
+    toast.error("Password not changed", { description: "The current password is wrong." });
     return;
   }
   Object.assign(form, { current: "", next: "", confirm: "" });

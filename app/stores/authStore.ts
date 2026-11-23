@@ -96,7 +96,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   /** Updates the signed-in account's profile fields. The email is the account's identity, so it isn't editable here. */
   const updateProfile = async (
-    patch: Partial<Pick<Account, "name" | "studio" | "title" | "phone" | "newsletter">>,
+    patch: Partial<Pick<Account, "name" | "studio" | "title" | "phone" | "avatar" | "newsletter">>,
   ): Promise<{ ok: boolean }> => {
     try {
       const res = await $fetch<{ user: Account }>("/api/auth/profile", { method: "PATCH", body: patch });

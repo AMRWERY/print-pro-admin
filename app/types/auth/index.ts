@@ -12,6 +12,8 @@ export interface Account {
   /** Job title shown on the profile. */
   title?: string;
   phone?: string;
+  /** Profile photo, a small image as a data URL. */
+  avatar?: string;
   createdAt: string;
 }
 
