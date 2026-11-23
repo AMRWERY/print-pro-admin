@@ -183,8 +183,10 @@
     description="Numbering, how long customers can cancel, and the limits for unverified customers."
     :changed="changed.includes('orders')"
   >
-    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <!-- Each field spans three shared rows (label, input, hint), so inputs line up even when a label wraps. -->
+    <div class="-mb-4 grid gap-x-4 md:grid-cols-2 xl:grid-cols-4">
       <LazyVInput
+        class="row-span-3 mb-4 grid grid-rows-subgrid"
         v-model="s.orders.prefix"
         name="orderPrefix"
         label="Order number prefix"
@@ -196,6 +198,7 @@
         :hint="`Next order: ${s.orders.prefix.toUpperCase()}0001`"
       />
       <LazyVInput
+        class="row-span-3 mb-4 grid grid-rows-subgrid"
         v-model="s.orders.graceMinutes"
         name="graceMinutes"
         type="number"
@@ -206,6 +209,7 @@
         max="1440"
       />
       <LazyVInput
+        class="row-span-3 mb-4 grid grid-rows-subgrid"
         v-model="s.orders.paymentWindowHours"
         name="paymentWindowHours"
         type="number"
@@ -216,6 +220,7 @@
         max="720"
       />
       <LazyVInput
+        class="row-span-3 mb-4 grid grid-rows-subgrid"
         v-model="s.orders.maxUnverified"
         name="maxUnverified"
         type="number"

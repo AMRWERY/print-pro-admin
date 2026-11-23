@@ -89,11 +89,10 @@
 
         <settings-store v-model="form" :changed="changedKeys" />
 
-        <settings-finance v-model="form" :changed="changedKeys" />
 
         <settings-commerce v-model="form" :changed="changedKeys" />
 
-        <settings-operations v-model="form" :changed="changedKeys" />
+        <settings-inventory v-model="form" :changed="changedKeys" />
 
         <settings-system
           v-model="form"

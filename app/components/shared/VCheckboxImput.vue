@@ -1,12 +1,12 @@
 <template>
-  <div class="space-y-1.5" v-bind="wrapperAttrs()">
+  <div class="flex flex-col space-y-1.5" v-bind="wrapperAttrs()">
     <label
       :for="inputId"
       class="group flex items-start gap-2.5 text-sm"
       :class="[
         disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
         boxed &&
-          'rounded-card border border-line bg-surface p-3 transition-colors duration-200 hover:border-mute/60 has-[:checked]:border-accent has-[:checked]:bg-accent-soft',
+          'flex-1 rounded-card border border-line bg-surface p-3 transition-colors duration-200 hover:border-mute/60 has-[:checked]:border-accent has-[:checked]:bg-accent-soft',
         boxed && errorMessage && '!border-accent',
         labelClass,
       ]"
