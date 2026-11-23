@@ -10,7 +10,7 @@
     "postinstall": "nuxt prepare",
     "check:vocab": "node scripts/check-vocabulary.mjs",
     "smoke": "node scripts/smoke-routes.mjs",
-    "typecheck": "nuxt prepare && vue-tsc --noEmit"
+    "typecheck": "nuxt prepare && vue-tsc --noEmit -p .nuxt/tsconfig.app.json && vue-tsc --noEmit -p .nuxt/tsconfig.server.json"
   },
   "dependencies": {
     "@nuxt/icon": "^2.2.1",
