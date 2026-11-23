@@ -45,7 +45,7 @@ export const callApi = async <T>(event: H3Event, path: string, opts: CallOptions
     setResponseStatus(event, res.status);
     return res._data as T;
   } catch (e) {
-    const err = e as { statusCode?: number; status?: number; data?: { message?: string } };
+    const err = e as { statusCode?: number; status?: number; data?: { message?: string; fields?: Record<string, string> } };
     const statusCode = err.statusCode ?? err.status ?? 503;
     // The API said this session is no longer valid: drop the cookie so the app signs out.
     if (statusCode === 401 && token) endSession(event);
@@ -53,6 +53,8 @@ export const callApi = async <T>(event: H3Event, path: string, opts: CallOptions
       statusCode,
       statusMessage: statusCode === 503 ? "API unavailable" : undefined,
       message: err.data?.message ?? (statusCode === 503 ? "The server is unreachable. Try again shortly." : "Request failed"),
+      // Which form fields the API objected to, so the page can mark them.
+      ...(err.data?.fields ? { data: { fields: err.data.fields } } : {}),
     });
   }
 };

@@ -3,6 +3,10 @@ type ApiError = { statusCode?: number; status?: number; data?: { message?: strin
 /** HTTP status of a failed request, or 0 when there was none (offline). */
 export const statusOf = (e: unknown): number => (e as ApiError)?.statusCode ?? (e as ApiError)?.status ?? 0;
 
+/** Form fields the server objected to ({ sku: "Use letters…" }), or {} when it named none. */
+export const fieldErrorsOf = (e: unknown): Record<string, string> =>
+  (e as { data?: { data?: { fields?: Record<string, string> } } })?.data?.data?.fields ?? {};
+
 /** The server's own message for a failed request ("Only 2 of X in stock"), or "". */
 export const messageOf = (e: unknown): string => (e as ApiError)?.data?.message ?? "";
 

@@ -1,13 +1,12 @@
 <template>
-  <LazyVPanel
-    id="pricing"
-    title="03 // Pricing"
-    icon="lucide:banknote"
-    class="scroll-mt-24"
-  >
-    <template #actions>
-      <span class="chip">Currency: EGP</span>
-    </template>
+  <section id="pricing" class="scroll-mt-24 space-y-4 border-t border-line pt-6 first:border-t-0 first:pt-0" aria-labelledby="pricing-title">
+    <header class="flex flex-wrap items-center justify-between gap-3">
+      <h2 id="pricing-title" class="flex items-center gap-2 font-display text-lg font-bold">
+        <Icon name="lucide:banknote" size="18" class="text-accent" aria-hidden="true" />
+        03 // Pricing
+      </h2>
+      <div class="shrink-0"><span class="chip">Currency: EGP</span></div>
+    </header>
 
     <div class="grid gap-4 sm:grid-cols-3">
       <LazyVInput
@@ -82,7 +81,7 @@
         />
       </div>
     </div>
-  </LazyVPanel>
+  </section>
 </template>
 
 <script lang="ts" setup>

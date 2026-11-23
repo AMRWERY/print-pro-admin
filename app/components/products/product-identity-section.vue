@@ -1,10 +1,11 @@
 <template>
-  <LazyVPanel
-    id="identity"
-    title="01 // Identity & description"
-    icon="lucide:file-text"
-    class="scroll-mt-24"
-  >
+  <section id="identity" class="scroll-mt-24 space-y-4 border-t border-line pt-6 first:border-t-0 first:pt-0" aria-labelledby="identity-title">
+    <header class="flex flex-wrap items-center justify-between gap-3">
+      <h2 id="identity-title" class="flex items-center gap-2 font-display text-lg font-bold">
+        <Icon name="lucide:file-text" size="18" class="text-accent" aria-hidden="true" />
+        01 // Identity & description
+      </h2>
+    </header>
     <div class="space-y-4">
       <LazyVInput
         v-model="form.name"
@@ -15,27 +16,24 @@
         maxlength="120"
       />
 
-      <LazyVInput
-        v-model="form.brand"
-        name="brand"
-        label="Brand"
-        required
-        rules="required|min:2|max:60"
-        maxlength="60"
-      />
-
-      <div>
-        <LazyVInput
-          v-model="form.slug"
-          name="slug"
-          label="Permanent handle / URI"
-          rules="required|min:2|max:80"
-          input-class="font-mono"
-          @update:model-value="slugTouched = true"
+      <div class="grid gap-4 sm:grid-cols-2">
+        <LazyVSelectInput
+          v-model="form.category"
+          name="category"
+          label="Category"
+          required
+          rules="required"
+          :options="categoryChoices"
         />
-        <p class="meta mt-1 break-all" dir="ltr">
-          https://printpro.com/products/{{ form.slug || "…" }}
-        </p>
+
+        <LazyVInput
+          v-model="form.brand"
+          name="brand"
+          label="Brand"
+          required
+          rules="required|min:2|max:60"
+          maxlength="60"
+        />
       </div>
 
       <div ref="editor">
@@ -94,47 +92,22 @@
         </div>
       </div>
 
-      <div>
-        <LazyVTextarea
-          v-model="form.excerpt"
-          name="excerpt"
-          label="Short summary (catalog card)"
-          optional
-          rows="2"
-          maxlength="300"
-        />
-        <p class="mt-1 text-end font-mono text-2xs text-mute tabular-nums">
-          {{ form.excerpt.length }} / 300
-        </p>
-      </div>
     </div>
-  </LazyVPanel>
+  </section>
 </template>
 
 <script lang="ts" setup>
-import type { ProductFormValues } from "~/types/admin/products";
+import { categoryMeta } from "~/data/product-meta";
+import type { ProductCategory, ProductFormValues } from "~/types/admin/products";
 
-const props = defineProps<{
-  form: ProductFormValues;
-  mode: "create" | "edit";
-}>();
+const props = defineProps<{ form: ProductFormValues }>();
 
 const editor = ref<HTMLElement | null>(null);
 
-// In create mode the handle follows the title until someone edits the handle by hand.
-const slugTouched = ref(props.mode === "edit");
-
-watch(
-  () => props.form.name,
-  (name) => {
-    if (slugTouched.value) return;
-    props.form.slug = name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .slice(0, 80);
-  },
-);
+const categoryChoices = (Object.keys(categoryMeta) as ProductCategory[]).map((value) => ({
+  value,
+  label: categoryMeta[value].label,
+}));
 
 // Wraps the selected text (or a placeholder) in markdown syntax.
 const wrap = (before: string, after: string, placeholder: string) => {

@@ -1,10 +1,11 @@
 <template>
-  <LazyVPanel
-    id="dimensions"
-    title="07 // Dimensions & packaging"
-    icon="lucide:package"
-    class="scroll-mt-24"
-  >
+  <section id="dimensions" class="scroll-mt-24 space-y-4 border-t border-line pt-6 first:border-t-0 first:pt-0" aria-labelledby="dimensions-title">
+    <header class="flex flex-wrap items-center justify-between gap-3">
+      <h2 id="dimensions-title" class="flex items-center gap-2 font-display text-lg font-bold">
+        <Icon name="lucide:package" size="18" class="text-accent" aria-hidden="true" />
+        06 // Dimensions & packaging
+      </h2>
+    </header>
     <div class="grid gap-4 sm:grid-cols-2">
       <LazyVInput
         v-model="form.massKg"
@@ -84,7 +85,7 @@
         />
       </div>
     </fieldset>
-  </LazyVPanel>
+  </section>
 </template>
 
 <script lang="ts" setup>

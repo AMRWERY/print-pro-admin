@@ -13,7 +13,6 @@
 </template>
 
 <script lang="ts" setup>
-import { buildVariants } from "~/utils/product-variants";
 import type { ProductFormValues } from "~/types/admin/products";
 
 const route = useRoute();
@@ -31,21 +30,15 @@ const blank = (): ProductFormValues => ({
   status: "active",
   slug: "",
   description: "",
-  excerpt: "",
   media: [],
   compareAt: null,
   cost: null,
   taxExempt: false,
-  backorder: "notify",
-  axes: [],
-  variants: buildVariants([], 0),
   specs: [],
   massKg: null,
   dims: { l: null, w: null, h: null },
   hsCode: "",
   packaging: "pallet",
-  seoTitle: "",
-  seoDescription: "",
   publication: "draft",
   channels: ["storefront"],
   subType: "",
@@ -62,7 +55,6 @@ if (from) {
     const source = await useProductsStore().loadDetail(String(from));
     const {
       id: _id,
-      ean: _ean,
       tag: _tag,
       spec: _spec,
       serial: _serial,

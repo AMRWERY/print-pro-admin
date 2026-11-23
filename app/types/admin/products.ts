@@ -18,7 +18,6 @@ export type ProductSort =
 export interface Product {
   id: string;
   sku: string;
-  ean: string;
   name: string;
   tag: string;
   spec: string;
@@ -92,30 +91,16 @@ export interface Template {
 
 export type Publication = "draft" | "published" | "archived";
 
-export type Backorder = "block" | "notify" | "allow";
 
 export type Packaging = "pallet" | "standard";
 
-export type VariantStatus = "active" | "preorder" | "hidden";
 
 export interface ProductMedia {
   name: string;
+  /** Size of the stored image in bytes. */
   size: number;
-}
-
-export interface VariantAxis {
-  name: string;
-  values: string[];
-}
-
-export interface ProductVariant {
-  /** Stable key: the axis values joined with "|". */
-  key: string;
-  label: string;
-  skuExt: string;
-  price: number;
-  stock: number;
-  status: VariantStatus;
+  /** The picture itself, a small JPEG as a data URL. Empty for entries saved before pictures were kept. */
+  url?: string;
 }
 
 export interface ProductSpec {
@@ -134,21 +119,15 @@ export interface ProductRevision {
 export interface ProductExtras {
   slug: string;
   description: string;
-  excerpt: string;
   media: ProductMedia[];
   compareAt: number | null;
   cost: number | null;
   taxExempt: boolean;
-  backorder: Backorder;
-  axes: VariantAxis[];
-  variants: ProductVariant[];
   specs: ProductSpec[];
   massKg: number | null;
   dims: { l: number | null; w: number | null; h: number | null };
   hsCode: string;
   packaging: Packaging;
-  seoTitle: string;
-  seoDescription: string;
   publication: Publication;
   channels: string[];
   subType: string;

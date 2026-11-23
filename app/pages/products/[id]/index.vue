@@ -28,7 +28,6 @@
     mode="edit"
     :initial="initial"
     :product-id="detail.id"
-    :ean="detail.ean"
     :revisions="detail.revisions"
     @saved="() => refresh()"
   />
@@ -61,7 +60,7 @@ watch(id, (v) => store.fetchDetail(v), { immediate: true });
 
 const notFound = computed(() => !!error.value && statusOf(error.value) === 404);
 
-// Only the form's fields go to the editor; the rest (EAN, revisions…) are display-only.
+// Only the form's fields go to the editor; the rest (revisions…) are display-only.
 const initial = computed<ProductFormValues>(() => {
   const d = detail.value!;
   return {
@@ -75,21 +74,15 @@ const initial = computed<ProductFormValues>(() => {
     status: d.status,
     slug: d.slug,
     description: d.description,
-    excerpt: d.excerpt,
     media: d.media,
     compareAt: d.compareAt,
     cost: d.cost,
     taxExempt: d.taxExempt,
-    backorder: d.backorder,
-    axes: d.axes,
-    variants: d.variants,
     specs: d.specs,
     massKg: d.massKg,
     dims: d.dims,
     hsCode: d.hsCode,
     packaging: d.packaging,
-    seoTitle: d.seoTitle,
-    seoDescription: d.seoDescription,
     publication: d.publication,
     channels: d.channels,
     subType: d.subType,
@@ -106,6 +99,6 @@ definePageMeta({
 useSeoMeta({
   title: () => (detail.value ? `Edit ${detail.value.name}` : "Edit product"),
   description:
-    "Edit a product's details, pricing, inventory, variants and search listing.",
+    "Edit a product's details, pricing and inventory.",
 });
 </script>

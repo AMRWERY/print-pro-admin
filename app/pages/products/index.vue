@@ -352,7 +352,6 @@ const exportRows = async (list: Product[], format: "pdf" | "excel") => {
       ],
       body: list.map((p) => [
         p.sku,
-        p.ean,
         p.name,
         categoryMeta[p.category].label,
         p.brand,

@@ -111,7 +111,6 @@
             </td>
             <td class="px-3 py-3.5 font-mono text-xs" dir="ltr">
               <p class="font-semibold">{{ p.sku }}</p>
-              <p class="text-mute">EAN: {{ p.ean }}</p>
             </td>
             <td class="px-3 py-3.5">
               <p class="flex items-center gap-1.5 text-xs">

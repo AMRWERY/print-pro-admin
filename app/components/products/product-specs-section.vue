@@ -1,20 +1,19 @@
 <template>
-  <LazyVPanel
-    id="specs"
-    title="06 // Specifications"
-    icon="lucide:gauge"
-    class="scroll-mt-24"
-  >
-    <template #actions>
-      <LazyVButton
-        variant="secondary"
-        size="sm"
-        icon="lucide:plus"
-        :disabled="form.specs.length >= 30"
-        @click="add"
-        >Add specification</LazyVButton
-      >
-    </template>
+  <section id="specs" class="scroll-mt-24 space-y-4 border-t border-line pt-6 first:border-t-0 first:pt-0" aria-labelledby="specs-title">
+    <header class="flex flex-wrap items-center justify-between gap-3">
+      <h2 id="specs-title" class="flex items-center gap-2 font-display text-lg font-bold">
+        <Icon name="lucide:gauge" size="18" class="text-accent" aria-hidden="true" />
+        05 // Specifications
+      </h2>
+      <div class="shrink-0"><LazyVButton
+              variant="secondary"
+              size="sm"
+              icon="lucide:plus"
+              :disabled="form.specs.length >= 30"
+              @click="add"
+              >Add specification</LazyVButton
+            ></div>
+    </header>
 
     <p v-if="!form.specs.length" class="callout">
       <Icon
@@ -66,7 +65,7 @@
         />
       </li>
     </ul>
-  </LazyVPanel>
+  </section>
 </template>
 
 <script lang="ts" setup>

@@ -11,7 +11,7 @@
       ]"
       :description="
         mode === 'create'
-          ? 'Register a new SKU with its pricing, inventory, variants and search listing.'
+          ? 'Add a product with its price and stock. Everything else is optional.'
           : undefined
       "
     >
@@ -85,28 +85,27 @@
     </p>
 
     <form
-      class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]"
+      class="grid gap-4"
+      :class="mode === 'edit' && 'xl:grid-cols-[minmax(0,1fr)_22rem]'"
       novalidate
       @submit.prevent
     >
-      <div class="min-w-0 space-y-4">
-        <product-identity-section :form="form" :mode="mode" />
+      <div class="min-w-0 space-y-8">
+        <product-identity-section :form="form" />
 
         <product-media-section :form="form" />
 
         <product-pricing-section :form="form" />
 
-        <product-inventory-section :form="form" :ean="ean" />
-
-        <product-variants-section :form="form" />
+        <product-inventory-section :form="form" />
 
         <product-specs-section :form="form" />
 
         <product-dimensions-section :form="form" />
 
-        <product-seo-section :form="form" />
       </div>
       <product-sidebar
+        v-if="mode === 'edit'"
         :form="form"
         :revisions="revisions"
         :bundled-options="bundledOptions"
@@ -144,7 +143,6 @@ const props = defineProps<{
   initial: ProductFormValues;
   mode: "create" | "edit";
   productId?: string;
-  ean?: string;
   revisions: ProductRevision[];
 }>();
 
@@ -164,10 +162,8 @@ const sections = [
   { id: "media", label: "Media & assets" },
   { id: "pricing", label: "Pricing" },
   { id: "inventory", label: "Inventory & stock" },
-  { id: "variants", label: "Variants" },
   { id: "specs", label: "Specifications" },
   { id: "dimensions", label: "Dimensions" },
-  { id: "seo", label: "Search listing" },
 ];
 
 const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v));
@@ -186,8 +182,10 @@ const jump = (id: string) =>
 const productsStore = useProductsStore();
 const pairable = ref<Product[]>([]);
 const pairableInks = ref<Product[]>([]);
-productsStore.fetchPairable("inks-toner").then((rows) => (pairable.value = rows));
-productsStore.fetchPairable("copiers").then((rows) => (pairableInks.value = rows));
+if (props.mode === "edit") {
+  productsStore.fetchPairable("inks-toner").then((rows) => (pairable.value = rows));
+  productsStore.fetchPairable("copiers").then((rows) => (pairableInks.value = rows));
+}
 
 const bundledOptions = computed(() =>
   [...pairable.value.slice(0, 3), ...pairableInks.value.slice(0, 3)].filter((p) => p.id !== props.productId),
@@ -198,7 +196,16 @@ const discard = () => {
 };
 
 // --- Saving ---
-const { validate } = useForm();
+const { validate, setErrors } = useForm();
+// Plain names for the fields the server can complain about.
+const fieldLabels: Record<string, string> = {
+  name: "Product title",
+  sku: "SKU",
+  brand: "Brand",
+  price: "Price",
+  stock: "Stock on hand",
+  min: "Low-stock alert",
+};
 const saving = ref<"" | Publication>("");
 const formError = ref("");
 
@@ -218,11 +225,6 @@ const save = async (publication: Publication) => {
   }
 
   form.publication = publication;
-  // Variants without a price take the listing price.
-  form.variants.forEach((v) => {
-    if (!v.price) v.price = Number(form.price) || 0;
-  });
-
   saving.value = publication;
   try {
     const saved =
@@ -246,10 +248,24 @@ const save = async (publication: Publication) => {
   } catch (e) {
     const status = statusOf(e);
     allowLeave = false;
-    formError.value =
-      status === 409
-        ? "A product with that SKU already exists. Use a different SKU."
-        : "The product could not be saved. Check the details and try again.";
+    const fields = fieldErrorsOf(e);
+    const names = Object.keys(fields);
+    if (names.length) {
+      // Mark each field and say which ones, so nothing has to be guessed.
+      setErrors(fields);
+      formError.value = `Please fix: ${names.map((n) => fieldLabels[n] ?? n).join(", ")}. Each one is marked below.`;
+      await nextTick();
+      const bad = document.querySelector<HTMLElement>('[aria-invalid="true"]');
+      bad?.scrollIntoView({ behavior: "smooth", block: "center" });
+      bad?.focus({ preventScroll: true });
+    } else {
+      formError.value =
+        status === 409
+          ? "A product with that SKU already exists. Use a different SKU."
+          : status === 0 || status >= 500
+            ? "The server could not be reached or had a problem. Try again in a moment."
+            : "The product could not be saved. Check the details and try again.";
+    }
   } finally {
     saving.value = "";
   }
