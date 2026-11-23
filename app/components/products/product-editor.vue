@@ -43,18 +43,18 @@
         <LazyVButton
           variant="secondary"
           icon="lucide:save"
-          :loading="saving === 'draft'"
+          :loading="saving === 'continue'"
           :disabled="!!saving"
-          @click="save('draft')"
-          >Save draft</LazyVButton
+          @click="save(true)"
+          >Save &amp; Continue</LazyVButton
         >
 
         <LazyVButton
-          icon="lucide:rocket"
-          :loading="saving === 'published'"
+          icon="lucide:check"
+          :loading="saving === 'exit'"
           :disabled="!!saving"
-          @click="save('published')"
-          >{{ mode === "create" ? "Publish SKU" : "Update SKU" }}</LazyVButton
+          @click="save(false)"
+          >Save SKU</LazyVButton
         >
       </template>
     </LazyVPageHeader>
@@ -86,7 +86,6 @@
 
     <form
       class="grid gap-4"
-      :class="mode === 'edit' && 'xl:grid-cols-[minmax(0,1fr)_22rem]'"
       novalidate
       @submit.prevent
     >
@@ -104,12 +103,6 @@
         <product-dimensions-section :form="form" />
 
       </div>
-      <product-sidebar
-        v-if="mode === 'edit'"
-        :form="form"
-        :revisions="revisions"
-        :bundled-options="bundledOptions"
-      />
     </form>
 
     <LazyVDialog
@@ -131,19 +124,13 @@
 </template>
 
 <script lang="ts" setup>
-import type {
-  Product,
-  ProductFormValues,
-  ProductRevision,
-  Publication,
-} from "~/types/admin/products";
+import type { Product, ProductFormValues, Publication } from "~/types/admin/products";
 import type { Tone } from "~/types/admin/dashboard";
 
 const props = defineProps<{
   initial: ProductFormValues;
   mode: "create" | "edit";
   productId?: string;
-  revisions: ProductRevision[];
 }>();
 
 const emit = defineEmits<{ saved: [product: Product] }>();
@@ -169,30 +156,20 @@ const sections = [
 const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v));
 
 const form = reactive<ProductFormValues>(clone(props.initial));
-let snapshot = JSON.stringify(form);
+// A ref, so `dirty` notices when a save resets what counts as "unchanged".
+const snapshot = ref(JSON.stringify(form));
 
-const dirty = computed(() => JSON.stringify(form) !== snapshot);
+const dirty = computed(() => JSON.stringify(form) !== snapshot.value);
 
 const jump = (id: string) =>
   document
     .getElementById(id)
     ?.scrollIntoView({ behavior: "smooth", block: "start" });
 
-// Items that can be paired with this product (machines and supplies).
 const productsStore = useProductsStore();
-const pairable = ref<Product[]>([]);
-const pairableInks = ref<Product[]>([]);
-if (props.mode === "edit") {
-  productsStore.fetchPairable("inks-toner").then((rows) => (pairable.value = rows));
-  productsStore.fetchPairable("copiers").then((rows) => (pairableInks.value = rows));
-}
-
-const bundledOptions = computed(() =>
-  [...pairable.value.slice(0, 3), ...pairableInks.value.slice(0, 3)].filter((p) => p.id !== props.productId),
-);
 
 const discard = () => {
-  Object.assign(form, clone(JSON.parse(snapshot)));
+  Object.assign(form, clone(JSON.parse(snapshot.value)));
 };
 
 // --- Saving ---
@@ -206,10 +183,11 @@ const fieldLabels: Record<string, string> = {
   stock: "Stock on hand",
   min: "Low-stock alert",
 };
-const saving = ref<"" | Publication>("");
+const saving = ref<"" | "continue" | "exit">("");
 const formError = ref("");
 
-const save = async (publication: Publication) => {
+/** Saves the product. `stay`: keep the form open ("Save & Continue") instead of going back to the list. */
+const save = async (stay: boolean) => {
   if (saving.value) return;
   formError.value = "";
 
@@ -224,27 +202,26 @@ const save = async (publication: Publication) => {
     return;
   }
 
-  form.publication = publication;
-  saving.value = publication;
+  // A saved product is a live one: it is listed on the shop (channel permitting) as soon as it is stored.
+  form.publication = "published";
+  saving.value = stay ? "continue" : "exit";
   try {
     const saved =
       props.mode === "edit"
         ? await productsStore.update(props.productId!, clone(form))
         : await productsStore.create(clone(form));
-    snapshot = JSON.stringify(form);
+    snapshot.value = JSON.stringify(form);
     allowLeave = true;
-    toast.success(
-      publication === "published"
-        ? props.mode === "create"
-          ? "SKU published"
-          : "SKU updated"
-        : "Draft saved",
-      { description: saved.name },
-    );
+    toast.success(props.mode === "create" ? "SKU saved" : "SKU updated", { description: saved.name });
     emit("saved", saved);
-    if (props.mode === "create")
+    if (!stay) {
       await navigateTo(localePath("/products"));
-    else allowLeave = false;
+    } else if (props.mode === "create") {
+      // The new product now exists, so carry on in its edit form: saving again updates it instead of adding a copy.
+      await navigateTo(localePath(`/products/${saved.id}`));
+    } else {
+      allowLeave = false;
+    }
   } catch (e) {
     const status = statusOf(e);
     allowLeave = false;

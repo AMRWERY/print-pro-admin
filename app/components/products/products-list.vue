@@ -24,7 +24,7 @@
               Product
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              SKU &amp; EAN ref
+              SKU
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
               Category &amp; make
@@ -95,7 +95,7 @@
             </td>
             <td class="px-3 py-3.5">
               <div class="flex items-start gap-3">
-                <LazyVIconTile :icon="p.icon" />
+                <product-thumb :product="p" />
 
                 <div class="min-w-0">
                   <p

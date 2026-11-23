@@ -341,7 +341,6 @@ const exportRows = async (list: Product[], format: "pdf" | "excel") => {
       fileName: `product-ledger-${new Date().toISOString().slice(0, 10)}`,
       head: [
         "SKU",
-        "EAN",
         "Name",
         "Category",
         "Brand",

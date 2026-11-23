@@ -28,7 +28,6 @@
     mode="edit"
     :initial="initial"
     :product-id="detail.id"
-    :revisions="detail.revisions"
     @saved="() => refresh()"
   />
 

@@ -32,7 +32,7 @@
         label="Find a product"
         icon="lucide:search"
         autocomplete="off"
-        placeholder="SKU, name or EAN"
+        placeholder="SKU or name"
       />
       <ul
         class="max-h-52 space-y-1 overflow-y-auto"

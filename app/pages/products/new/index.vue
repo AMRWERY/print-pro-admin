@@ -3,7 +3,6 @@
     v-if="initial"
     mode="create"
     :initial="initial"
-    :revisions="[]"
   />
   <div v-else class="space-y-4" aria-busy="true">
     <LazyVSkeletonLoader variant="line" class="w-64" />
@@ -39,7 +38,7 @@ const blank = (): ProductFormValues => ({
   dims: { l: null, w: null, h: null },
   hsCode: "",
   packaging: "pallet",
-  publication: "draft",
+  publication: "published",
   channels: ["storefront"],
   subType: "",
   collections: [],
@@ -68,7 +67,7 @@ if (from) {
       name: `${source.name} (copy)`,
       sku: `${source.sku}-COPY`,
       slug: `${source.slug}-copy`,
-      publication: "draft",
+      publication: "published",
     };
   } catch {
     initial.value = blank();

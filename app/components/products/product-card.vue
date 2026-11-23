@@ -16,7 +16,7 @@
         @update:model-value="emit('toggle')"
       />
 
-      <LazyVIconTile :icon="product.icon" />
+      <product-thumb :product="product" />
 
       <div class="min-w-0 flex-1">
         <p

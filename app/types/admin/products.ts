@@ -33,6 +33,8 @@ export interface Product {
   unit: "unit" | "pack";
   status: ProductStatus;
   icon: string;
+  /** Address of the cover photo (the first picture), added to responses; absent when it has none. */
+  cover?: string;
 }
 
 export interface ProductsQuery {
