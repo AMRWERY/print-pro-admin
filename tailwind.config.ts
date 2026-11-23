@@ -46,16 +46,17 @@ export default {
         },
       },
       fontFamily: {
+        // Poppins has no Arabic letters, so Arabic text falls back to IBM Plex Sans Arabic.
         display: [
-          '"Reem Kufi"',
+          "Poppins",
           '"IBM Plex Sans Arabic"',
           "ui-sans-serif",
           "system-ui",
           "sans-serif",
         ],
         sans: [
+          "Poppins",
           '"IBM Plex Sans Arabic"',
-          '"IBM Plex Sans"',
           "ui-sans-serif",
           "system-ui",
           "sans-serif",
