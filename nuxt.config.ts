@@ -18,6 +18,12 @@ export default defineNuxtConfig({
     // Where the PrintPro API lives (server-only). Override with NUXT_API_BASE.
     apiBase: "http://localhost:4000",
   },
+  // The admin renders in the browser only, so by default every icon would be fetched from the public Iconify
+  // service when a page opens. Bundle the icons the code uses from the installed @iconify-json/lucide instead:
+  // no network needed, nothing flashes in late, and a blocked or offline connection can't blank the icons.
+  icon: {
+    clientBundle: { scan: true, sizeLimitKb: 512 },
+  },
   postcss: {
     plugins: {
       tailwindcss: {},
