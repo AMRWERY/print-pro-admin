@@ -22,7 +22,11 @@ export default defineNuxtConfig({
   // service when a page opens. Bundle the icons the code uses from the installed @iconify-json/lucide instead:
   // no network needed, nothing flashes in late, and a blocked or offline connection can't blank the icons.
   icon: {
-    clientBundle: { scan: true, sizeLimitKb: 512 },
+    clientBundle: {
+      // By default only .vue and markup files are scanned; the menu, status labels and other data files are .ts.
+      scan: { globInclude: ["**/*.{vue,ts,jsx,tsx,md,mdc,mdx,yml,yaml}"] },
+      sizeLimitKb: 512,
+    },
   },
   postcss: {
     plugins: {
