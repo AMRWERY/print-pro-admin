@@ -81,7 +81,7 @@
             <td class="px-4 py-3.5">
               <LazyVCheckboxImput
                 :name="`select-${row.id}`"
-                :label="`Select order ${row.id}`"
+                :label="$t('orders_ui.select_order', { id: row.id })"
                 hide-label
                 size="sm"
                 :model-value="selected.includes(row.id)"
@@ -173,7 +173,7 @@
                 size="sm"
                 icon="lucide:eye"
                 @click="emit('inspect', row)"
-                >{{ $t('btn.view') }}<span class="sr-only"> {{ row.id }}</span></LazyVButton
+                >{{ $t('common_ui.view') }}<span class="sr-only"> {{ row.id }}</span></LazyVButton
               >
             </td>
           </tr>
@@ -201,7 +201,7 @@
         <div class="flex items-start gap-3">
           <LazyVCheckboxImput
             :name="`select-card-${row.id}`"
-            :label="`Select order ${row.id}`"
+            :label="$t('orders_ui.select_order', { id: row.id })"
             hide-label
             size="sm"
             :model-value="selected.includes(row.id)"
@@ -259,7 +259,7 @@
             size="sm"
             icon="lucide:eye"
             @click="emit('inspect', row)"
-            >{{ $t('btn.view') }}</LazyVButton
+            >{{ $t('common_ui.view') }}</LazyVButton
           >
         </div>
       </li>

@@ -44,7 +44,7 @@
     <coupons-kpis :kpis="data?.kpis" />
 
     <div>
-      <section class="card min-w-0" aria-label="Voucher ledger">
+      <section class="card min-w-0" :aria-label="$t('coupons_ui.export_title')">
         <div class="border-b border-line p-4 sm:p-5">
           <coupons-toolbar
             v-model:q="filters.q"
@@ -62,8 +62,8 @@
               icon="lucide:triangle-alert"
               :title="$t('coupons_ui.error_title')"
               :description="$t('coupons_ui.error_desc')"
-              eyebrow="LEDGER :: SYNC_ERROR"
-              tag="OFFLINE"
+              :eyebrow="$t('coupons_ui.eyebrow_sync_error')"
+              :tag="$t('coupons_ui.tag_offline')"
               tag-tone="accent"
             >
               <LazyVButton icon="lucide:refresh-cw" @click="() => refresh()"
@@ -79,8 +79,8 @@
             <LazyVEmptyState
               :title="$t('coupons_ui.empty_filter_title')"
               :description="$t('coupons_ui.empty_filter_desc')"
-              eyebrow="QUERY :: NO_RESULTS"
-              tag="0 RESULTS"
+              :eyebrow="$t('coupons_ui.eyebrow_no_results')"
+              :tag="$t('coupons_ui.tag_results_count', { count: 0 })"
             >
               <LazyVButton variant="secondary" @click="resetFilters"
                 >{{ $t('common_ui.clear_all_filters') }}</LazyVButton
@@ -147,7 +147,7 @@
       id="voucher-drawer"
       role="dialog"
       aria-modal="true"
-      aria-label="Voucher form"
+      :aria-label="$t('coupons_ui.drawer_label')"
       class="fixed inset-y-0 end-0 z-50 w-full max-w-xl overflow-y-auto overscroll-contain border-s border-line bg-surface shadow-2xl shadow-black/50 transition-[transform,visibility] duration-normal ease-out motion-reduce:transition-none [&>section]:min-h-full [&>section]:rounded-none [&>section]:border-0 [&>section]:shadow-none"
       :class="
         drawerOpen
@@ -201,7 +201,7 @@
         variant="secondary"
         icon="lucide:trash-2"
         class="!border-accent !text-accent"
-        @click="askDelete(selected, `${selected.length} vouchers`)"
+        @click="askDelete(selected, $t('coupons_ui.vouchers_count', { count: selected.length }))"
         >{{ $t('btn.delete') }}</LazyVButton
       >
     </LazyVBulkBar>
@@ -343,7 +343,7 @@ const open = async (next: { coupon: Coupon | null; seed?: Coupon }) => {
   drawerOpen.value = true;
   await nextTick();
   document
-    .querySelector<HTMLElement>("#voucher-drawer [aria-label='Close']")
+    .querySelector<HTMLElement>("#voucher-drawer [data-close-btn]")
     ?.focus();
 };
 const openCreate = () => open({ coupon: null });
@@ -406,18 +406,23 @@ const save = async (values: CouponInput) => {
     const status = statusOf(e);
     formError.value =
       status === 409
-        ? "Another voucher already uses that code. Choose a different one."
-        : "The voucher could not be saved. Check the values and try again.";
+        ? t("coupons_ui.err_code_conflict")
+        : t("coupons_ui.err_save_failed");
   } finally {
     saving.value = false;
   }
 };
 
 // --- Pause, resume, archive (one or many) ---
-const bulkWords: Record<Exclude<CouponBulkAction, "delete">, string> = {
-  pause: "paused",
-  resume: "resumed",
-  archive: "archived",
+const bulkDone: Record<Exclude<CouponBulkAction, "delete">, string> = {
+  pause: "coupons_ui.toast_bulk_paused",
+  resume: "coupons_ui.toast_bulk_resumed",
+  archive: "coupons_ui.toast_bulk_archived",
+};
+const bulkBlocked: Record<Exclude<CouponBulkAction, "delete">, string> = {
+  pause: "coupons_ui.toast_bulk_blocked_pause",
+  resume: "coupons_ui.toast_bulk_blocked_resume",
+  archive: "coupons_ui.toast_bulk_blocked_archive",
 };
 
 const runBulk = async (
@@ -427,15 +432,10 @@ const runBulk = async (
   try {
     const { changed } = await store.bulk(ids, action);
     if (changed)
-      toast.success(
-        `${changed} voucher${changed > 1 ? "s" : ""} ${bulkWords[action]}`,
-      );
+      toast.success(t(bulkDone[action], { count: changed }));
     else
       toast.warning(t('coupons_ui.toast_nothing_changed'), {
-        description:
-          "Those vouchers can't be " +
-          bulkWords[action] +
-          " from their current state.",
+        description: t(bulkBlocked[action]),
       });
     selected.value = [];
     await refresh();
@@ -488,21 +488,21 @@ const exportRows = async (list: CouponRow[], format: "pdf" | "excel") => {
   const money = (n: number) => currency(n, { maximumFractionDigits: 0 });
   try {
     await downloadTable(format, {
-      title: "Voucher ledger",
-      subtitle: `${list.length} voucher${list.length > 1 ? "s" : ""}`,
+      title: t("coupons_ui.export_title"),
+      subtitle: t("coupons_ui.vouchers_count", { count: list.length }),
       fileName: `voucher-ledger-${new Date().toISOString().slice(0, 10)}`,
       head: [
-        "Code",
-        "Campaign",
-        "Type",
-        "Discount",
-        "Used",
-        "Limit",
-        "Min order",
-        "Tier",
-        "Starts",
-        "Ends",
-        "Status",
+        t("common_ui.code"),
+        t("coupons_ui.export_col_campaign"),
+        t("coupons_ui.export_col_type"),
+        t("coupons_ui.export_col_discount"),
+        t("coupons_ui.export_col_used"),
+        t("coupons_ui.export_col_limit"),
+        t("coupons_ui.export_col_min_order"),
+        t("coupons_ui.export_col_tier"),
+        t("coupons_ui.export_col_starts"),
+        t("coupons_ui.export_col_ends"),
+        t("common_ui.status"),
       ],
       body: list.map((c) => [
         c.code,
@@ -510,9 +510,9 @@ const exportRows = async (list: CouponRow[], format: "pdf" | "excel") => {
         typeMeta[c.type].short,
         valueLabel(c, money),
         c.used,
-        c.limit ?? "Unlimited",
+        c.limit ?? t("coupons_ui.insp_unlimited"),
         c.minOrder,
-        c.tier === "all" ? "All" : c.tier,
+        c.tier === "all" ? t("common_ui.all") : c.tier,
         c.startsAt ?? "",
         c.endsAt ?? "",
         stateMeta[c.state].label,
@@ -520,12 +520,10 @@ const exportRows = async (list: CouponRow[], format: "pdf" | "excel") => {
       moneyCols: [6],
       numberCols: [4, 5],
     });
-    toast.success(
-      `Exported ${list.length} voucher${list.length > 1 ? "s" : ""}`,
-    );
+    toast.success(t("coupons_ui.toast_exported", { count: list.length }));
   } catch {
-    toast.error("Couldn't create the file", {
-      description: "Try again in a moment.",
+    toast.error(t("coupons_ui.toast_export_error"), {
+      description: t("coupons_ui.toast_export_retry_desc"),
     });
   }
 };

@@ -1,7 +1,7 @@
 <template>
   <LazyVPanel
-    title="Personal details"
-    subtitle="Shown to your team and on the documents you sign"
+    :title="$t('profile_ui.personal_details')"
+    :subtitle="$t('profile_ui.personal_details_subtitle')"
     icon="lucide:user-round"
   >
     <form class="space-y-4" novalidate @submit.prevent="submit">
@@ -9,7 +9,7 @@
         <LazyVInput
           v-model="form.name"
           name="profileName"
-          label="Full name"
+          :label="$t('customers_ui.full_name')"
           required
           rules="required|min:2|max:80"
           maxlength="80"
@@ -19,7 +19,7 @@
         <LazyVInput
           v-model="form.title"
           name="profileTitle"
-          label="Job title"
+          :label="$t('profile_ui.job_title')"
           optional
           maxlength="80"
           autocomplete="organization-title"
@@ -28,7 +28,7 @@
         <LazyVInput
           v-model="form.studio"
           name="profileStudio"
-          label="Organization"
+          :label="$t('customers_ui.organization')"
           required
           rules="required|min:2|max:120"
           maxlength="120"
@@ -39,7 +39,7 @@
           v-model="form.phone"
           name="profilePhone"
           type="tel"
-          label="Phone"
+          :label="$t('profile_ui.phone')"
           optional
           :rules="optionalPhone"
           maxlength="30"
@@ -48,12 +48,12 @@
       </div>
 
       <div>
-        <p class="label">Email</p>
+        <p class="label">{{ $t('auth_ui.email_label') }}</p>
         <p class="field mt-1.5 text-sm text-mute" dir="ltr">
           {{ account.email }}
         </p>
         <p class="mt-1 text-xs text-mute">
-          Your email is your sign-in. It can't be changed here.
+          {{ $t('profile_ui.email_note') }}
         </p>
       </div>
 
@@ -61,13 +61,13 @@
         class="flex flex-wrap items-center justify-end gap-2 border-t border-line pt-4"
       >
         <span v-if="dirty" class="me-auto font-mono text-2xs text-yellow"
-          >Unsaved changes</span
+          >{{ $t('common_ui.unsaved_changes') }}</span
         >
         <LazyVButton
           variant="tertiary"
           :disabled="!dirty || saving"
           @click="reset"
-          >Reset</LazyVButton
+          >{{ $t('btn.reset') }}</LazyVButton
         >
 
         <LazyVButton
@@ -75,7 +75,7 @@
           icon="lucide:save"
           :loading="saving"
           :disabled="!dirty"
-          >Save changes</LazyVButton
+          >{{ $t('btn.save_changes') }}</LazyVButton
         >
       </div>
     </form>
@@ -89,6 +89,7 @@ const props = defineProps<{ account: Account }>();
 
 const auth = useAuthStore();
 const toast = useToast();
+const { t } = useI18n();
 
 const initial = () => ({
   name: props.account.name,
@@ -130,9 +131,9 @@ const submit = async () => {
   });
   saving.value = false;
   if (!res.ok) {
-    toast.error("Couldn't update profile");
+    toast.error(t('profile_ui.toast_update_error'));
     return;
   }
-  toast.success("Profile updated");
+  toast.success(t('profile_ui.toast_updated'));
 };
 </script>

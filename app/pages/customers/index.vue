@@ -62,8 +62,8 @@
             icon="lucide:triangle-alert"
             :title="$t('common_ui.sync_error')"
             :description="$t('common_ui.connection_error')"
-            eyebrow="REGISTRY :: SYNC_ERROR"
-            tag="OFFLINE"
+            :eyebrow="$t('customers_ui.sync_error_eyebrow')"
+            :tag="$t('customers_ui.offline_tag')"
             tag-tone="accent"
           >
             <LazyVButton icon="lucide:refresh-cw" @click="() => refresh()"
@@ -79,8 +79,8 @@
           <LazyVEmptyState
             :title="$t('common_ui.empty_title')"
             :description="$t('common_ui.empty_description')"
-            eyebrow="QUERY :: NO_RESULTS"
-            tag="0 RESULTS"
+            :eyebrow="$t('customers_ui.no_results_eyebrow')"
+            :tag="$t('customers_ui.zero_results_tag')"
           >
             <LazyVButton variant="secondary" @click="resetFilters"
               >{{ $t('common_ui.clear_all_filters') }}</LazyVButton
@@ -140,7 +140,7 @@
       id="customer-drawer"
       role="dialog"
       aria-modal="true"
-      aria-label="Customer details"
+      :aria-label="$t('customers_ui.inspector_title')"
       class="fixed inset-y-0 end-0 z-50 w-full max-w-xl overflow-y-auto overscroll-contain border-s border-line bg-surface shadow-2xl shadow-black/50 transition-[transform,visibility] duration-normal ease-out motion-reduce:transition-none [&>section]:min-h-full [&>section]:rounded-none [&>section]:border-0 [&>section]:shadow-none"
       :class="
         drawerOpen
@@ -182,7 +182,7 @@
         variant="secondary"
         icon="lucide:trash-2"
         class="!border-accent !text-accent"
-        @click="askDelete(selected, `${selected.length} clients`)"
+        @click="askDelete(selected, t('customers_ui.n_clients', { count: selected.length }))"
         >{{ $t('btn.delete') }}</LazyVButton
       >
     </LazyVBulkBar>
@@ -195,10 +195,10 @@
 
     <LazyVDialog
       v-model:open="deleteOpen"
-      title="Delete from the registry?"
+      :title="$t('customers_ui.delete_title')"
       :description="
         pendingDelete
-          ? `${pendingDelete.label} will be removed from the registry.`
+          ? $t('customers_ui.delete_desc', { label: pendingDelete.label })
           : ''
       "
     >
@@ -209,8 +209,7 @@
           class="bullet-icon"
           aria-hidden="true"
         />
-        This removes the customer record and its notes. Past orders keep their
-        history. It cannot be undone from this screen.
+        {{ $t('customers_ui.delete_warning') }}
       </p>
       <template #footer>
         <LazyVButton
@@ -232,18 +231,36 @@
 </template>
 
 <script lang="ts" setup>
-import { segmentMeta, statusMeta, tierMeta } from "~/data/customer-meta";
 import type {
   Customer,
   CustomerActivity,
   CustomerSegment,
   CustomerSort,
   CustomerStatus,
+  CustomerTier,
   CustomersResponse,
 } from "~/types/admin/customers";
 
 const { t } = useI18n();
 const toast = useToast();
+
+const segmentShort = computed<Record<CustomerSegment, string>>(() => ({
+  enterprise: t("customers_ui.segment_short_enterprise"),
+  business: t("customers_ui.segment_short_business"),
+  printShop: t("customers_ui.segment_short_print_shop"),
+  home: t("customers_ui.segment_short_home"),
+  highLtv: t("customers_ui.segment_short_high_ltv"),
+}));
+const statusLabel = computed<Record<CustomerStatus, string>>(() => ({
+  active: t("customers_ui.status_active"),
+  audit: t("customers_ui.status_audit"),
+  dormant: t("customers_ui.status_dormant"),
+}));
+const tierLabel = computed<Record<CustomerTier, string>>(() => ({
+  AAA: t("customers_ui.tier_aaa"),
+  AA: t("customers_ui.tier_aa"),
+  A: t("customers_ui.tier_a"),
+}));
 
 const filters = reactive({
   q: "",
@@ -327,7 +344,7 @@ const openInspector = async (id: string) => {
   await nextTick();
   document
     .querySelector<HTMLElement>(
-      "#customer-drawer [aria-label='Close inspector']",
+      `#customer-drawer [aria-label='${t("common_ui.close_inspector")}']`,
     )
     ?.focus();
 };
@@ -388,7 +405,7 @@ const confirmDelete = async () => {
   try {
     const { ids, label } = pendingDelete.value;
     await store.bulkDelete(ids);
-    toast.success("Removed from the registry", { description: label });
+    toast.success(t("customers_ui.toast_removed"), { description: label });
     if (selectedId.value && ids.includes(selectedId.value)) {
       closeDrawer();
       selectedId.value = null;
@@ -397,8 +414,8 @@ const confirmDelete = async () => {
     deleteOpen.value = false;
     await refresh();
   } catch {
-    toast.error("Couldn't delete", {
-      description: "Nothing was removed. Try again.",
+    toast.error(t("customers_ui.toast_delete_error"), {
+      description: t("customers_ui.toast_delete_error_desc"),
     });
   } finally {
     deleting.value = false;
@@ -408,28 +425,31 @@ const confirmDelete = async () => {
 // --- Export ---
 const exportRows = async (list: Customer[], format: "pdf" | "excel") => {
   if (!list.length) {
-    toast.warning("Nothing to export", {
-      description: "There are no clients on this page.",
+    toast.warning(t("customers_ui.toast_nothing_export"), {
+      description: t("customers_ui.toast_nothing_export_desc"),
     });
     return;
   }
   try {
     await downloadTable(format, {
-      title: "Client registry",
-      subtitle: `${list.length} client${list.length > 1 ? "s" : ""}`,
+      title: t("customers_ui.export_title"),
+      subtitle:
+        list.length > 1
+          ? t("customers_ui.n_clients", { count: list.length })
+          : t("customers_ui.one_client"),
       fileName: `client-registry-${new Date().toISOString().slice(0, 10)}`,
       head: [
-        "Name",
-        "Organization",
-        "Role",
-        "Email",
-        "Phone",
-        "Region",
-        "Segment",
-        "Tier",
-        "Status",
-        "Lifetime value",
-        "Orders",
+        t("common_ui.name"),
+        t("customers_ui.organization"),
+        t("customers_ui.export_col_role"),
+        t("auth_ui.email_label"),
+        t("profile_ui.phone"),
+        t("customers_ui.export_col_region"),
+        t("customers_ui.col_segment"),
+        t("customers_ui.col_tier"),
+        t("common_ui.status"),
+        t("customers_ui.ltv_label"),
+        t("customers_ui.col_orders"),
       ],
       body: list.map((c) => [
         c.name,
@@ -438,9 +458,9 @@ const exportRows = async (list: Customer[], format: "pdf" | "excel") => {
         c.email,
         c.phone,
         c.node,
-        segmentMeta[c.segment].short,
-        tierMeta[c.tier].label,
-        statusMeta[c.status].label,
+        segmentShort.value[c.segment],
+        tierLabel.value[c.tier],
+        statusLabel.value[c.status],
         c.ltv,
         c.orders,
       ]),
@@ -448,11 +468,13 @@ const exportRows = async (list: Customer[], format: "pdf" | "excel") => {
       numberCols: [10],
     });
     toast.success(
-      `Exported ${list.length} client${list.length > 1 ? "s" : ""}`,
+      list.length > 1
+        ? t("customers_ui.toast_exported_many", { count: list.length })
+        : t("customers_ui.toast_exported_one"),
     );
   } catch {
-    toast.error("Couldn't create the file", {
-      description: "Try again in a moment.",
+    toast.error(t("customers_ui.toast_file_error"), {
+      description: t("customers_ui.try_again_moment"),
     });
   }
 };

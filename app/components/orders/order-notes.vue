@@ -2,7 +2,7 @@
   <LazyVPanel :title="$t('orders_ui.order_notes')" icon="lucide:lock">
     <template #actions>
       <LazyVStatusBadge tone="neutral" icon="lucide:lock"
-        >Staff only</LazyVStatusBadge
+        >{{ $t('orders_ui.staff_only') }}</LazyVStatusBadge
       >
     </template>
 
@@ -22,7 +22,7 @@
               v-if="note.urgent"
               tone="accent"
               icon="lucide:triangle-alert"
-              >Urgent</LazyVStatusBadge
+              >{{ $t('orders_ui.urgent') }}</LazyVStatusBadge
             >
             {{ note.ago }}
           </span>
@@ -35,8 +35,8 @@
       <LazyVTextarea
         v-model="text"
         name="adminNote"
-        label="Append administrative annotation"
-        placeholder="Enter a test result, delivery update or payment note…"
+        :label="$t('orders_ui.note_label')"
+        :placeholder="$t('orders_ui.note_placeholder')"
         rows="3"
         maxlength="600"
         rules="required"
@@ -45,7 +45,7 @@
         <LazyVCheckboxImput
           v-model="urgent"
           name="urgentPin"
-          label="Mark as urgent pin"
+          :label="$t('orders_ui.note_urgent_pin')"
           size="sm"
         />
 

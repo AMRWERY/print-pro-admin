@@ -6,29 +6,29 @@
           v-model="q"
           name="contentSearch"
           type="search"
-          label="Search content"
+          :label="$t('content_ui.tb_search_label')"
           hide-label
           icon="lucide:search"
           autocomplete="off"
-          placeholder="Search headline or link…"
+          :placeholder="$t('content_ui.tb_search_placeholder')"
         />
       </form>
 
       <LazyVSelectInput
         v-model="state"
         name="contentState"
-        label="Status"
+        :label="$t('common_ui.status')"
         hide-label
         :options="stateOptions"
         class="w-full sm:w-52"
       />
 
-      <LazyVSegmented v-model="view" label="Layout" :options="viewOptions" />
+      <LazyVSegmented v-model="view" :label="$t('content_ui.tb_layout')" :options="viewOptions" />
     </div>
 
     <div
       role="group"
-      aria-label="Content type"
+      :aria-label="$t('content_ui.content_type')"
       class="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1"
     >
       <button
@@ -69,9 +69,10 @@ const state = defineModel<BlockStatusFilter>("state", { required: true });
 const view = defineModel<"list" | "grid">("view", { required: true });
 
 const { number } = useFormatters();
+const { t } = useI18n();
 
-const viewOptions = [
-  { value: "list" as const, label: "List" },
-  { value: "grid" as const, label: "Grid" },
-];
+const viewOptions = computed(() => [
+  { value: "list" as const, label: t("content_ui.tb_view_list") },
+  { value: "grid" as const, label: t("content_ui.tb_view_grid") },
+]);
 </script>

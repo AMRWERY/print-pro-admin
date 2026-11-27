@@ -86,13 +86,13 @@
       <ul
         v-if="active.length"
         class="flex flex-wrap items-center gap-2"
-        aria-label="Active filters"
+        :aria-label="$t('orders_ui.active_filters')"
       >
         <li v-for="chip in active" :key="chip.key">
           <button
             type="button"
             class="chip-link"
-            :aria-label="`Remove filter: ${chip.label}`"
+            :aria-label="$t('orders_ui.remove_filter', { label: chip.label })"
             @click="chip.clear()"
           >
             {{ chip.label }}

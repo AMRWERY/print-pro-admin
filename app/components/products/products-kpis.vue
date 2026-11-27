@@ -17,16 +17,16 @@
       <li>
         <LazyVStatCard
           size="lg"
-          label="Products listed"
+          :label="$t('products_ui.products_listed')"
           icon="lucide:archive"
           :value="number(data.kpis.registered)"
-          :hint="`+${data.kpis.indexedThisCycle} added to the catalog`"
+          :hint="$t('products_ui.added_to_catalog', { count: data.kpis.indexedThisCycle })"
         />
       </li>
       <li>
         <LazyVStatCard
           size="lg"
-          label="Stock value"
+          :label="$t('products_ui.stock_value')"
           icon="lucide:landmark"
           :value="
             currency(data.kpis.valuation, {
@@ -34,35 +34,35 @@
               notation: 'compact',
             })
           "
-          hint="Stock on hand at unit price"
+          :hint="$t('products_ui.stock_value_hint')"
         />
       </li>
       <li>
         <LazyVStatCard
           size="lg"
           tone="accent"
-          label="Depletion alerts"
+          :label="$t('products_ui.depletion_alerts')"
           icon="lucide:triangle-alert"
           :value="number(data.kpis.depleted)"
-          hint="Critical SKUs at or below reorder point"
+          :hint="$t('products_ui.depletion_hint')"
         />
       </li>
       <li>
         <LazyVStatCard
           size="lg"
-          label="In testing"
+          :label="$t('products_ui.status_testing')"
           icon="lucide:flask-conical"
           :value="number(data.kpis.testing)"
-          hint="Items being tested before listing"
+          :hint="$t('products_ui.testing_hint')"
         />
       </li>
       <li class="col-span-2 md:col-span-1">
         <LazyVStatCard
           size="lg"
-          label="On hold"
+          :label="$t('products_ui.status_hold')"
           icon="lucide:shield-alert"
           :value="number(data.kpis.hold)"
-          hint="Withdrawn or waiting on the supplier"
+          :hint="$t('products_ui.hold_hint')"
         />
       </li>
     </template>

@@ -1,5 +1,5 @@
 <template>
-  <nav aria-label="Settings sections">
+  <nav :aria-label="$t('settings_ui.nav_label')">
     <!-- Narrow screens: one scrolling row. Wide screens: a grouped list that stays in view. -->
     <ul class="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 xl:hidden">
       <li v-for="s in sections" :key="s.id" class="shrink-0">
@@ -21,7 +21,7 @@
             aria-hidden="true"
           />
           <span v-if="changed.includes(s.key)" class="sr-only"
-            >(unsaved changes)</span
+            >{{ $t('settings_ui.unsaved_changes_sr') }}</span
           >
         </a>
       </li>
@@ -50,7 +50,7 @@
                 aria-hidden="true"
               />
               <span v-if="changed.includes(s.key)" class="sr-only"
-                >(unsaved changes)</span
+                >{{ $t('settings_ui.unsaved_changes_sr') }}</span
               >
             </a>
           </li>

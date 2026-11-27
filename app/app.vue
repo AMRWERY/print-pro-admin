@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts" setup>
-const { locale } = useI18n();
+const { locale, t } = useI18n();
 const { theme } = useTheme();
 
 useHead({
@@ -21,10 +21,10 @@ useHead({
 });
 
 useSeoMeta({
-  title: 'PrintPro - Admin',
-  ogTitle: 'PrintPro',
-  description: 'This is printpro, let me tell you all about it.',
-  ogDescription: 'This is printpro, let me tell you all about it.',
+  title: () => t("common_ui.brand_home"),
+  ogTitle: () => t("common_ui.brand_name"),
+  description: () => t("common_ui.site_description"),
+  ogDescription: () => t("common_ui.site_description"),
   // ogImage: 'https://example.com/image.png',
   // twitterCard: 'summary_large_image',
 })

@@ -15,7 +15,7 @@
         variant="secondary"
         icon="lucide:refresh-cw"
         @click="emit('retry')"
-        >{{ retryLabel }}</LazyVButton
+        >{{ retryLabel ?? $t("common_ui.retry") }}</LazyVButton
       >
     </div>
   </div>
@@ -29,9 +29,7 @@
  *   <LazyVErrorBanner message="The chart could not be loaded." @retry="refresh()" />
  */
 
-withDefaults(defineProps<{ message?: string; retryLabel?: string }>(), {
-  retryLabel: "Retry",
-});
+defineProps<{ message?: string; retryLabel?: string }>();
 
 const emit = defineEmits<{ retry: [] }>();
 </script>

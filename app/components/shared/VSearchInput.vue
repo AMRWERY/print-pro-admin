@@ -4,11 +4,11 @@
       v-model="query"
       :name="name"
       type="search"
-      :label="label"
+      :label="label ?? $t('common_ui.search_label')"
       hide-label
       icon="lucide:search"
       autocomplete="off"
-      :placeholder="placeholder"
+      :placeholder="placeholder ?? $t('common_ui.search_placeholder')"
       input-class="!pe-4"
     />
   </form>
@@ -33,8 +33,6 @@ const props = withDefaults(
     to?: string;
   }>(),
   {
-    label: "Search printers, photocopiers, ink and toner",
-    placeholder: "Search printers, photocopiers, ink, toner…",
     name: "headerSearch",
     to: "/search",
   },

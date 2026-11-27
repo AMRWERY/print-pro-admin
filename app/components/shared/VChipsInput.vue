@@ -14,7 +14,7 @@
         <button
           type="button"
           class="rounded-tight text-mute transition duration-fast hover:text-accent"
-          :aria-label="`Remove ${item}`"
+          :aria-label="$t('common_ui.remove_item', { item })"
           @click.stop="remove(i)"
         >
           <Icon name="lucide:x" size="12" aria-hidden="true" />
@@ -36,7 +36,7 @@
       />
     </div>
     <p :id="hintId" class="mt-1 text-xs text-mute">
-      {{ atLimit ? `Up to ${max} items.` : hint || "Press Enter to add." }}
+      {{ atLimit ? $t("common_ui.chips_up_to", { max }) : hint || $t("common_ui.chips_press_enter") }}
     </p>
   </div>
 </template>

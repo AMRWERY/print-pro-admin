@@ -37,10 +37,10 @@
         variant="tertiary"
         v-if="done && !current"
         class="text-sm underline-offset-4 hover:underline"
-        :aria-label="`Edit ${title}`"
+        :aria-label="$t('common_ui.edit_item', { title })"
         @click="state.edit(n)"
       >
-        Edit
+        {{ $t("common_ui.edit") }}
       </LazyVButton>
     </header>
 

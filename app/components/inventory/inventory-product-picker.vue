@@ -13,14 +13,14 @@
       </div>
       <p class="text-end font-mono text-xs tabular-nums">
         <span class="block text-base font-semibold">{{ item.stock }}</span>
-        in stock
+        {{ $t('inventory_ui.in_stock_label') }}
       </p>
       <LazyVButton
         v-if="changeable"
         variant="tertiary"
         size="sm"
         @click="item = null"
-        >Change</LazyVButton
+        >{{ $t('inventory_ui.change') }}</LazyVButton
       >
     </div>
 
@@ -29,14 +29,14 @@
         v-model="q"
         name="pickerSearch"
         type="search"
-        label="Find a product"
+        :label="$t('inventory_ui.find_product')"
         icon="lucide:search"
         autocomplete="off"
-        placeholder="SKU or name"
+        :placeholder="$t('inventory_ui.find_placeholder')"
       />
       <ul
         class="max-h-52 space-y-1 overflow-y-auto"
-        aria-label="Matching products"
+        :aria-label="$t('inventory_ui.matching_products')"
       >
         <li v-for="r in results" :key="r.id">
           <button
@@ -52,7 +52,7 @@
               <span class="meta" dir="ltr">{{ r.sku }}</span>
             </span>
             <span class="font-mono text-xs tabular-nums text-mute"
-              >{{ r.stock }} in stock</span
+              >{{ $t('inventory_ui.n_in_stock', { n: r.stock }) }}</span
             >
           </button>
         </li>
@@ -60,7 +60,7 @@
           v-if="results && !results.length"
           class="px-1 py-2 text-sm text-mute"
         >
-          No product matches “{{ debounced }}”.
+          {{ $t('inventory_ui.no_product_match', { term: debounced }) }}
         </li>
       </ul>
     </div>

@@ -13,16 +13,16 @@ export const requiredText =
 
 export const emailRule: Rule = (v) => {
   const s = text(v);
-  if (!s) return "Enter your email so we can send the order confirmation.";
+  if (!s) return tr("common_ui.val_email_required");
   return /^\S+@\S+\.\S+$/.test(s)
     ? true
-    : "That email looks incomplete. Use the format studio@example.com.";
+    : tr("common_ui.val_email_invalid");
 };
 
 export const phoneRule: Rule = (v) =>
   digits(v).length >= 7
     ? true
-    : "Enter a phone number the carrier can reach (at least 7 digits).";
+    : tr("common_ui.val_phone_invalid");
 
 export const minLengthText =
   (min: number, message: string): Rule =>
@@ -47,25 +47,25 @@ const luhn = (num: string) => {
 
 export const cardNumberRule: Rule = (v) => {
   const n = digits(v);
-  if (!n) return "Enter the card number.";
+  if (!n) return tr("common_ui.val_card_required");
   return n.length >= 13 && n.length <= 19 && luhn(n)
     ? true
-    : "That card number doesn't look right. Check each digit.";
+    : tr("common_ui.val_card_invalid");
 };
 
 export const cardExpiryRule: Rule = (v) => {
   const m = /^(0[1-9]|1[0-2])\/(\d{2})$/.exec(String(v ?? ""));
-  if (!m) return "Enter the expiry as MM/YY, for example 08/28.";
+  if (!m) return tr("common_ui.val_expiry_format");
   const end = new Date(2000 + Number(m[2]), Number(m[1]), 0, 23, 59, 59);
   return end.getTime() < Date.now()
-    ? "This card has expired. Use a different card."
+    ? tr("common_ui.val_card_expired")
     : true;
 };
 
 export const cardCvcRule: Rule = (v) =>
   /^\d{3,4}$/.test(String(v ?? ""))
     ? true
-    : "Enter the 3 or 4 digit security code.";
+    : tr("common_ui.val_cvc_invalid");
 
 export const mustAccept =
   (message: string): Rule =>
@@ -88,21 +88,23 @@ export const formatExpiry = (v: string) => {
 export const passwordChecks = (v: unknown): PasswordCheck[] => {
   const s = String(v ?? "");
   return [
-    { key: "length", label: "At least 12 characters", passed: s.length >= 12 },
-    { key: "case", label: "Upper and lower case letters", passed: /[a-z]/.test(s) && /[A-Z]/.test(s) },
-    { key: "digit", label: "At least one number", passed: /\d/.test(s) },
-    { key: "symbol", label: "At least one symbol (!@#$%^&*)", passed: /[^A-Za-z0-9]/.test(s) },
+    { key: "length", label: tr("auth_ui.check_length", { n: 12 }), passed: s.length >= 12 },
+    { key: "case", label: tr("auth_ui.check_case"), passed: /[a-z]/.test(s) && /[A-Z]/.test(s) },
+    { key: "digit", label: tr("auth_ui.check_digit"), passed: /\d/.test(s) },
+    { key: "symbol", label: tr("auth_ui.check_symbol", { symbols: "!@#$%^&*" }), passed: /[^A-Za-z0-9]/.test(s) },
   ];
 };
 
 export const strongPasswordRule: Rule = (v) => {
-  if (!String(v ?? "")) return "Create a password.";
+  if (!String(v ?? "")) return tr("auth_ui.password_create");
   const missing = passwordChecks(v).filter((c) => !c.passed);
-  return missing.length ? `Still needed: ${missing.map((c) => c.label.toLowerCase()).join(", ")}.` : true;
+  return missing.length
+    ? tr("auth_ui.password_still_needed", { items: missing.map((c) => c.label.toLowerCase()).join(tr("common_ui.list_sep")) })
+    : true;
 };
 
 /** Must equal another field's value (read lazily, so it follows what the user types). */
 export const matchesRule =
-  (other: () => unknown, message = "The two passwords don't match."): Rule =>
+  (other: () => unknown, message?: string): Rule =>
     (v) =>
-      !!v && v === other() ? true : message;
+      !!v && v === other() ? true : (message ?? tr("auth_ui.passwords_dont_match"));

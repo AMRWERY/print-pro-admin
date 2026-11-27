@@ -41,7 +41,7 @@
             :to="{ path: '/reset-password', query: { token: sent.token } }"
             icon-end="lucide:arrow-right"
             icon-end-class="icon-nudge rtl:-scale-x-100"
-            >{{ t("auth_ui.open_reset_link") }}</LazyVButton
+            >{{ t("btn.open_reset_link") }}</LazyVButton
           >
         </div>
 

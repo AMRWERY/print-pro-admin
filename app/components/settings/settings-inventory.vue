@@ -2,8 +2,8 @@
   <settings-section
     id="inventory"
     number="08"
-    title="Inventory & warehouses"
-    description="Defaults for new products, how fresh warehouse stock counts are, and automatic safeguards."
+    :title="$t('settings_ui.sec_inventory')"
+    :description="$t('settings_ui.inventory_desc')"
     :changed="changed.includes('inventory')"
   >
     <div class="grid gap-4 md:grid-cols-3">
@@ -11,18 +11,18 @@
         v-model="s.inventory.lowStockDefault"
         name="lowStockDefault"
         type="number"
-        label="Low-stock threshold"
+        :label="$t('settings_ui.low_stock')"
         required
         rules="required|integer|min_value:0"
         min="0"
-        hint="Default for new products."
+        :hint="$t('settings_ui.low_stock_hint')"
       />
 
       <LazyVInput
         v-model="s.inventory.reorderBufferDays"
         name="reorderBufferDays"
         type="number"
-        label="Reorder buffer (days)"
+        :label="$t('settings_ui.reorder_buffer')"
         required
         rules="required|integer|min_value:0|max_value:365"
         min="0"
@@ -33,7 +33,7 @@
         v-model="s.inventory.warehouseSyncMinutes"
         name="warehouseSyncMinutes"
         type="number"
-        label="Warehouse sync (minutes)"
+        :label="$t('settings_ui.warehouse_sync')"
         required
         rules="required|integer|min_value:1|max_value:1440"
         min="1"
@@ -44,14 +44,14 @@
     <div class="grid gap-3 md:grid-cols-2">
       <settings-toggle
         v-model="s.inventory.autoHold"
-        title="Auto-hold items that fail testing"
-        description="Stock that fails a test print or function check is held out of sale until reviewed."
+        :title="$t('settings_ui.auto_hold_title')"
+        :description="$t('settings_ui.auto_hold_desc')"
       />
 
       <settings-toggle
         v-model="s.inventory.barcodeVerify"
-        title="Verify barcodes on receiving"
-        description="Scanned items must match the purchase order before they are counted."
+        :title="$t('settings_ui.barcode_title')"
+        :description="$t('settings_ui.barcode_desc')"
       />
     </div>
   </settings-section>

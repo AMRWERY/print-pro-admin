@@ -24,7 +24,7 @@
           <span
             class="cursor-grab touch-none text-mute active:cursor-grabbing"
             draggable="true"
-            title="Drag to reorder"
+            :title="$t('categories_ui.tree_drag')"
             @dragstart="onDragStart($event, root)"
             @dragend="reset"
           >
@@ -40,7 +40,11 @@
             "
             icon-class="rtl:-scale-x-100"
             :aria-expanded="isOpen(root.id)"
-            :aria-label="`${isOpen(root.id) ? 'Collapse' : 'Expand'} ${root.name}`"
+            :aria-label="
+              isOpen(root.id)
+                ? $t('categories_ui.tree_collapse_item', { name: root.name })
+                : $t('categories_ui.tree_expand_item', { name: root.name })
+            "
             @click="toggle(root.id)"
           />
           <span v-else class="w-9" aria-hidden="true" />
@@ -57,7 +61,7 @@
               }}</span>
             </p>
             <p class="meta break-all" dir="ltr">
-              {{ root.slug }} · {{ number(root.skus) }} SKUs
+              {{ root.slug }} · {{ $t('categories_ui.tree_skus', { count: number(root.skus) }) }}
             </p>
             <p class="mt-0.5 flex items-center gap-1.5 font-mono text-2xs">
               <LazyVStatusBadge
@@ -74,7 +78,7 @@
                 variant="icon"
                 size="sm"
                 icon="lucide:arrow-up"
-                :aria-label="`Move ${root.name} up`"
+                :aria-label="$t('categories_ui.tree_move_up', { name: root.name })"
                 :disabled="root.order === 0"
                 @click="move(root, -1)"
               />
@@ -83,19 +87,21 @@
                 variant="icon"
                 size="sm"
                 icon="lucide:arrow-down"
-                :aria-label="`Move ${root.name} down`"
+                :aria-label="$t('categories_ui.tree_move_down', { name: root.name })"
                 :disabled="root.order === roots.length - 1"
                 @click="move(root, 1)"
               />
             </template>
             <LazyVSwitch
               :model-value="root.visibility === 'active'"
-              :label="`Visible on the storefront: ${root.name}`"
+              :label="
+                $t('categories_ui.tree_visible_on_storefront', { name: root.name })
+              "
               @update:model-value="(on) => emit('visibility', root, on)"
             />
 
             <LazyVRowActions
-              :label="`Actions for ${root.name}`"
+              :label="$t('categories_ui.tree_actions_for', { name: root.name })"
               @edit="emit('select', root.id)"
               @remove="emit('remove', root)"
             />
@@ -120,7 +126,7 @@
             <span
               class="cursor-grab touch-none text-mute active:cursor-grabbing"
               draggable="true"
-              title="Drag to reorder"
+              :title="$t('categories_ui.tree_drag')"
               @dragstart="onDragStart($event, child)"
               @dragend="reset"
             >
@@ -136,7 +142,7 @@
               <p class="meta break-all" dir="ltr">{{ child.slug }}</p>
             </div>
             <span class="font-mono text-xs tabular-nums text-mute"
-              >{{ number(child.skus) }} SKUs</span
+              >{{ $t('categories_ui.tree_skus', { count: number(child.skus) }) }}</span
             >
             <LazyVStatusBadge
               v-if="child.visibility !== 'active'"
@@ -150,7 +156,7 @@
                   variant="icon"
                   size="sm"
                   icon="lucide:arrow-up"
-                  :aria-label="`Move ${child.name} up`"
+                  :aria-label="$t('categories_ui.tree_move_up', { name: child.name })"
                   :disabled="child.order === 0"
                   @click="move(child, -1)"
                 />
@@ -159,14 +165,14 @@
                   variant="icon"
                   size="sm"
                   icon="lucide:arrow-down"
-                  :aria-label="`Move ${child.name} down`"
+                  :aria-label="$t('categories_ui.tree_move_down', { name: child.name })"
                   :disabled="child.order === childrenOf(root.id).length - 1"
                   @click="move(child, 1)"
                 />
               </template>
 
               <LazyVRowActions
-                :label="`Actions for ${child.name}`"
+                :label="$t('categories_ui.tree_actions_for', { name: child.name })"
                 @edit="emit('select', child.id)"
                 @remove="emit('remove', child)"
               />
@@ -184,30 +190,30 @@
     <div v-else class="overflow-x-auto">
       <table class="w-full min-w-[720px] text-sm">
         <caption class="sr-only">
-          All categories
+          {{ $t('categories_ui.tree_all_categories') }}
         </caption>
         <thead>
           <tr class="border-y border-line bg-ink">
             <th scope="col" class="label-caps px-4 py-3 text-start font-normal">
-              Code
+              {{ $t('common_ui.code') }}
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Category
+              {{ $t('categories_ui.col_category') }}
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Parent
+              {{ $t('categories_ui.col_parent') }}
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Slug
+              {{ $t('categories_ui.col_slug') }}
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-end font-normal">
-              SKUs
+              {{ $t('categories_ui.col_skus') }}
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Status
+              {{ $t('common_ui.status') }}
             </th>
             <th scope="col" class="px-4 py-3">
-              <span class="sr-only">Actions</span>
+              <span class="sr-only">{{ $t('common_ui.actions') }}</span>
             </th>
           </tr>
         </thead>
@@ -223,7 +229,7 @@
               {{ c.name }}
             </td>
             <td class="px-3 py-3 text-mute">
-              {{ c.parentId ? byId.get(c.parentId)?.name : "Root" }}
+              {{ c.parentId ? byId.get(c.parentId)?.name : $t('categories_ui.tree_root') }}
             </td>
             <td class="px-3 py-3 font-mono text-xs text-mute" dir="ltr">
               {{ c.slug }}
@@ -241,7 +247,7 @@
             <td class="px-4 py-3 text-end">
               <div class="flex justify-end">
                 <LazyVRowActions
-                  :label="`Actions for ${c.name}`"
+                  :label="$t('categories_ui.tree_actions_for', { name: c.name })"
                   @edit="emit('select', c.id)"
                   @remove="emit('remove', c)"
                 />

@@ -62,7 +62,7 @@ const signOut = async () => {
   await navigateTo(localePath("/auth"));
 };
 
-const name = computed(() => auth.user?.name ?? "Admin");
+const name = computed(() => auth.user?.name ?? t("layout_ui.default_admin_name"));
 const email = computed(() => auth.user?.email ?? t("layout_ui.not_signed_in"));
 const initials = computed(() =>
   name.value

@@ -63,7 +63,7 @@
           placeholder="*******"
           required
           revealable
-          :rules="requiredText('Enter your password.')"
+          :rules="requiredText(t('auth_ui.password_required'))"
           autocomplete="current-password"
           icon="lucide:key-round"
         />

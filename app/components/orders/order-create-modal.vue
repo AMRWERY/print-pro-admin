@@ -103,6 +103,7 @@ const open = defineModel<boolean>("open", { default: false });
 
 const { currency } = useFormatters();
 const toast = useToast();
+const { t } = useI18n();
 
 // Same rating-to-discount tier the server prices the order with.
 const tierOf: Record<CustomerTier, AccountTier> = { AAA: "enterprise", AA: "business", A: "home" };
@@ -111,12 +112,12 @@ const customers = ref<Customer[]>([]);
 const products = ref<Product[]>([]);
 
 const customerOptions = computed(() => [
-  { value: "", label: "Select a customer…" },
+  { value: "", label: t('orders_ui.select_customer') },
   ...customers.value.map((c) => ({ value: c.id, label: `${c.name} · ${c.org}` })),
 ]);
 
 const productOptions = computed(() => [
-  { value: "", label: "Select equipment or media…" },
+  { value: "", label: t('orders_ui.select_product') },
   ...products.value.map((p) => ({ value: p.id, label: p.name })),
 ]);
 
@@ -176,14 +177,13 @@ const submit = async () => {
   error.value = "";
   try {
     const row = await useOrdersStore().create({ ...form });
-    toast.success(`Order ${row.id} created`, {
-      description: "The order is waiting for payment.",
+    toast.success(t('orders_ui.toast_order_created', { id: row.id }), {
+      description: t('orders_ui.toast_order_created_desc'),
     });
     emit("created", row);
     open.value = false;
   } catch {
-    error.value =
-      "The order could not be created. Check the details and try again.";
+    error.value = t('orders_ui.create_error');
   } finally {
     loading.value = false;
   }

@@ -9,7 +9,7 @@
     <div class="flex items-start gap-3">
       <LazyVCheckboxImput
         :name="`pick-card-${product.id}`"
-        :label="`Select ${product.name}`"
+        :label="$t('products_ui.select_product', { name: product.name })"
         hide-label
         size="sm"
         :model-value="selected"
@@ -49,8 +49,7 @@
         :tone="stockMeta[state].tone"
         :icon="stockMeta[state].icon"
       >
-        Stock: {{ product.stock }} {{ product.unit
-        }}{{ product.stock === 1 ? "" : "s" }}
+        {{ $t('products_ui.stock_badge', { qty: qty(product) }) }}
       </LazyVStatusBadge>
     </div>
 
@@ -60,13 +59,13 @@
       <div
         class="flex items-center gap-1"
         role="group"
-        :aria-label="`Adjust stock for ${product.name}`"
+        :aria-label="$t('products_ui.adjust_stock_for', { name: product.name })"
       >
         <LazyVButton
           variant="icon"
           size="sm"
           icon="lucide:minus"
-          aria-label="Decrease stock"
+          :aria-label="$t('products_ui.decrease_stock')"
           :disabled="product.stock <= 0"
           @click="emit('stock', product.stock - 1)"
         />
@@ -80,13 +79,13 @@
           variant="icon"
           size="sm"
           icon="lucide:plus"
-          aria-label="Increase stock"
+          :aria-label="$t('products_ui.increase_stock')"
           @click="emit('stock', product.stock + 1)"
         />
       </div>
 
       <LazyVRowActions
-        :label="`Actions for ${product.name}`"
+        :label="$t('products_ui.actions_for', { name: product.name })"
         duplicate
         @edit="emit('edit')"
         @duplicate="emit('duplicate')"
@@ -104,6 +103,7 @@ import {
 } from "~/data/product-meta";
 import type { Product } from "~/types/admin/products";
 
+const { t } = useI18n();
 const categories = useCategories();
 
 const props = defineProps<{ product: Product; selected?: boolean }>();
@@ -119,4 +119,7 @@ const emit = defineEmits<{
 const { currency } = useFormatters();
 
 const state = computed(() => stockStateOf(props.product));
+
+const qty = (p: Product) =>
+  t(`products_ui.qty_${p.unit}_${p.stock === 1 ? "one" : "other"}`, { count: p.stock });
 </script>

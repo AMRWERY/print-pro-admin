@@ -31,7 +31,7 @@
       </span>
 
       <p class="mt-4 font-display text-lg font-semibold text-paper">
-        {{ over ? dropTitle : title }}
+        {{ over ? (dropTitle ?? $t('common_ui.drop_to_upload')) : (title ?? $t('common_ui.drag_files_here')) }}
       </p>
       <p v-if="description" class="mx-auto mt-1 max-w-xl text-sm text-mute">
         {{ description }}
@@ -44,7 +44,7 @@
         :disabled="disabled"
         :loading="loading"
         @click.stop="open()"
-        >{{ buttonLabel }}</LazyVButton
+        >{{ buttonLabel ?? $t('common_ui.select_local_file') }}</LazyVButton
       >
 
       <p v-if="limits" class="mt-3 font-mono text-1xs tracking-wider text-mute">
@@ -68,7 +68,7 @@
       tag="ul"
       name="file"
       class="space-y-2"
-      aria-label="Selected files"
+      :aria-label="$t('common_ui.selected_files')"
     >
       <li
         v-for="(f, i) in modelValue"
@@ -81,7 +81,7 @@
           <img
             v-if="previews[i]"
             :src="previews[i]"
-            :alt="`Thumbnail of ${f.name}`"
+            :alt="$t('common_ui.thumbnail_of', { name: f.name })"
             class="h-full w-full object-cover"
           />
           <Icon v-else name="lucide:file" size="18" aria-hidden="true" />
@@ -96,7 +96,7 @@
         <LazyVButton
           variant="icon"
           size="sm"
-          :aria-label="`Remove ${f.name}`"
+          :aria-label="$t('common_ui.remove_file', { name: f.name })"
           icon="lucide:x"
           @click="remove(i)"
         />
@@ -129,6 +129,8 @@
  * - Keyboard: Tab to the "Select" button and press Enter; clicking anywhere in the zone also opens the dialog.
  */
 
+const { t } = useI18n();
+
 const props = withDefaults(
   defineProps<{
     /** Controlled list of picked files (use with `list`). */
@@ -155,9 +157,6 @@ const props = withDefaults(
     error?: string;
   }>(),
   {
-    title: "Drag files here",
-    dropTitle: "Drop to upload",
-    buttonLabel: "Select local file",
     icon: "lucide:cloud-upload",
   },
 );
@@ -179,9 +178,9 @@ const limits = computed(() => {
   const exts = acceptList.value.filter((a) => a.startsWith("."));
   if (exts.length)
     parts.push(exts.map((e) => e.slice(1).toUpperCase()).join(" · "));
-  if (props.maxSizeMb) parts.push(`MAX ${props.maxSizeMb} MB`);
+  if (props.maxSizeMb) parts.push(t("common_ui.file_max_size", { n: props.maxSizeMb }));
   if (props.multiple && props.maxFiles)
-    parts.push(`UP TO ${props.maxFiles} FILES`);
+    parts.push(t("common_ui.file_up_to_files", { n: props.maxFiles }));
   return parts.join("  /  ");
 });
 
@@ -214,22 +213,26 @@ const handle = (incoming: File[]) => {
   let valid: File[] = [];
 
   for (const f of incoming) {
-    if (!accepted(f)) problems.push(`“${f.name}” isn’t a supported file type.`);
+    if (!accepted(f)) problems.push(t("common_ui.file_unsupported_type", { name: f.name }));
     else if (props.maxSizeMb && f.size > props.maxSizeMb * 1e6)
       problems.push(
-        `“${f.name}” is ${formatSize(f.size)}. The limit is ${props.maxSizeMb} MB.`,
+        t("common_ui.file_too_large", {
+          name: f.name,
+          size: formatSize(f.size),
+          limit: props.maxSizeMb,
+        }),
       );
     else valid.push(f);
   }
 
   if (!props.multiple && valid.length > 1) {
-    problems.push("Only one file can be uploaded at a time; using the first.");
+    problems.push(t("common_ui.file_only_one"));
     valid = valid.slice(0, 1);
   }
   if (props.multiple && props.maxFiles) {
     const room = props.maxFiles - (props.modelValue?.length ?? 0);
     if (valid.length > room) {
-      problems.push(`You can add up to ${props.maxFiles} files.`);
+      problems.push(t("common_ui.file_max_files", { n: props.maxFiles }));
       valid = valid.slice(0, Math.max(0, room));
     }
   }

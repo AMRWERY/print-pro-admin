@@ -21,7 +21,7 @@
     </LazyVPageHeader>
 
     <div>
-      <section class="card min-w-0" aria-label="Content blocks">
+      <section class="card min-w-0" :aria-label="$t('content_ui.section_label')">
         <div class="border-b border-line p-4 sm:p-5">
           <content-toolbar
             v-model:q="filters.q"
@@ -38,8 +38,8 @@
               icon="lucide:triangle-alert"
               :title="$t('content_ui.error_title')"
               :description="$t('content_ui.error_desc')"
-              eyebrow="CONTENT :: SYNC_ERROR"
-              tag="OFFLINE"
+              :eyebrow="$t('content_ui.eyebrow_sync_error')"
+              :tag="$t('content_ui.tag_offline')"
               tag-tone="accent"
             >
               <LazyVButton icon="lucide:refresh-cw" @click="() => refresh()"
@@ -55,8 +55,8 @@
             <LazyVEmptyState
               :title="$t('content_ui.empty_filter_title')"
               :description="$t('content_ui.empty_filter_desc')"
-              eyebrow="QUERY :: NO_RESULTS"
-              tag="0 RESULTS"
+              :eyebrow="$t('content_ui.eyebrow_no_results')"
+              :tag="$t('content_ui.tag_results_count', { count: 0 })"
             >
               <LazyVButton variant="secondary" @click="resetFilters"
                 >{{ $t('common_ui.clear_all_filters') }}</LazyVButton
@@ -124,7 +124,7 @@
       id="content-drawer"
       role="dialog"
       aria-modal="true"
-      aria-label="Slot inspector"
+      :aria-label="$t('content_ui.insp_slot_title')"
       class="fixed inset-y-0 end-0 z-50 w-full max-w-2xl overflow-y-auto overscroll-contain border-s border-line bg-surface shadow-2xl shadow-black/50 transition-[transform,visibility] duration-normal ease-out motion-reduce:transition-none [&>section]:min-h-full [&>section]:rounded-none [&>section]:border-0 [&>section]:shadow-none"
       :class="
         drawerOpen
@@ -174,7 +174,12 @@
           <content-preview
             :block="previewing"
             :device="previewDevice"
-            :caption="`${deviceMeta[previewDevice].label} preview of ${previewing.title}`"
+            :caption="
+              $t('content_ui.insp_preview_caption', {
+                device: deviceMeta[previewDevice].label,
+                title: previewing.title,
+              })
+            "
           />
         </div>
 
@@ -196,7 +201,10 @@
             <dd class="text-xs tabular-nums">
               {{
                 previewing.views
-                  ? `${number(previewing.views)} views · ${percent(previewing.ctr, 2)} CTR`
+                  ? $t('content_ui.list_views_ctr', {
+                      views: number(previewing.views),
+                      ctr: percent(previewing.ctr, 2),
+                    })
                   : $t('content_ui.preview_no_traffic')
               }}
             </dd>
@@ -350,7 +358,7 @@ const open = async (next: { block: ContentBlock | null; seed?: ContentBlock }) =
   drawerOpen.value = true;
   await nextTick();
   document
-    .querySelector<HTMLElement>("#content-drawer [aria-label='Close']")
+    .querySelector<HTMLElement>("#content-drawer [data-close-btn]")
     ?.focus();
 };
 const openCreate = () => open({ block: null });
@@ -386,7 +394,7 @@ const openDuplicate = (b: BlockRow) =>
     seed: {
       ...b,
       id: "",
-      title: `${b.title} (copy)`.slice(0, 120),
+      title: t("content_ui.copy_title", { title: b.title }).slice(0, 120),
       status: "draft",
       views: 0,
       clicks: 0,
@@ -413,8 +421,8 @@ const save = async (values: BlockInput) => {
     const status = statusOf(e);
     formError.value =
       status === 404
-        ? "This block no longer exists. Close the form and refresh the list."
-        : "The block could not be saved. Check the values and try again.";
+        ? t("content_ui.err_block_missing")
+        : t("content_ui.err_save_failed");
   } finally {
     saving.value = false;
   }
@@ -430,7 +438,10 @@ const setPublished = async (b: BlockRow, publish: boolean) => {
     toast.success(publish ? t('content_ui.toast_published') : t('content_ui.toast_unpublished'), {
       description:
         publish && saved.state === "scheduled"
-          ? `${saved.title} goes live on ${windowLabel(saved.startsAt, null).replace("From ", "")}.`
+          ? t("content_ui.toast_goes_live", {
+              title: saved.title,
+              date: windowLabel(saved.startsAt, null).replace("From ", ""),
+            })
           : saved.title,
     });
     await reload();

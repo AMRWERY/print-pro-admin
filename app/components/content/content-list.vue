@@ -12,9 +12,9 @@
         v-if="view === 'list'"
         class="flex items-center justify-between gap-3 border-b border-line bg-ink px-4 py-2.5"
       >
-        <span class="label-caps">Sequence &amp; placement</span>
+        <span class="label-caps">{{ $t('content_ui.list_col_sequence') }}</span>
         <span class="label-caps hidden text-end sm:block"
-          >Drag the handle, or press ↑ ↓ on it, to reorder</span
+          >{{ $t('content_ui.list_col_reorder_hint') }}</span
         >
       </div>
 
@@ -51,7 +51,7 @@
               type="button"
               draggable="true"
               class="mt-1 grid h-8 w-6 shrink-0 cursor-grab place-items-center rounded-tight text-mute transition duration-fast hover:bg-raised hover:text-paper focus-visible:ring-2 focus-visible:ring-cyan active:cursor-grabbing"
-              :aria-label="`Reorder ${b.title}. Position ${b.position}. Use the up and down arrow keys to move it.`"
+              :aria-label="$t('content_ui.list_reorder_aria', { title: b.title, position: b.position })"
               @dragstart="onDragStart($event, b)"
               @dragend="reset"
               @keydown.up.prevent="move(b, -1)"
@@ -63,7 +63,7 @@
             <button
               type="button"
               class="w-28 shrink-0 overflow-hidden rounded-tight transition duration-fast hover:opacity-90 focus-visible:ring-2 focus-visible:ring-cyan sm:w-36"
-              :aria-label="`Preview ${b.title}`"
+              :aria-label="$t('content_ui.list_preview_aria', { title: b.title })"
               @click="emit('preview', b)"
             >
               <content-preview :block="b" thumb />
@@ -102,10 +102,9 @@
                   {{ windowLabel(b.startsAt, b.endsAt) }}
                 </span>
                 <span v-if="b.views" class="tabular-nums"
-                  >{{ compact(b.views) }} views ·
-                  {{ percent(b.ctr, 1) }} CTR</span
+                  >{{ $t('content_ui.list_views_ctr', { views: compact(b.views), ctr: percent(b.ctr, 1) }) }}</span
                 >
-                <span v-else>No traffic yet</span>
+                <span v-else>{{ $t('content_ui.preview_no_traffic') }}</span>
               </p>
             </div>
 
@@ -119,7 +118,11 @@
               >
               <LazyVSwitch
                 :model-value="b.status === 'published'"
-                :label="`${b.status === 'published' ? 'Unpublish' : 'Publish'} ${b.title}`"
+                :label="
+                  b.status === 'published'
+                    ? $t('content_ui.list_unpublish_title', { title: b.title })
+                    : $t('content_ui.list_publish_title', { title: b.title })
+                "
                 @update:model-value="(v: boolean) => emit('toggle', b, v)"
               />
             </div>
@@ -130,7 +133,7 @@
             <button
               type="button"
               class="block w-full focus-visible:ring-2 focus-visible:ring-cyan"
-              :aria-label="`Preview ${b.title}`"
+              :aria-label="$t('content_ui.list_preview_aria', { title: b.title })"
               @click="emit('preview', b)"
             >
               <content-preview
@@ -161,11 +164,17 @@
               <div class="mt-auto flex items-center justify-between pt-1">
                 <LazyVSwitch
                   :model-value="b.status === 'published'"
-                  :label="`${b.status === 'published' ? 'Unpublish' : 'Publish'} ${b.title}`"
+                  :label="
+                    b.status === 'published'
+                      ? $t('content_ui.list_unpublish_title', { title: b.title })
+                      : $t('content_ui.list_publish_title', { title: b.title })
+                  "
                   @update:model-value="(v: boolean) => emit('toggle', b, v)"
                 />
                 <span class="meta tabular-nums">{{
-                  b.views ? `${percent(b.ctr, 1)} CTR` : "No traffic"
+                  b.views
+                    ? $t('content_ui.list_ctr', { ctr: percent(b.ctr, 1) })
+                    : $t('content_ui.list_no_traffic')
                 }}</span>
               </div>
             </div>
@@ -173,7 +182,7 @@
 
           <LazyVRowActions
             :class="view === 'grid' ? 'absolute end-2 top-2' : 'mt-0.5'"
-            :label="`Actions for ${b.title}`"
+            :label="$t('content_ui.list_actions_for', { title: b.title })"
             duplicate
             @edit="emit('select', b)"
             @duplicate="emit('duplicate', b)"
@@ -185,7 +194,8 @@
               class="menu-item w-full"
               @click="emit('preview', b)"
             >
-              <Icon name="lucide:eye" size="16" aria-hidden="true" /> Preview
+              <Icon name="lucide:eye" size="16" aria-hidden="true" />
+              {{ $t('content_ui.list_preview') }}
             </button>
             <button
               type="button"
@@ -200,7 +210,11 @@
                 size="16"
                 aria-hidden="true"
               />
-              {{ b.status === "published" ? "Unpublish" : "Publish" }}
+              {{
+                b.status === "published"
+                  ? $t("content_ui.list_unpublish")
+                  : $t("content_ui.list_publish")
+              }}
             </button>
           </LazyVRowActions>
         </li>

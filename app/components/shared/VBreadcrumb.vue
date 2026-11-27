@@ -1,5 +1,5 @@
 <template>
-  <nav aria-label="Breadcrumb">
+  <nav :aria-label="$t('common_ui.breadcrumb')">
     <ol class="flex flex-wrap items-center gap-2 meta tracking-wider">
       <template v-for="(item, i) in items" :key="`${item.label}-${i}`">
         <li v-if="i > 0" aria-hidden="true">/</li>

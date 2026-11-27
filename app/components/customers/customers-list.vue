@@ -12,7 +12,7 @@
       >
         <LazyVCheckboxImput
           name="pickAllClients"
-          label="Select all clients on this page"
+          :label="$t('customers_ui.select_all_clients')"
           hide-label
           size="sm"
           :model-value="allSelected"
@@ -21,8 +21,8 @@
           @update:model-value="toggleAll"
         />
 
-        <span class="label-caps">Client &amp; organization</span>
-        <span class="label-caps ms-auto hidden sm:block">Activity / region</span>
+        <span class="label-caps">{{ $t('customers_ui.list_client_org') }}</span>
+        <span class="label-caps ms-auto hidden sm:block">{{ $t('customers_ui.list_activity_region') }}</span>
       </div>
 
       <ul class="divide-y divide-line">
@@ -34,7 +34,7 @@
         >
           <LazyVCheckboxImput
             :name="`pick-${c.id}`"
-            :label="`Select ${c.name}`"
+            :label="$t('customers_ui.select_client', { name: c.name })"
             hide-label
             size="sm"
             class="mt-2.5"
@@ -60,7 +60,7 @@
                     name="lucide:badge-check"
                     size="14"
                     class="text-yellow"
-                    aria-label="AAA key account"
+                    :aria-label="$t('customers_ui.tier_aaa')"
                   />
                 </span>
                 <span class="meta block truncate">{{ c.org }}</span>
@@ -77,21 +77,21 @@
                   }}</span
                 >
                 <LazyVStatusBadge :tone="segmentMeta[c.segment].tone">{{
-                  segmentMeta[c.segment].short
+                  segmentShort[c.segment]
                 }}</LazyVStatusBadge>
 
                 <LazyVStatusBadge
                   v-if="c.status !== 'active'"
                   :tone="statusMeta[c.status].tone"
                   :icon="statusMeta[c.status].icon"
-                  >{{ statusMeta[c.status].label }}</LazyVStatusBadge
+                  >{{ statusLabel[c.status] }}</LazyVStatusBadge
                 >
               </span>
             </span>
           </button>
           <LazyVRowActions
             class="mt-1.5"
-            :label="`Actions for ${c.name}`"
+            :label="$t('customers_ui.actions_for', { name: c.name })"
             @edit="emit('edit', c)"
             @remove="emit('remove', c)"
           />
@@ -103,7 +103,11 @@
 
 <script lang="ts" setup>
 import { segmentMeta, statusMeta } from "~/data/customer-meta";
-import type { Customer } from "~/types/admin/customers";
+import type {
+  Customer,
+  CustomerSegment,
+  CustomerStatus,
+} from "~/types/admin/customers";
 
 const props = defineProps<{
   rows: Customer[];
@@ -117,6 +121,21 @@ const emit = defineEmits<{
   edit: [customer: Customer];
   remove: [customer: Customer];
 }>();
+
+const { t } = useI18n();
+
+const segmentShort = computed<Record<CustomerSegment, string>>(() => ({
+  enterprise: t("customers_ui.segment_short_enterprise"),
+  business: t("customers_ui.segment_short_business"),
+  printShop: t("customers_ui.segment_short_print_shop"),
+  home: t("customers_ui.segment_short_home"),
+  highLtv: t("customers_ui.segment_short_high_ltv"),
+}));
+const statusLabel = computed<Record<CustomerStatus, string>>(() => ({
+  active: t("customers_ui.status_active"),
+  audit: t("customers_ui.status_audit"),
+  dormant: t("customers_ui.status_dormant"),
+}));
 
 const selected = defineModel<string[]>("selected", { default: () => [] });
 

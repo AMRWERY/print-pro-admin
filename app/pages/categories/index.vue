@@ -13,7 +13,7 @@
     />
 
     <template v-else>
-      <section class="card min-w-0" aria-label="Category tree">
+      <section class="card min-w-0" :aria-label="$t('categories_ui.tree_label')">
         <div class="border-b border-line p-4 sm:p-5">
           <categories-toolbar
             v-model:filter="filter"
@@ -78,7 +78,7 @@
       id="category-drawer"
       role="dialog"
       aria-modal="true"
-      aria-label="Category inspector"
+      :aria-label="$t('categories_ui.inspector_title')"
       class="fixed inset-y-0 end-0 z-50 w-full max-w-xl overflow-y-auto overscroll-contain border-s border-line bg-surface shadow-2xl shadow-black/50 transition-[transform,visibility] duration-normal ease-out motion-reduce:transition-none [&>section]:min-h-full [&>section]:rounded-none [&>section]:border-0 [&>section]:shadow-none"
       :class="
         drawerOpen
@@ -212,7 +212,7 @@ const showDrawer = async () => {
   drawerOpen.value = true;
   await nextTick();
   document
-    .querySelector<HTMLElement>("#category-drawer [aria-label='Close inspector']")
+    .querySelector<HTMLElement>("#category-drawer [data-close-btn]")
     ?.focus();
 };
 
@@ -275,7 +275,7 @@ const save = async (values: CategoryInput) => {
     const status = statusOf(e);
     const keyMessage = fieldErrorsOf(e).key;
     formError.value = keyMessage
-      ? `Key: ${keyMessage}`
+      ? t('categories_ui.err_key_prefix', { message: keyMessage })
       : status === 409
         ? t('categories_ui.err_slug_conflict')
         : t('categories_ui.err_save_failed');
@@ -306,7 +306,7 @@ const setVisibility = async (c: Category, on: boolean) => {
     );
   } catch {
     toast.error(t('categories_ui.toast_visibility_error'), {
-      description: `${c.name} is unchanged.`,
+      description: t('categories_ui.toast_visibility_unchanged', { name: c.name }),
     });
   }
 };
@@ -350,7 +350,7 @@ const confirmDelete = async () => {
     deleteOpen.value = false;
   } catch (e) {
     // 409: products or coupons still use it. The reason stays in the dialog so it can be read and acted on.
-    deleteError.value = statusOf(e) === 409 ? messageOf(e) : "Nothing was removed. Try again.";
+    deleteError.value = statusOf(e) === 409 ? messageOf(e) : t('categories_ui.err_delete_failed');
   } finally {
     deleting.value = false;
   }

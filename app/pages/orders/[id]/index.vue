@@ -31,12 +31,18 @@
               >{{ stageMeta[detail.row.stage].status }}</LazyVStatusBadge
             >
           </p>
-          <p class="font-mono text-xs text-mute" dir="ltr">
-            Created {{ formatUtc(detail.row.placedAt) }} · Valuation
-            <span class="font-semibold text-paper">{{
-              currency(detail.pricing.total, cents)
-            }}</span>
-            · Hash {{ detail.row.hex }}
+          <p class="font-mono text-xs text-mute">
+            <span>
+              <i18n-t keypath="orders_ui.created_summary">
+                <template #date>{{ formatUtc(detail.row.placedAt) }}</template>
+                <template #value
+                  ><span class="font-semibold text-paper">{{
+                    currency(detail.pricing.total, cents)
+                  }}</span></template
+                >
+                <template #hash>{{ detail.row.hex }}</template>
+              </i18n-t>
+            </span>
           </p>
         </div>
 
@@ -96,8 +102,8 @@
       v-if="notFound"
       icon="lucide:search-x"
       :title="$t('error_ui.not_found_title')"
-      :description="`There is no order ${orderId}. It may have been mistyped or removed.`"
-      eyebrow="LEDGER :: NOT_FOUND"
+      :description="$t('orders_ui.not_found_desc', { id: orderId })"
+      :eyebrow="$t('orders_ui.not_found_eyebrow')"
       tag="404"
       tag-tone="accent"
     >
@@ -162,7 +168,7 @@
           />
 
           <LazyVPanel
-            title="Customer instructions"
+            :title="$t('orders_ui.customer_instructions')"
             icon="lucide:file-check"
           >
             <blockquote
@@ -181,7 +187,7 @@
           />
           <order-ledger
             :events="detail.ledger"
-            :chain="`CHAIN ${detail.row.id}`"
+            :chain="$t('orders_ui.chain_label', { id: detail.row.id })"
           />
         </div>
       </template>
@@ -189,8 +195,12 @@
 
     <LazyVDialog
       v-model:open="confirmOpen"
-      title="Mark this order as completed?"
-      :description="`This moves ${orderId} to the final stage and releases ${detail ? currency(detail.pricing.total, cents) : 'the order value'} to the books. It is recorded in the ledger.`"
+      :title="$t('orders_ui.complete_confirm_title')"
+      :description="
+        detail
+          ? $t('orders_ui.complete_confirm_desc', { id: orderId, value: currency(detail.pricing.total, cents) })
+          : $t('orders_ui.complete_confirm_desc_no_value', { id: orderId })
+      "
     >
       <p class="callout">
         <Icon
@@ -199,8 +209,7 @@
           class="bullet-icon"
           aria-hidden="true"
         />
-        Make sure the machine has been delivered and signed for.
-        Completing an order cannot be undone from this screen.
+        {{ $t('orders_ui.complete_confirm_callout') }}
       </p>
 
       <template #footer>
@@ -246,8 +255,8 @@ const notFound = computed(() => statusOf(error.value) === 404);
 
 const deliveryNote = computed(() =>
   detail.value?.row.stage === "completed"
-    ? "Delivery status: delivered and closed"
-    : "Delivery status: in progress",
+    ? t('orders_ui.delivery_status_completed')
+    : t('orders_ui.delivery_status_progress'),
 );
 
 // --- Moving the order along its pipeline ---
@@ -259,12 +268,12 @@ const moveTo = async (stage: OrderStage) => {
   try {
     await store.moveStage(slug.value, stage);
     toast.success(
-      stage === "completed" ? "Order completed" : "Progress updated",
-      { description: `${orderId.value} is now at: ${stageMeta[stage].tab}.` },
+      stage === "completed" ? t('orders_ui.toast_completed') : t('orders_ui.toast_progress_updated'),
+      { description: t('orders_ui.toast_stage_moved', { id: orderId.value, stage: stageMeta[stage].tab }) },
     );
   } catch {
-    toast.error("Couldn't update the order", {
-      description: "Try again in a moment.",
+    toast.error(t('orders_ui.toast_update_error'), {
+      description: t('orders_ui.toast_try_moment'),
     });
   } finally {
     moving.value = false;
@@ -285,10 +294,10 @@ const addNote = async (payload: { text: string; urgent: boolean }) => {
   try {
     await store.addNote(slug.value, payload);
     notesRef.value?.reset();
-    toast.success("Note saved");
+    toast.success(t('orders_ui.toast_note_saved'));
   } catch {
-    toast.error("Couldn't save the note", {
-      description: "Your text is kept. Try again.",
+    toast.error(t('orders_ui.toast_note_error'), {
+      description: t('orders_ui.toast_note_error_desc'),
     });
   } finally {
     savingNote.value = false;
@@ -306,11 +315,11 @@ const exportAs = async (format: "pdf" | "excel") => {
       detail.value,
     );
     toast.success(
-      format === "pdf" ? "PDF downloaded" : "Excel file downloaded",
+      format === "pdf" ? t('orders_ui.toast_pdf_downloaded') : t('orders_ui.toast_excel_downloaded'),
     );
   } catch {
-    toast.error("Couldn't create the file", {
-      description: "Try again in a moment.",
+    toast.error(t('orders_ui.toast_export_error'), {
+      description: t('orders_ui.toast_try_moment'),
     });
   } finally {
     exporting.value = false;

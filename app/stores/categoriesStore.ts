@@ -3,6 +3,13 @@ import type { RequestStatus } from "~/types/admin/products";
 
 const BASE = "/api/admin/categories";
 
+/** The built-in categories: their stored default English name and the key of its translation. */
+const BUILT_IN: Record<string, { name: string; key: string }> = {
+  printers: { name: "Printers", key: "categories_ui.kind_printer" },
+  copiers: { name: "Photocopiers", key: "categories_ui.kind_copier" },
+  "inks-toner": { name: "Inks & Toner", key: "categories_ui.name_inks_toner" },
+};
+
 /** The category tree and its mutations. */
 export const useCategoriesStore = defineStore("categories", () => {
   const data = ref<CategoriesResponse | null>(null);
@@ -36,12 +43,20 @@ export const useCategoriesStore = defineStore("categories", () => {
     if (status.value === "idle") loading = fetchAll();
     return loading ?? Promise.resolve();
   };
+  /** A category's display name: built-ins that still carry their default name are translated, renamed or new ones keep theirs. */
+  const nameOf = (c: Category) => {
+    const b = BUILT_IN[c.key];
+    return b && c.name === b.name ? tr(b.key) : c.name;
+  };
   /** The category's name, or the raw key when it no longer exists (or has not loaded yet). */
-  const label = (key: string) => byKey.value.get(key)?.name ?? key;
+  const label = (key: string) => {
+    const c = byKey.value.get(key);
+    return c ? nameOf(c) : key;
+  };
   const icon = (key: string) => byKey.value.get(key)?.icon ?? "lucide:package";
   const options = (withAll = false) => [
-    ...(withAll ? [{ value: "all", label: "Category: all" }] : []),
-    ...items.value.map((c) => ({ value: c.key, label: c.name })),
+    ...(withAll ? [{ value: "all", label: tr("categories_ui.filter_all") }] : []),
+    ...items.value.map((c) => ({ value: c.key, label: nameOf(c) })),
   ];
 
   const create = (body: CategoryInput) => api<Category>(BASE, { method: "POST", body });

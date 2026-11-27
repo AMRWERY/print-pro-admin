@@ -6,18 +6,18 @@
           v-model="q"
           name="productSearch"
           type="search"
-          label="Search products"
+          :label="$t('products_ui.filter_search_label')"
           hide-label
           icon="lucide:search"
           autocomplete="off"
-          placeholder="Search product, SKU, serial…"
+          :placeholder="$t('products_ui.search_placeholder')"
         />
       </form>
 
       <LazyVSelectInput
         v-model="category"
         name="productCategory"
-        label="Category"
+        :label="$t('products_ui.field_category')"
         hide-label
         :options="categories.options(true)"
       />
@@ -25,7 +25,7 @@
       <LazyVSelectInput
         v-model="brand"
         name="productBrand"
-        label="Brand"
+        :label="$t('products_ui.brand')"
         hide-label
         :options="brandOptions"
       />
@@ -33,7 +33,7 @@
       <LazyVSelectInput
         v-model="stock"
         name="productStock"
-        label="Stock"
+        :label="$t('products_ui.col_stock')"
         hide-label
         :options="stockOptions"
       />
@@ -41,7 +41,7 @@
       <LazyVSelectInput
         v-model="status"
         name="productStatus"
-        label="Status"
+        :label="$t('products_ui.col_status')"
         hide-label
         :options="statusOptions"
       />
@@ -51,9 +51,9 @@
       <div
         class="flex flex-wrap items-center gap-2"
         role="group"
-        aria-label="Preset filters"
+        :aria-label="$t('products_ui.preset_filters')"
       >
-        <span class="label-caps">Presets</span>
+        <span class="label-caps">{{ $t('products_ui.presets') }}</span>
         <button
           v-for="preset in presetList"
           :key="preset.key"
@@ -73,7 +73,7 @@
           variant="tertiary"
           size="sm"
           @click="reset"
-          >Reset</LazyVButton
+          >{{ $t('common_ui.reset') }}</LazyVButton
         >
       </div>
 
@@ -81,14 +81,14 @@
         <LazyVSelectInput
           v-model="sort"
           name="productSort"
-          label="Sort"
+          :label="$t('products_ui.sort')"
           inline
           :options="sortOptions"
         />
 
         <LazyVSegmented
           v-model="view"
-          label="Display mode"
+          :label="$t('products_ui.display_mode')"
           :options="viewOptions"
         />
       </div>
@@ -128,22 +128,23 @@ const status = defineModel<"all" | ProductStatus>("status", { required: true });
 const sort = defineModel<ProductSort>("sort", { required: true });
 const view = defineModel<"ledger" | "cards">("view", { required: true });
 
+const { t } = useI18n();
 const { number } = useFormatters();
 
-const viewOptions = [
-  { value: "ledger" as const, label: "Table" },
-  { value: "cards" as const, label: "Cards" },
-];
+const viewOptions = computed(() => [
+  { value: "ledger" as const, label: t("products_ui.view_table") },
+  { value: "cards" as const, label: t("products_ui.view_cards") },
+]);
 
 const brandOptions = computed(() => [
-  { value: "all", label: "Brand: all" },
+  { value: "all", label: t("products_ui.brand_all") },
   ...(props.brands ?? []).map((b) => ({ value: b, label: b })),
 ]);
 
 const presetList = computed(() => [
   {
     key: "a3Copiers" as const,
-    label: "A3 photocopiers",
+    label: t("products_ui.preset_a3_copiers"),
     count: props.presets?.a3Copiers ?? 0,
     active:
       category.value === "copiers" &&
@@ -152,7 +153,7 @@ const presetList = computed(() => [
   },
   {
     key: "supplies" as const,
-    label: "Ink & toner supplies",
+    label: t("products_ui.preset_supplies"),
     count: props.presets?.supplies ?? 0,
     active:
       category.value === "inks-toner" &&
@@ -161,7 +162,7 @@ const presetList = computed(() => [
   },
   {
     key: "depleted" as const,
-    label: "Depleted alerts only",
+    label: t("products_ui.preset_depleted"),
     count: props.presets?.depleted ?? 0,
     active: stock.value === "depleted",
   },

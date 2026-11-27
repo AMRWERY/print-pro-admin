@@ -5,15 +5,15 @@
         v-model="filter"
         name="categoryFilter"
         type="search"
-        label="Filter categories"
+        :label="$t('categories_ui.tb_filter_label')"
         hide-label
         icon="lucide:filter"
         autocomplete="off"
-        placeholder="Filter by name, slug or code…"
+        :placeholder="$t('categories_ui.filter_placeholder')"
       />
     </form>
 
-    <LazyVSegmented v-model="view" label="Layout" :options="viewOptions" />
+    <LazyVSegmented v-model="view" :label="$t('categories_ui.tb_layout')" :options="viewOptions" />
 
     <div v-if="view === 'tree'" class="flex flex-wrap items-center gap-2">
       <LazyVButton
@@ -21,7 +21,7 @@
         size="sm"
         icon="lucide:chevrons-up-down"
         @click="emit('expand')"
-        >Expand</LazyVButton
+        >{{ $t('categories_ui.tb_expand') }}</LazyVButton
       >
 
       <LazyVButton
@@ -29,7 +29,7 @@
         size="sm"
         icon="lucide:chevrons-down-up"
         @click="emit('collapse')"
-        >Collapse</LazyVButton
+        >{{ $t('categories_ui.tb_collapse') }}</LazyVButton
       >
 
       <LazyVButton
@@ -39,12 +39,12 @@
         :aria-pressed="reorderMode"
         :class="reorderMode && '!border-accent !text-accent'"
         @click="reorderMode = !reorderMode"
-        >Reorder mode</LazyVButton
+        >{{ $t('btn.reorder_mode') }}</LazyVButton
       >
     </div>
 
     <LazyVButton icon="lucide:circle-plus" @click="emit('add')"
-      >Add category</LazyVButton
+      >{{ $t('categories_ui.btn_add_category') }}</LazyVButton
     >
   </div>
 </template>
@@ -56,8 +56,10 @@ const reorderMode = defineModel<boolean>("reorderMode", { required: true });
 
 const emit = defineEmits<{ add: []; expand: []; collapse: [] }>();
 
-const viewOptions = [
-  { value: "tree" as const, label: "Hierarchy" },
-  { value: "flat" as const, label: "Flat matrix" },
-];
+const { t } = useI18n();
+
+const viewOptions = computed(() => [
+  { value: "tree" as const, label: t("categories_ui.tb_view_tree") },
+  { value: "flat" as const, label: t("categories_ui.tb_view_flat") },
+]);
 </script>

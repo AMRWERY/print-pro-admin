@@ -40,14 +40,14 @@
           <dd class="font-mono text-sm tabular-nums" dir="ltr">
             {{ formatUtc(row.placedAt) }}
           </dd>
-          <dt class="label-caps mt-3">Order reference</dt>
+          <dt class="label-caps mt-3">{{ $t('orders_ui.order_reference') }}</dt>
           <dd class="flex items-center gap-2 font-mono text-sm" dir="ltr">
             {{ row.hex }}
             <LazyVButton
               variant="icon"
               size="sm"
               icon="lucide:copy"
-              aria-label="Copy order reference"
+              :aria-label="$t('orders_ui.copy_order_reference')"
               @click="copy(row.hex)"
             />
           </dd>
@@ -100,14 +100,15 @@ const open = defineModel<boolean>("open", { default: false });
 
 const { currency } = useFormatters();
 const toast = useToast();
+const { t } = useI18n();
 
 const copy = async (value: string) => {
   try {
     await navigator.clipboard.writeText(value);
-    toast.success("Order reference copied");
+    toast.success(t('orders_ui.toast_reference_copied'));
   } catch {
-    toast.error("Couldn't copy", {
-      description: "Select the hash and copy it manually.",
+    toast.error(t('orders_ui.shipment_copy_error'), {
+      description: t('orders_ui.toast_copy_hash_desc'),
     });
   }
 };

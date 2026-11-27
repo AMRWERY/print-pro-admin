@@ -65,8 +65,8 @@
             icon="lucide:triangle-alert"
             :title="$t('orders_ui.sync_failed_title')"
             :description="$t('common_ui.connection_error')"
-            eyebrow="REGISTER :: SYNC_ERROR"
-            tag="OFFLINE"
+            :eyebrow="$t('products_ui.eyebrow_sync_error')"
+            :tag="$t('products_ui.tag_offline')"
             tag-tone="accent"
           >
             <LazyVButton icon="lucide:refresh-cw" @click="() => refresh()"
@@ -82,8 +82,8 @@
           <LazyVEmptyState
             :title="$t('common_ui.empty_title')"
             :description="$t('common_ui.empty_description')"
-            eyebrow="QUERY :: NO_RESULTS"
-            tag="0 RESULTS"
+            :eyebrow="$t('products_ui.eyebrow_no_results')"
+            :tag="$t('products_ui.tag_no_results')"
           >
             <LazyVButton variant="secondary" @click="resetFilters"
               >{{ $t('common_ui.clear_all_filters') }}</LazyVButton
@@ -154,17 +154,17 @@
         variant="secondary"
         icon="lucide:trash-2"
         class="!border-accent !text-accent"
-        @click="askDelete(selected, `${selected.length} products`)"
+        @click="askDelete(selected, productsLabel(selected.length))"
         >{{ $t('btn.delete') }}</LazyVButton
       >
     </LazyVBulkBar>
 
         <LazyVDialog
       v-model:open="deleteOpen"
-      title="Delete from the register?"
+      :title="$t('products_ui.delete_title')"
       :description="
         pendingDelete
-          ? `${pendingDelete.label} will be removed from the register.`
+          ? $t('products_ui.delete_desc', { label: pendingDelete.label })
           : ''
       "
     >
@@ -175,8 +175,7 @@
           class="bullet-icon"
           aria-hidden="true"
         />
-        This removes the SKU and its stock record. Existing orders keep their
-        history. It cannot be undone from this screen.
+        {{ $t('products_ui.delete_warning') }}
       </p>
       <template #footer>
         <LazyVButton
@@ -294,8 +293,8 @@ const adjustStock = async (p: Product, next: number) => {
   try {
     await store.adjustStock(p, next);
   } catch {
-    toast.error("Couldn't update stock", {
-      description: `${p.name} is back to ${previous}.`,
+    toast.error(t("products_ui.stock_update_failed"), {
+      description: t("products_ui.stock_reverted", { name: p.name, previous }),
     });
   }
 };
@@ -316,12 +315,12 @@ const confirmDelete = async () => {
   try {
     const { ids, label } = pendingDelete.value;
     await store.removeMany(ids);
-    toast.success("Removed from the register", { description: label });
+    toast.success(t("products_ui.removed_toast"), { description: label });
     selected.value = [];
     deleteOpen.value = false;
   } catch {
-    toast.error("Couldn't delete", {
-      description: "Nothing was removed. Try again.",
+    toast.error(t("products_ui.delete_failed"), {
+      description: t("products_ui.delete_failed_desc"),
     });
   } finally {
     deleting.value = false;
@@ -329,27 +328,30 @@ const confirmDelete = async () => {
 };
 
 // --- Export ---
+const productsLabel = (n: number) =>
+  t(n === 1 ? "products_ui.products_count_one" : "products_ui.products_count_other", { count: n });
+
 const exportRows = async (list: Product[], format: "pdf" | "excel") => {
   if (!list.length) {
-    toast.warning("Nothing to export", {
-      description: "There are no products on this page.",
+    toast.warning(t("products_ui.nothing_to_export"), {
+      description: t("products_ui.nothing_to_export_desc"),
     });
     return;
   }
   try {
     await downloadTable(format, {
-      title: "Product ledger",
-      subtitle: `${list.length} product${list.length > 1 ? "s" : ""}`,
+      title: t("products_ui.export_title"),
+      subtitle: productsLabel(list.length),
       fileName: `product-ledger-${new Date().toISOString().slice(0, 10)}`,
       head: [
-        "SKU",
-        "Name",
-        "Category",
-        "Brand",
-        "Price (EGP)",
-        "Stock",
-        "Reorder at",
-        "Status",
+        t("products_ui.col_sku"),
+        t("products_ui.col_name"),
+        t("products_ui.col_category"),
+        t("products_ui.brand"),
+        t("products_ui.price_egp"),
+        t("products_ui.col_stock"),
+        t("products_ui.reorder_at"),
+        t("products_ui.col_status"),
       ],
       body: list.map((p) => [
         p.sku,
@@ -365,11 +367,11 @@ const exportRows = async (list: Product[], format: "pdf" | "excel") => {
       numberCols: [6, 7],
     });
     toast.success(
-      `Exported ${list.length} product${list.length > 1 ? "s" : ""}`,
+      t("products_ui.exported_title", { label: productsLabel(list.length) }),
     );
   } catch {
-    toast.error("Couldn't create the file", {
-      description: "Try again in a moment.",
+    toast.error(t("products_ui.export_failed"), {
+      description: t("products_ui.export_failed_desc"),
     });
   }
 };

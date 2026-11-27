@@ -78,7 +78,7 @@
     </LazyVPageHeader>
 
     <!-- Period -->
-    <section class="card space-y-3 p-4" aria-label="Reporting period">
+    <section class="card space-y-3 p-4" :aria-label="$t('dashboard_ui.reporting_period')">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <LazyVSegmented
           v-model="filters.range"
@@ -88,7 +88,7 @@
         <LazyVSegmented
           v-model="filters.granularity"
           :options="granularityOptions"
-          label="Chart interval"
+          :label="$t('analytics_ui.chart_interval')"
         />
       </div>
 
@@ -99,14 +99,14 @@
         <LazyVDatePicker
           v-model="filters.from"
           name="analyticsFrom"
-          label="From"
+          :label="$t('analytics_ui.date_from')"
           :max="filters.to"
           :shortcuts="false"
         />
         <LazyVDatePicker
           v-model="filters.to"
           name="analyticsTo"
-          label="To"
+          :label="$t('analytics_ui.date_to')"
           :min="filters.from"
           :shortcuts="false"
         />
@@ -125,8 +125,12 @@
           <template v-else>{{ $t('analytics_ui.period_loading') }}</template>
         </span>
         <span v-if="data"
-          >vs {{ dateLabel(data.period.prevFrom) }} {{ $t('analytics_ui.period_label_to') }}
-          {{ dateLabel(data.period.prevTo) }}</span
+          >{{
+          $t('analytics_ui.vs_range', {
+            from: dateLabel(data.period.prevFrom),
+            to: dateLabel(data.period.prevTo),
+          })
+        }}</span
         >
         <span
           v-if="
@@ -135,9 +139,18 @@
             data.granularity !== 'hour'
           "
           class="text-yellow"
-          >Shown {{ data.granularity === "week" ? "weekly" : "monthly" }}: too
-          many points for
-          {{ filters.granularity === "day" ? "daily" : "weekly" }}</span
+          >{{
+          $t('analytics_ui.granularity_note_too_many', {
+            interval:
+              data.granularity === "week"
+                ? $t('analytics_ui.granularity_note_weekly')
+                : $t('analytics_ui.granularity_note_monthly'),
+            target:
+              filters.granularity === "day"
+                ? $t('analytics_ui.granularity_note_daily')
+                : $t('analytics_ui.granularity_note_weekly'),
+          })
+        }}</span
         >
         <span>{{ $t('analytics_ui.net_of_tax') }}</span>
       </p>
@@ -185,12 +198,7 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  cohortLabel,
-  dateLabel,
-  granularityOptions,
-  rangeOptions,
-} from "~/data/analytics-meta";
+import { dateLabel } from "~/data/analytics-meta";
 import type {
   AnalyticsRange,
   AnalyticsResponse,
@@ -201,6 +209,28 @@ import type {
 
 const toast = useToast();
 const { t } = useI18n();
+
+const rangeOptions = computed<{ value: AnalyticsRange; label: string }[]>(() => [
+  { value: "today", label: t("dashboard_ui.period_today") },
+  { value: "7d", label: t("analytics_ui.period_7d") },
+  { value: "30d", label: t("analytics_ui.period_30d") },
+  { value: "quarter", label: t("analytics_ui.period_quarter") },
+  { value: "ytd", label: t("analytics_ui.period_ytd") },
+  { value: "custom", label: t("analytics_ui.period_custom") },
+]);
+
+const granularityOptions = computed<{ value: Granularity; label: string }[]>(() => [
+  { value: "day", label: t("analytics_ui.granularity_day") },
+  { value: "week", label: t("analytics_ui.granularity_week") },
+  { value: "month", label: t("analytics_ui.granularity_month") },
+]);
+
+const cohortLabel = computed<Record<Cohort, string>>(() => ({
+  all: t("analytics_ui.cohort_all"),
+  enterprise: t("analytics_ui.cohort_enterprise"),
+  business: t("analytics_ui.cohort_business"),
+  printShop: t("analytics_ui.cohort_print_shop"),
+}));
 
 const filters = reactive({
   range: "30d" as AnalyticsRange,

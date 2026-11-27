@@ -3,7 +3,7 @@
     <header class="flex flex-wrap items-center justify-between gap-3">
       <h2 id="specs-title" class="flex items-center gap-2 font-display text-lg font-bold">
         <Icon name="lucide:gauge" size="18" class="text-accent" aria-hidden="true" />
-        05 // Specifications
+        05 // {{ $t('products_ui.specifications') }}
       </h2>
       <div class="shrink-0"><LazyVButton
               variant="secondary"
@@ -11,7 +11,7 @@
               icon="lucide:plus"
               :disabled="form.specs.length >= 30"
               @click="add"
-              >Add specification</LazyVButton
+              >{{ $t('products_ui.add_specification') }}</LazyVButton
             ></div>
     </header>
 
@@ -22,10 +22,7 @@
         class="bullet-icon"
         aria-hidden="true"
       />
-      <span
-        >No specifications yet. Add the parameters customers compare, such as
-        sensor size, resolution or Dmax.</span
-      >
+      <span>{{ $t('products_ui.specs_empty') }}</span>
     </p>
 
     <ul class="space-y-2">
@@ -35,31 +32,31 @@
         class="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto]"
       >
         <label class="min-w-0">
-          <span class="sr-only">Parameter {{ i + 1 }} name</span>
+          <span class="sr-only">{{ $t('products_ui.parameter_name_sr', { n: i + 1 }) }}</span>
           <input
             v-model="spec.key"
             type="text"
             class="field"
-            placeholder="Parameter"
+            :placeholder="$t('products_ui.parameter')"
             maxlength="60"
           />
         </label>
         <label
           class="order-last col-span-2 min-w-0 sm:order-none sm:col-span-1"
         >
-          <span class="sr-only">Parameter {{ i + 1 }} value</span>
+          <span class="sr-only">{{ $t('products_ui.parameter_value_sr', { n: i + 1 }) }}</span>
           <input
             v-model="spec.value"
             type="text"
             class="field"
-            placeholder="Value"
+            :placeholder="$t('products_ui.value')"
             maxlength="200"
           />
         </label>
         <LazyVButton
           variant="icon"
           icon="lucide:trash-2"
-          :aria-label="`Remove ${spec.key || `parameter ${i + 1}`}`"
+          :aria-label="$t('common_ui.remove_file', { name: spec.key || $t('products_ui.parameter_n', { n: i + 1 }) })"
           class="hover:!border-accent hover:!text-accent"
           @click="form.specs.splice(i, 1)"
         />

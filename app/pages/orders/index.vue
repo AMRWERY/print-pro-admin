@@ -6,7 +6,7 @@
       :breadcrumb="[{ label: $t('nav.dashboard'), to: '/' }, { label: $t('orders_ui.title') }]"
     >
       <template #meta>
-        <p class="chip" dir="ltr">STATION ID // CAL-902</p>
+        <p class="chip" dir="ltr">{{ $t('common_ui.station_id') }}</p>
       </template>
 
       <template #actions>
@@ -70,8 +70,8 @@
             icon="lucide:triangle-alert"
             :title="$t('orders_ui.sync_failed_title')"
             :description="$t('orders_ui.sync_failed_desc')"
-            eyebrow="LEDGER :: SYNC_ERROR"
-            tag="OFFLINE"
+            :eyebrow="$t('orders_ui.sync_error_eyebrow')"
+            :tag="$t('orders_ui.offline_tag')"
             tag-tone="accent"
           >
             <LazyVButton icon="lucide:refresh-cw" @click="() => refresh()"
@@ -88,8 +88,8 @@
           <LazyVEmptyState
             :title="$t('orders_ui.empty_filtered_title')"
             :description="$t('orders_ui.empty_filtered_desc')"
-            eyebrow="QUERY :: NO_RESULTS"
-            tag="0 RESULTS"
+            :eyebrow="$t('orders_ui.no_results_eyebrow')"
+            :tag="$t('orders_ui.results_tag', { n: 0 })"
           >
             <LazyVButton variant="secondary" @click="resetFilters"
               >{{ $t('common_ui.clear_all_filters') }}</LazyVButton
@@ -147,18 +147,16 @@
       class="grid gap-x-6 gap-y-2 rounded-card border border-line bg-surface px-4 py-3 font-mono text-2xs text-mute sm:grid-cols-2 xl:grid-cols-4"
     >
       <li class="flex items-center gap-2">
-        <span class="pip" aria-hidden="true" />SHA-256 block #8849-01 verified
+        <span class="pip" aria-hidden="true" />{{ $t('orders_ui.integrity_block_verified', { block: '#8849-01' }) }}
       </li>
       <li class="flex items-center gap-2">
-        <Icon name="lucide:database" size="12" aria-hidden="true" />Node: Order
-        system (synced 12ms)
+        <Icon name="lucide:database" size="12" aria-hidden="true" />{{ $t('orders_ui.integrity_node', { ms: '12ms' }) }}
       </li>
       <li class="flex items-center gap-2">
-        <Icon name="lucide:gauge" size="12" aria-hidden="true" />Illuminant: D50
-        (5000K ± 25K)
+        <Icon name="lucide:gauge" size="12" aria-hidden="true" />{{ $t('orders_ui.integrity_illuminant', { range: '5000K ± 25K' }) }}
       </li>
       <li class="flex items-center gap-2 font-bold text-accent">
-        <span class="status-dot" aria-hidden="true" />ISO 14644-1 class 4 active
+        <span class="status-dot" aria-hidden="true" />{{ $t('orders_ui.integrity_iso_active') }}
       </li>
     </ul>
 
@@ -298,24 +296,24 @@ const onCreated = () => {
 // --- Export ---
 const exportRows = async (list: OrderRow[], format: "pdf" | "excel") => {
   if (!list.length) {
-    toast.warning("Nothing to export", {
-      description: "There are no orders on this page.",
+    toast.warning(t('orders_ui.toast_export_empty'), {
+      description: t('orders_ui.toast_export_empty_desc'),
     });
     return;
   }
   try {
     await downloadTable(format, {
-      title: "Orders",
-      subtitle: `${list.length} order${list.length > 1 ? "s" : ""}`,
+      title: t('orders_ui.title'),
+      subtitle: t('orders_ui.export_subtitle', { n: list.length }),
       fileName: `orders-${new Date().toISOString().slice(0, 10)}`,
       head: [
-        "Order",
-        "Placed (UTC)",
-        "Customer",
-        "Company",
-        "Allocation",
-        "Order value (EGP)",
-        "Stage",
+        t('orders_ui.export_col_order'),
+        t('orders_ui.export_col_placed'),
+        t('orders_ui.customer_field'),
+        t('orders_ui.export_col_company'),
+        t('orders_ui.export_col_allocation'),
+        t('orders_ui.export_col_value'),
+        t('orders_ui.export_col_stage'),
       ],
       body: list.map((r) => [
         r.id,
@@ -328,10 +326,10 @@ const exportRows = async (list: OrderRow[], format: "pdf" | "excel") => {
       ]),
       moneyCols: [5],
     });
-    toast.success(`Exported ${list.length} order${list.length > 1 ? "s" : ""}`);
+    toast.success(t('orders_ui.toast_exported', { n: list.length }));
   } catch {
-    toast.error("Couldn't create the file", {
-      description: "Try again in a moment.",
+    toast.error(t('orders_ui.toast_export_error'), {
+      description: t('orders_ui.toast_try_moment'),
     });
   }
 };

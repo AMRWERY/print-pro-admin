@@ -1,7 +1,7 @@
 <template>
   <LazyVPanel
     :title="$t('orders_ui.line_items')"
-    :subtitle="`${count} ${count === 1 ? 'unit' : 'units'} across ${lines.length} ${lines.length === 1 ? 'batch' : 'batches'}`"
+    :subtitle="$t('orders_ui.line_items_subtitle', { units: count, batches: lines.length })"
     icon="lucide:package"
   >
     <ul class="space-y-3">
@@ -14,15 +14,15 @@
 
         <div class="min-w-0">
           <p class="font-medium leading-snug">{{ line.title }}</p>
-          <p class="meta" dir="ltr">SKU: {{ line.sku }}</p>
+          <p class="meta" dir="ltr">{{ $t('orders_ui.sku_label', { sku: line.sku }) }}</p>
           <p class="meta">{{ line.spec }}</p>
         </div>
         <p
           class="col-start-2 font-mono text-xs text-mute tabular-nums sm:col-start-auto sm:text-end"
         >
-          <span class="label-caps block">Qty</span>
+          <span class="label-caps block">{{ $t('orders_ui.qty_label') }}</span>
           {{ line.quantity }} {{ line.unit }}{{ line.quantity > 1 ? "s" : "" }}
-          <span class="block">@ {{ currency(line.unitPrice, cents) }}</span>
+          <span class="block">{{ $t('orders_ui.at_unit_price', { price: currency(line.unitPrice, cents) }) }}</span>
         </p>
         <p
           class="col-start-2 font-mono text-sm font-semibold tabular-nums sm:col-start-auto sm:text-end"
@@ -41,7 +41,7 @@
         <dd class="tabular-nums">{{ currency(pricing.subtotal, cents) }}</dd>
       </div>
       <div class="flex justify-between gap-4">
-        <dt class="text-mute">Testing &amp; setup fee</dt>
+        <dt class="text-mute">{{ $t('orders_ui.testing_setup_fee') }}</dt>
         <dd class="tabular-nums">{{ currency(pricing.setupFee, cents) }}</dd>
       </div>
       <div class="flex justify-between gap-4">
@@ -53,9 +53,7 @@
         class="flex justify-between gap-4 text-yellow"
       >
         <dt>
-          Institutional discount (−{{
-            Math.round(pricing.discountRate * 100)
-          }}%)
+          {{ $t('orders_ui.institutional_discount', { rate: Math.round(pricing.discountRate * 100) }) }}
         </dt>
         <dd class="tabular-nums">−{{ currency(pricing.discount, cents) }}</dd>
       </div>

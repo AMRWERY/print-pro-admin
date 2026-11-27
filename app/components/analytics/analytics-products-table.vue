@@ -1,7 +1,7 @@
 <template>
   <LazyVPanel
-    title="Best-selling products & stock levels"
-    subtitle="Stock velocity, revenue and margin by SKU, with days of buffer left"
+    :title="$t('analytics_ui.products_table_title')"
+    :subtitle="$t('analytics_ui.products_table_subtitle')"
     icon="lucide:package"
     body-class=""
   >
@@ -12,17 +12,17 @@
             v-model="q"
             name="analyticsSku"
             type="search"
-            label="Filter SKUs"
+            :label="$t('analytics_ui.filter_skus')"
             hide-label
             icon="lucide:search"
             autocomplete="off"
-            placeholder="Filter SKU…"
+            :placeholder="$t('analytics_ui.filter_sku_placeholder')"
           />
         </form>
         <LazyVSelectInput
           v-model="category"
           name="analyticsCategory"
-          label="Division"
+          :label="$t('analytics_ui.division')"
           hide-label
           :options="categories.options(true)"
           class="w-44"
@@ -32,7 +32,7 @@
 
     <div v-if="error" class="p-4 sm:p-5">
       <LazyVErrorBanner
-        message="The product ranking could not be loaded."
+        :message="$t('analytics_ui.ranking_error')"
         @retry="() => refresh()"
       />
     </div>
@@ -41,11 +41,11 @@
       <LazyVEmptyState
         bare
         icon="lucide:search-x"
-        title="No SKUs match"
-        description="Try another name or SKU, or the All divisions filter."
+        :title="$t('analytics_ui.no_matching_skus')"
+        :description="$t('analytics_ui.no_matching_skus_desc')"
       >
         <LazyVButton variant="secondary" @click="reset"
-          >Clear filters</LazyVButton
+          >{{ $t('common_ui.clear_filters') }}</LazyVButton
         >
       </LazyVEmptyState>
     </div>
@@ -55,7 +55,7 @@
       <div class="hidden xl:block">
         <table class="w-full text-sm" :aria-busy="pending || undefined">
           <caption class="sr-only">
-            Best-selling products
+            {{ $t('dashboard_ui.best_selling_products') }}
           </caption>
           <thead>
             <tr class="border-y border-line bg-ink">
@@ -63,34 +63,34 @@
                 scope="col"
                 class="label-caps px-4 py-3 text-start font-normal"
               >
-                Product / SKU
+                {{ $t('analytics_ui.col_product_sku') }}
               </th>
               <th
                 scope="col"
                 class="label-caps px-3 py-3 text-start font-normal"
               >
-                Category node
+                {{ $t('analytics_ui.col_category') }}
               </th>
               <th scope="col" class="label-caps px-3 py-3 text-end font-normal">
-                Units dispatched
+                {{ $t('analytics_ui.col_units_dispatched') }}
               </th>
               <th scope="col" class="label-caps px-3 py-3 text-end font-normal">
-                Gross revenue
+                {{ $t('analytics_ui.gross_revenue') }}
               </th>
               <th scope="col" class="label-caps px-3 py-3 text-end font-normal">
-                Margin
+                {{ $t('analytics_ui.margin') }}
               </th>
               <th
                 scope="col"
                 class="label-caps px-3 py-3 text-start font-normal"
               >
-                Stock velocity
+                {{ $t('analytics_ui.col_stock_velocity') }}
               </th>
               <th
                 scope="col"
                 class="label-caps px-4 py-3 text-start font-normal"
               >
-                Status
+                {{ $t('common_ui.status') }}
               </th>
             </tr>
           </thead>
@@ -140,22 +140,21 @@
               </td>
               <td class="w-44 px-3 py-3.5">
                 <p class="font-mono text-xs tabular-nums">
-                  {{ r.daysLeft >= 365 ? "365+" : number(r.daysLeft) }} days
-                  buffer
+                  {{ $t('analytics_ui.days_buffer_long', { days: r.daysLeft >= 365 ? "365+" : number(r.daysLeft) }) }}
                 </p>
                 <LazyVMeter
                   class="my-1"
                   :value="Math.min(100, (r.daysLeft / 45) * 100)"
                   :tone="velocityMeta[r.status].tone"
-                  :label="`Stock buffer for ${r.name}`"
+                  :label="$t('analytics_ui.stock_buffer_for', { name: r.name })"
                 />
-                <p class="meta">{{ r.perDay }} units/day</p>
+                <p class="meta">{{ $t('analytics_ui.units_per_day', { n: r.perDay }) }}</p>
               </td>
               <td class="px-4 py-3.5">
                 <LazyVStatusBadge
                   :tone="velocityMeta[r.status].tone"
                   :icon="velocityMeta[r.status].icon"
-                  >{{ velocityMeta[r.status].label }}</LazyVStatusBadge
+                  >{{ velocityLabel[r.status] }}</LazyVStatusBadge
                 >
               </td>
             </tr>
@@ -190,18 +189,18 @@
               <p class="meta" dir="ltr">{{ r.sku }}</p>
             </div>
             <LazyVStatusBadge :tone="velocityMeta[r.status].tone">{{
-              velocityMeta[r.status].label
+              velocityLabel[r.status]
             }}</LazyVStatusBadge>
           </div>
           <dl
             class="grid grid-cols-3 gap-2 text-center font-mono text-xs tabular-nums"
           >
             <div>
-              <dt class="label-caps">Units</dt>
+              <dt class="label-caps">{{ $t('analytics_ui.col_units') }}</dt>
               <dd class="font-semibold">{{ number(r.units) }}</dd>
             </div>
             <div>
-              <dt class="label-caps">Revenue</dt>
+              <dt class="label-caps">{{ $t('dashboard_ui.revenue') }}</dt>
               <dd class="font-semibold">
                 {{
                   currency(r.revenue, {
@@ -212,18 +211,18 @@
               </dd>
             </div>
             <div>
-              <dt class="label-caps">Margin</dt>
+              <dt class="label-caps">{{ $t('analytics_ui.margin') }}</dt>
               <dd class="font-semibold">{{ percent(r.margin) }}</dd>
             </div>
           </dl>
           <LazyVMeter
             :value="Math.min(100, (r.daysLeft / 45) * 100)"
             :tone="velocityMeta[r.status].tone"
-            :label="`Stock buffer for ${r.name}`"
+            :label="$t('analytics_ui.stock_buffer_for', { name: r.name })"
           />
           <p class="meta">
-            {{ r.daysLeft >= 365 ? "365+" : r.daysLeft }} days buffer ·
-            {{ r.perDay }} units/day
+            {{ $t('analytics_ui.days_buffer_long', { days: r.daysLeft >= 365 ? "365+" : r.daysLeft }) }} ·
+            {{ $t('analytics_ui.units_per_day', { n: r.perDay }) }}
           </p>
         </li>
       </ul>
@@ -234,8 +233,12 @@
       class="flex flex-wrap items-center justify-between gap-3 border-t border-line p-4 sm:px-5"
     >
       <p class="font-mono text-2xs text-mute">
-        Aggregated on this page: {{ number(data?.totalUnits ?? 0) }} units ·
-        {{ currency(data?.totalRevenue ?? 0, { maximumFractionDigits: 0 }) }}
+        {{
+          $t('analytics_ui.aggregated_on_page', {
+            units: number(data?.totalUnits ?? 0),
+            revenue: currency(data?.totalRevenue ?? 0, { maximumFractionDigits: 0 }),
+          })
+        }}
       </p>
       <LazyVPagination
         v-model:page="page"
@@ -243,7 +246,7 @@
         :total="data?.total ?? 0"
         :per-page-options="[5, 10, 25]"
         show-per-page
-        item-label="SKUs"
+        :item-label="$t('analytics_ui.sku_items')"
       />
     </div>
   </LazyVPanel>
@@ -263,7 +266,15 @@ const props = defineProps<{
   period: Pick<AnalyticsQuery, "range" | "from" | "to">;
 }>();
 
+const { t } = useI18n();
 const { number, currency, percent } = useFormatters();
+
+const velocityLabel = computed(() => ({
+  restock: t("analytics_ui.velocity_restock"),
+  low: t("analytics_ui.velocity_low"),
+  optimal: t("analytics_ui.velocity_optimal"),
+  healthy: t("analytics_ui.velocity_healthy"),
+}));
 
 const q = ref("");
 const category = ref<"all" | ProductCategory>("all");

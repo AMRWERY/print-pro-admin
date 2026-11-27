@@ -2,8 +2,8 @@
   <settings-section
     id="payments"
     number="05"
-    title="Payment methods & approvals"
-    description="How customers pay, and the point above which a payment is held until the goods are confirmed."
+    :title="$t('settings_ui.payments_title')"
+    :description="$t('settings_ui.payments_desc')"
     :changed="changed.includes('payments')"
   >
     <!-- Bank wire -->
@@ -12,20 +12,20 @@
         <div class="min-w-0">
           <p class="flex items-center gap-2 text-sm font-semibold">
             <Icon name="lucide:landmark" size="16" class="text-accent" aria-hidden="true" />
-            Bank transfer
+            {{ $t('settings_ui.bank_transfer') }}
           </p>
           <p class="meta mt-0.5">
-            Customers send funds to this account; the order is confirmed once the transfer arrives.
+            {{ $t('settings_ui.bank_transfer_desc') }}
           </p>
         </div>
-        <LazyVSwitch v-model="s.payments.wireEnabled" label="Accept bank transfers" />
+        <LazyVSwitch v-model="s.payments.wireEnabled" :label="$t('settings_ui.bank_transfers')" />
       </div>
 
       <div v-if="s.payments.wireEnabled" class="mt-4 grid gap-4 md:grid-cols-2">
         <LazyVInput
           v-model="s.payments.bankName"
           name="bankName"
-          label="Bank"
+          :label="$t('settings_ui.bank')"
           optional
           maxlength="80"
         />
@@ -33,16 +33,16 @@
           v-model="s.payments.approvalLimit"
           name="approvalLimit"
           type="number"
-          label="Two-approver limit"
+          :label="$t('settings_ui.two_approver_limit')"
           required
           rules="required|min_value:0"
           min="0"
-          hint="Refunds and payouts above this need two approvers."
+          :hint="$t('settings_ui.two_approver_hint')"
         />
         <LazyVInput
           v-model="s.payments.iban"
           name="iban"
-          label="IBAN"
+          :label="$t('settings_ui.iban')"
           required
           :rules="ibanRule(() => s.payments.wireEnabled)"
           maxlength="42"
@@ -52,7 +52,7 @@
         <LazyVInput
           v-model="s.payments.bic"
           name="bic"
-          label="BIC / SWIFT"
+          :label="$t('settings_ui.bic_swift')"
           required
           :rules="bicRule(() => s.payments.wireEnabled)"
           maxlength="11"
@@ -68,15 +68,15 @@
         <div class="min-w-0">
           <p class="flex items-center gap-2 text-sm font-semibold">
             <Icon name="lucide:credit-card" size="16" class="text-accent" aria-hidden="true" />
-            Card & wallet payments
+            {{ $t('settings_ui.card_wallet') }}
           </p>
-          <p class="meta mt-0.5">Instant payment for smaller baskets.</p>
+          <p class="meta mt-0.5">{{ $t('settings_ui.card_wallet_desc') }}</p>
         </div>
-        <LazyVSwitch v-model="s.payments.cardEnabled" label="Accept card payments" />
+        <LazyVSwitch v-model="s.payments.cardEnabled" :label="$t('settings_ui.accept_cards')" />
       </div>
 
       <fieldset v-if="s.payments.cardEnabled" class="mt-4">
-        <legend class="label">Accepted methods</legend>
+        <legend class="label">{{ $t('settings_ui.accepted_methods') }}</legend>
         <div class="mt-1.5 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
           <LazyVCheckboxImput
             v-for="m in cardMethodOptions"
@@ -92,34 +92,34 @@
         </div>
         <p v-if="!s.payments.cardMethods.length" class="callout-accent mt-2" role="alert">
           <Icon name="lucide:circle-alert" size="16" class="bullet-icon" aria-hidden="true" />
-          Choose at least one method, or customers can't pay by card.
+          {{ $t('settings_ui.card_method_required') }}
         </p>
       </fieldset>
     </div>
 
     <p v-if="!s.payments.wireEnabled && !s.payments.cardEnabled" class="callout-accent" role="alert">
       <Icon name="lucide:circle-alert" size="16" class="bullet-icon" aria-hidden="true" />
-      Both payment options are off. Customers won't be able to check out.
+      {{ $t('settings_ui.payments_both_off') }}
     </p>
 
     <LazyVInput
       v-model="s.payments.holdThreshold"
       name="holdThreshold"
       type="number"
-      label="Payment hold threshold"
+      :label="$t('settings_ui.hold_threshold')"
       required
       rules="required|min_value:0"
       min="0"
       class="md:max-w-sm"
-      hint="Orders above this value are held until the transfer is confirmed."
+      :hint="$t('settings_ui.hold_threshold_hint')"
     />
   </settings-section>
 
   <settings-section
     id="shipping"
     number="06"
-    title="Shipping & delivery"
-    description="Couriers offered at checkout, the default delivery service and when delivery becomes free."
+    :title="$t('settings_ui.shipping_title')"
+    :description="$t('settings_ui.shipping_desc')"
     :changed="changed.includes('shipping')"
   >
     <ul class="grid gap-3 lg:grid-cols-3">
@@ -131,14 +131,14 @@
       >
         <div class="flex items-start justify-between gap-3">
           <p class="text-sm font-semibold">{{ c.name }}</p>
-          <LazyVSwitch v-model="c.enabled" :label="`Offer ${c.name}`" />
+          <LazyVSwitch v-model="c.enabled" :label="$t('settings_ui.offer_carrier', { name: c.name })" />
         </div>
         <p class="meta">{{ c.description }}</p>
         <LazyVInput
           v-model="c.fee"
           :name="`carrierFee${i}`"
           type="number"
-          label="Base fee per delivery"
+          :label="$t('settings_ui.base_fee')"
           required
           rules="required|min_value:0"
           min="0"
@@ -148,7 +148,7 @@
     </ul>
 
     <fieldset>
-      <legend class="label">Default delivery service</legend>
+      <legend class="label">{{ $t('settings_ui.default_service') }}</legend>
       <div class="mt-1.5 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
         <LazyVRadioInput
           v-for="t in escortOptions"
@@ -168,7 +168,7 @@
       v-model="s.shipping.freeThreshold"
       name="freeThreshold"
       type="number"
-      label="Free delivery above basket value"
+      :label="$t('settings_ui.free_above')"
       required
       rules="required|min_value:0"
       min="0"
@@ -179,8 +179,8 @@
   <settings-section
     id="orders"
     number="07"
-    title="Order processing & grace rules"
-    description="Numbering, how long customers can cancel, and the limits for unverified customers."
+    :title="$t('settings_ui.orders_title')"
+    :description="$t('settings_ui.orders_desc')"
     :changed="changed.includes('orders')"
   >
     <!-- Each field spans three shared rows (label, input, hint), so inputs line up even when a label wraps. -->
@@ -189,20 +189,20 @@
         class="row-span-3 mb-4 grid grid-rows-subgrid"
         v-model="s.orders.prefix"
         name="orderPrefix"
-        label="Order number prefix"
+        :label="$t('settings_ui.order_prefix')"
         required
         :rules="orderPrefixRule"
         maxlength="16"
         input-class="font-mono uppercase"
         dir="ltr"
-        :hint="`Next order: ${s.orders.prefix.toUpperCase()}0001`"
+        :hint="$t('settings_ui.next_order', { number: `${s.orders.prefix.toUpperCase()}0001` })"
       />
       <LazyVInput
         class="row-span-3 mb-4 grid grid-rows-subgrid"
         v-model="s.orders.graceMinutes"
         name="graceMinutes"
         type="number"
-        label="Cancellation grace (minutes)"
+        :label="$t('settings_ui.cancel_grace')"
         required
         rules="required|integer|min_value:0|max_value:1440"
         min="0"
@@ -213,7 +213,7 @@
         v-model="s.orders.paymentWindowHours"
         name="paymentWindowHours"
         type="number"
-        label="Payment window (hours)"
+        :label="$t('settings_ui.payment_window')"
         required
         rules="required|integer|min_value:1|max_value:720"
         min="1"
@@ -224,11 +224,11 @@
         v-model="s.orders.maxUnverified"
         name="maxUnverified"
         type="number"
-        label="Max unverified order value"
+        :label="$t('settings_ui.max_unverified')"
         required
         rules="required|min_value:0"
         min="0"
-        hint="Above this, the customer must verify first."
+        :hint="$t('settings_ui.max_unverified_hint')"
       />
     </div>
   </settings-section>

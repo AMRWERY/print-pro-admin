@@ -1,11 +1,7 @@
 <template>
   <LazyVPanel
-    :title="category ? 'Category inspector' : 'New category'"
-    :subtitle="
-      category
-        ? `${category.code}`
-        : 'Top-level category'
-    "
+    :title="category ? $t('categories_ui.inspector_title') : $t('categories_ui.inspector_create_title')"
+    :subtitle="category ? category.code : $t('categories_ui.top_level')"
     :icon="category ? 'lucide:folder-tree' : 'lucide:folder-plus'"
   >
     <template #actions>
@@ -13,7 +9,8 @@
         variant="icon"
         size="sm"
         icon="lucide:x"
-        aria-label="Close inspector"
+        :aria-label="$t('common_ui.close_inspector')"
+        data-close-btn
         @click="emit('close')"
       />
     </template>
@@ -27,7 +24,7 @@
       <LazyVInput
         v-model="form.name"
         name="catName"
-        label="Category name"
+        :label="$t('categories_ui.cat_name')"
         required
         rules="required|min:2|max:80"
         maxlength="80"
@@ -36,11 +33,11 @@
       <LazyVInput
         v-model="form.slug"
         name="catSlug"
-        label="Canonical URL slug"
+        :label="$t('categories_ui.cat_slug')"
         required
         rules="required|min:2|max:120"
         input-class="font-mono"
-        hint="Lowercase letters, numbers, dashes and slashes."
+        :hint="$t('categories_ui.cat_slug_hint')"
         @update:model-value="slugTouched = true"
       />
 
@@ -48,35 +45,37 @@
         v-if="!category"
         v-model="form.key"
         name="catKey"
-        label="Key"
+        :label="$t('categories_ui.cat_key')"
         optional
         input-class="font-mono"
         maxlength="40"
-        hint="Used in links and reports. Letters, numbers and dashes. Leave empty to create it from the name. It cannot be changed later."
+        :hint="$t('categories_ui.cat_key_hint')"
       />
       <div v-else>
-        <p class="label">Key</p>
+        <p class="label">{{ $t('categories_ui.cat_key') }}</p>
         <p class="field mt-1.5 font-mono text-sm text-mute" dir="ltr">{{ category.key }}</p>
-        <p class="mt-1 text-xs text-mute">The key cannot be changed.</p>
+        <p class="mt-1 text-xs text-mute">
+          {{ $t('categories_ui.cat_key_locked') }}
+        </p>
       </div>
 
       <LazyVSelectInput
         v-if="!category"
         v-model="form.kind"
         name="catKind"
-        label="Behaves like"
+        :label="$t('categories_ui.cat_behaves_like')"
         :options="kindOptions"
-        hint="Decides which specifications and filters its products get on the shop. It cannot be changed later."
+        :hint="$t('categories_ui.cat_behaves_hint')"
       />
       <div v-else>
-        <p class="label">Behaves like</p>
+        <p class="label">{{ $t('categories_ui.cat_behaves_like') }}</p>
         <p class="field mt-1.5 text-sm text-mute">{{ kindLabel }}</p>
       </div>
 
       <LazyVSelectInput
         v-model="form.visibility"
         name="catVisibility"
-        label="Storefront visibility"
+        :label="$t('categories_ui.cat_visibility')"
         :options="visibilityOptions"
       />
 
@@ -84,7 +83,7 @@
         <LazyVTextarea
           v-model="form.abstract"
           name="catAbstract"
-          label="Description"
+          :label="$t('common_ui.description')"
           optional
           rows="4"
           maxlength="400"
@@ -95,34 +94,36 @@
       </div>
 
       <fieldset class="space-y-3 rounded-card border border-line bg-ink p-3">
-        <legend class="label-caps px-1">Storefront & megamenu flags</legend>
+        <legend class="label-caps px-1">
+          {{ $t('categories_ui.flags_legend') }}
+        </legend>
         <div class="flex items-center justify-between gap-3 text-sm">
-          <span id="flag-index">Storefront public indexing</span>
+          <span id="flag-index">{{ $t('categories_ui.flag_indexing') }}</span>
           <LazyVSwitch
             v-model="form.publicIndexing"
-            label="Storefront public indexing"
+            :label="$t('categories_ui.flag_indexing')"
           />
         </div>
 
         <div class="flex items-center justify-between gap-3 text-sm">
-          <span>Feature on nav megamenu</span>
+          <span>{{ $t('categories_ui.flag_megamenu') }}</span>
           <LazyVSwitch
             v-model="form.megamenu"
-            label="Feature on nav megamenu"
+            :label="$t('categories_ui.flag_megamenu')"
           />
         </div>
 
         <LazyVSelectInput
           v-model="form.facetRank"
           name="catFacet"
-          label="Filter facet priority"
+          :label="$t('categories_ui.facet_priority')"
           :options="facetOptions"
         />
 
         <LazyVSelectInput
           v-model="form.defaultSort"
           name="catSort"
-          label="Default storefront sort"
+          :label="$t('categories_ui.default_sort')"
           :options="sortOptions"
         />
       </fieldset>
@@ -131,17 +132,19 @@
         <figcaption
           class="mb-1 flex items-center justify-between font-mono text-2xs uppercase text-mute"
         >
-          <span>SERP preview</span>
-          <span class="tabular-nums">{{ form.abstract.length }}/160 chars</span>
+          <span>{{ $t('categories_ui.serp_preview') }}</span>
+          <span class="tabular-nums">{{
+            $t('categories_ui.serp_chars', { count: form.abstract.length, max: 160 })
+          }}</span>
         </figcaption>
         <p class="truncate text-base font-medium text-cyan">
-          {{ form.name || "Category name" }}
+          {{ form.name || $t('categories_ui.cat_name') }}
         </p>
         <p class="truncate font-mono text-2xs text-mute" dir="ltr">
           https://printpro.com{{ form.slug }}
         </p>
         <p class="mt-1 line-clamp-2 text-xs text-mute">
-          {{ form.abstract || "The abstract appears here." }}
+          {{ form.abstract || $t('categories_ui.serp_abstract_fallback') }}
         </p>
       </figure>
 
@@ -166,7 +169,7 @@
         class="!text-accent"
         :disabled="saving"
         @click="emit('remove')"
-        >Delete node</LazyVButton
+        >{{ $t('categories_ui.delete_node') }}</LazyVButton
       >
 
       <span v-else />
@@ -176,7 +179,7 @@
         form="category-form"
         :loading="saving"
         icon="lucide:save"
-        >{{ category ? "Save changes" : "Create category" }}</LazyVButton
+        >{{ category ? $t("btn.save_changes") : $t("categories_ui.create_category") }}</LazyVButton
       >
     </div>
   </LazyVPanel>
@@ -214,15 +217,17 @@ const slugify = (s: string) =>
     .replace(/^-+|-+$/g, "")
     .slice(0, 60);
 
-const c = props.category;
-const kindOptions = [
-  { value: "general", label: "General (no technical filters)" },
-  { value: "printer", label: "Printers" },
-  { value: "copier", label: "Photocopiers" },
-  { value: "supply", label: "Ink & toner" },
-];
+const { t } = useI18n();
 
-const kindLabel = computed(() => kindOptions.find((k) => k.value === props.category?.kind)?.label ?? "");
+const c = props.category;
+const kindOptions = computed(() => [
+  { value: "general", label: t("categories_ui.kind_general") },
+  { value: "printer", label: t("categories_ui.kind_printer") },
+  { value: "copier", label: t("categories_ui.kind_copier") },
+  { value: "supply", label: t("categories_ui.kind_supply") },
+]);
+
+const kindLabel = computed(() => kindOptions.value.find((k) => k.value === props.category?.kind)?.label ?? "");
 
 const form = reactive<CategoryInput>({
   key: "",

@@ -20,7 +20,7 @@
           :label="$t('orders_ui.kpi_total_orders')"
           icon="lucide:archive"
           :value="number(data.kpis.totalOrders)"
-          hint="All-time order count"
+          :hint="$t('orders_ui.kpi_total_orders_hint')"
         >
           <template #value>
             {{ number(data.kpis.totalOrders) }}
@@ -37,7 +37,7 @@
           :label="$t('orders_ui.kpi_total_volume')"
           icon="lucide:landmark"
           :value="currency(data.kpis.volume, { maximumFractionDigits: 0 })"
-          hint="Rolling 30-day custodial value"
+          :hint="$t('orders_ui.kpi_volume_hint')"
         />
       </li>
 
@@ -50,7 +50,7 @@
           :value="
             currency(data.kpis.pendingPayment, { maximumFractionDigits: 0 })
           "
-          hint="Orders held until payment arrives"
+          :hint="$t('orders_ui.kpi_awaiting_hint')"
         >
           <p class="font-mono text-2xs text-mute">
             {{ number(data.counts.awaitingPayment) }} {{ $t('orders_ui.title') }}
@@ -63,7 +63,7 @@
           size="lg"
           :label="$t('orders_ui.kpi_dispatched')"
           icon="lucide:truck"
-          hint="High-security courier network"
+          :hint="$t('orders_ui.kpi_dispatched_hint')"
         >
           <template #value>
             {{ number(data.counts.inTransit) }}
@@ -80,12 +80,12 @@
           tone="accent"
           :label="$t('orders_ui.kpi_testing_packing')"
           icon="lucide:shield-alert"
-          hint="Waiting on tests or customer details"
+          :hint="$t('orders_ui.kpi_testing_hint')"
         >
           <template #value>
             {{ data.kpis.onHold }}
             <LazyVStatusBadge tone="accent" icon="lucide:triangle-alert"
-              >Flagged</LazyVStatusBadge
+              >{{ $t('orders_ui.flagged') }}</LazyVStatusBadge
             >
           </template>
         </LazyVStatCard>

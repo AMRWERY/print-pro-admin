@@ -37,13 +37,13 @@
           <p class="meta">{{ detail.org }}</p>
           <p class="mt-1.5 flex flex-wrap items-center gap-1.5">
             <LazyVStatusBadge :tone="tierMeta[detail.tier].tone">{{
-              tierMeta[detail.tier].label
+              tierLabel[detail.tier]
             }}</LazyVStatusBadge>
 
             <LazyVStatusBadge
               :tone="statusMeta[detail.status].tone"
               :icon="statusMeta[detail.status].icon"
-              >{{ statusMeta[detail.status].label }}</LazyVStatusBadge
+              >{{ statusLabel[detail.status] }}</LazyVStatusBadge
             >
           </p>
         </div>
@@ -73,7 +73,7 @@
           </dd>
         </div>
         <div class="rounded-card border border-line bg-ink p-3">
-          <dt class="label-caps">On-time payment rating</dt>
+          <dt class="label-caps">{{ $t('customers_ui.on_time_payment_rating') }}</dt>
           <dd class="font-display text-lg font-bold tabular-nums text-success">
             {{ percent(detail.paymentRating) }}
           </dd>
@@ -101,21 +101,21 @@
           <div>
             <dt class="label-caps">{{ $t('customers_ui.direct_line') }}</dt>
             <dd class="font-mono text-xs" dir="ltr">
-              {{ detail.phone || "Not provided" }}
+              {{ detail.phone || $t('customers_ui.not_provided') }}
             </dd>
           </div>
           <div>
             <dt class="label-caps">{{ $t('customers_ui.billing_address') }}</dt>
-            <dd class="text-xs">{{ detail.deliveryAddress || "Not provided" }}</dd>
+            <dd class="text-xs">{{ detail.deliveryAddress || $t('customers_ui.not_provided') }}</dd>
           </div>
           <div>
             <dt class="label-caps">{{ $t('customers_ui.tax_id') }}</dt>
             <dd class="font-mono text-xs" dir="ltr">
-              {{ detail.taxId || "Not provided" }}
+              {{ detail.taxId || $t('customers_ui.not_provided') }}
             </dd>
           </div>
           <div>
-            <dt class="label-caps">Payment terms</dt>
+            <dt class="label-caps">{{ $t('customers_ui.payment_terms') }}</dt>
             <dd class="text-xs">{{ detail.paymentTerms }}</dd>
           </div>
         </dl>
@@ -136,7 +136,7 @@
           v-if="!detail.recentOrders.length"
           class="rounded-card border border-dashed border-line p-3 text-sm text-mute"
         >
-          No orders yet for this customer.
+          {{ $t('customers_ui.no_orders_yet') }}
         </p>
         <ul class="space-y-2">
           <li v-for="o in detail.recentOrders" :key="o.id">
@@ -187,7 +187,7 @@
           <LazyVButton
             variant="icon"
             icon="lucide:trash-2"
-            :aria-label="`Delete ${detail.name}`"
+            :aria-label="$t('customers_ui.delete_customer_aria', { name: detail.name })"
             class="hover:!border-accent hover:!text-accent"
             @click="emit('remove', detail)"
           />
@@ -200,7 +200,12 @@
 <script lang="ts" setup>
 import { statusMeta, tierMeta } from "~/data/customer-meta";
 import type { OrderNote } from "~/types/admin/orders";
-import type { Customer, CustomerDetail } from "~/types/admin/customers";
+import type {
+  Customer,
+  CustomerDetail,
+  CustomerStatus,
+  CustomerTier,
+} from "~/types/admin/customers";
 
 const props = defineProps<{ id: string }>();
 
@@ -211,8 +216,20 @@ const emit = defineEmits<{
   changed: [];
 }>();
 
+const { t } = useI18n();
 const { number, currency, percent } = useFormatters();
 const toast = useToast();
+
+const tierLabel = computed<Record<CustomerTier, string>>(() => ({
+  AAA: t("customers_ui.tier_aaa"),
+  AA: t("customers_ui.tier_aa"),
+  A: t("customers_ui.tier_a"),
+}));
+const statusLabel = computed<Record<CustomerStatus, string>>(() => ({
+  active: t("customers_ui.status_active"),
+  audit: t("customers_ui.status_audit"),
+  dormant: t("customers_ui.status_dormant"),
+}));
 
 const store = useCustomersStore();
 const { detail, detailError: error } = storeToRefs(store);
@@ -238,10 +255,10 @@ const addNote = async (payload: { text: string; urgent: boolean }) => {
   try {
     await store.addNote(props.id, payload);
     notesRef.value?.reset();
-    toast.success("Note saved");
+    toast.success(t("customers_ui.toast_note_saved"));
   } catch {
-    toast.error("Couldn't save the note", {
-      description: "Your text is kept. Try again.",
+    toast.error(t("customers_ui.toast_note_error"), {
+      description: t("customers_ui.toast_note_error_desc"),
     });
   } finally {
     saving.value = false;
@@ -254,10 +271,10 @@ const print = async () => {
   printing.value = true;
   try {
     await downloadCustomerPdf(detail.value);
-    toast.success("Customer PDF downloaded");
+    toast.success(t("customers_ui.toast_pdf_downloaded"));
   } catch {
-    toast.error("Couldn't create the PDF", {
-      description: "Try again in a moment.",
+    toast.error(t("customers_ui.toast_pdf_error"), {
+      description: t("customers_ui.try_again_moment"),
     });
   } finally {
     printing.value = false;

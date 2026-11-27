@@ -20,7 +20,7 @@ export const downloadTablePdf = async (t: TableExport) => {
   doc.setFont("helvetica", "bold").setFontSize(16).text(t.title, margin, 42);
   doc.setFont("helvetica", "normal").setFontSize(9).setTextColor(110);
   doc.text(
-    [t.subtitle, `Generated ${new Date().toISOString().slice(0, 16).replace("T", " ")} UTC`]
+    [t.subtitle, tr("common_ui.exp_generated_at", { time: new Date().toISOString().slice(0, 16).replace("T", " ") })]
       .filter(Boolean)
       .join("  |  "),
     margin,
@@ -40,7 +40,7 @@ export const downloadTablePdf = async (t: TableExport) => {
     didDrawPage: () => {
       doc.setFontSize(8).setTextColor(130);
       doc.text(
-        `Page ${doc.getNumberOfPages()}`,
+        tr("common_ui.page_n", { n: doc.getNumberOfPages() }),
         doc.internal.pageSize.getWidth() - margin,
         doc.internal.pageSize.getHeight() - 18,
         { align: "right" },

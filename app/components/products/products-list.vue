@@ -4,14 +4,14 @@
     <div v-if="view === 'ledger'" class="hidden overflow-x-auto lg:block">
       <table class="w-full min-w-[1000px] text-sm">
         <caption class="sr-only">
-          Product register
+          {{ $t('products_ui.product_register') }}
         </caption>
         <thead>
           <tr class="border-y border-line bg-ink">
             <th scope="col" class="w-10 px-4 py-3">
               <LazyVCheckboxImput
                 name="pickAll"
-                label="Select all products on this page"
+                :label="$t('products_ui.select_all_products')"
                 hide-label
                 size="sm"
                 :model-value="allSelected"
@@ -21,25 +21,25 @@
               />
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Product
+              {{ $t('products_ui.product') }}
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              SKU
+              {{ $t('products_ui.col_sku') }}
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Category &amp; make
+              {{ $t('products_ui.category_make') }}
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-end font-normal">
-              Unit price (EGP)
+              {{ $t('products_ui.unit_price_egp') }}
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Stock reserves
+              {{ $t('products_ui.stock_reserves') }}
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Status
+              {{ $t('products_ui.col_status') }}
             </th>
             <th scope="col" class="px-4 py-3">
-              <span class="sr-only">Actions</span>
+              <span class="sr-only">{{ $t('common_ui.actions') }}</span>
             </th>
           </tr>
         </thead>
@@ -86,7 +86,7 @@
             <td class="px-4 py-3.5">
               <LazyVCheckboxImput
                 :name="`pick-${p.id}`"
-                :label="`Select ${p.name}`"
+                :label="$t('products_ui.select_product', { name: p.name })"
                 hide-label
                 size="sm"
                 :model-value="selected.includes(p.id)"
@@ -132,17 +132,14 @@
               <p
                 class="flex items-center justify-between gap-2 font-mono text-xs tabular-nums"
               >
-                <span
-                  >{{ p.stock }} {{ p.unit
-                  }}{{ p.stock === 1 ? "" : "s" }}</span
-                >
-                <span class="text-mute">Min {{ p.min }}</span>
+                <span>{{ qty(p) }}</span>
+                <span class="text-mute">{{ $t('products_ui.min_value', { n: p.min }) }}</span>
               </p>
               <LazyVMeter
                 class="my-1.5"
                 :value="(p.stock / (p.min * 4)) * 100"
                 :tone="stockMeta[stockStateOf(p)].tone"
-                :label="`Stock level for ${p.name}`"
+                :label="$t('products_ui.stock_level_for', { name: p.name })"
               />
 
               <LazyVStatusBadge
@@ -160,7 +157,7 @@
             </td>
             <td class="px-4 py-3.5 text-end">
               <LazyVRowActions
-                :label="`Actions for ${p.name}`"
+                :label="$t('products_ui.actions_for', { name: p.name })"
                 duplicate
                 @edit="emit('edit', p)"
                 @duplicate="emit('duplicate', p)"
@@ -208,6 +205,7 @@ import {
 } from "~/data/product-meta";
 import type { Product } from "~/types/admin/products";
 
+const { t } = useI18n();
 const categories = useCategories();
 
 const props = defineProps<{
@@ -233,6 +231,9 @@ const allSelected = computed(
     props.rows.length > 0 &&
     props.rows.every((r) => selected.value.includes(r.id)),
 );
+
+const qty = (p: Product) =>
+  t(`products_ui.qty_${p.unit}_${p.stock === 1 ? "one" : "other"}`, { count: p.stock });
 
 const toggle = (id: string) => {
   selected.value = selected.value.includes(id)

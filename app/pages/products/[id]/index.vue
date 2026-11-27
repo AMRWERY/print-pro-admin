@@ -4,7 +4,7 @@
     icon="lucide:search-x"
     :title="$t('products_ui.product_not_found')"
     :description="$t('products_ui.product_not_found_desc')"
-    eyebrow="REGISTER :: NOT_FOUND"
+    :eyebrow="$t('products_ui.eyebrow_not_found')"
     tag="404"
     tag-tone="accent"
   >

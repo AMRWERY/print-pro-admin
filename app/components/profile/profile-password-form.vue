@@ -1,7 +1,7 @@
 <template>
   <LazyVPanel
-    title="Password"
-    subtitle="Use a long, unique password. You stay signed in on this device."
+    :title="$t('auth_ui.password_label')"
+    :subtitle="$t('profile_ui.password_subtitle')"
     icon="lucide:lock"
   >
     <form class="space-y-4" novalidate @submit.prevent="submit">
@@ -9,7 +9,7 @@
         v-model="form.current"
         name="currentPassword"
         type="password"
-        label="Current password"
+        :label="$t('profile_ui.current_password')"
         required
         revealable
         rules="required"
@@ -22,7 +22,7 @@
           v-model="form.next"
           name="newPassword"
           type="password"
-          label="New password"
+          :label="$t('profile_ui.new_password')"
           required
           revealable
           :rules="strongPasswordRule"
@@ -33,7 +33,7 @@
           v-model="form.confirm"
           name="confirmPassword"
           type="password"
-          label="Confirm new password"
+          :label="$t('profile_ui.confirm_new_password')"
           required
           revealable
           :rules="matchesRule(() => form.next)"
@@ -55,7 +55,7 @@
 
       <div class="flex justify-end border-t border-line pt-4">
         <LazyVButton type="submit" icon="lucide:key-round" :loading="saving"
-          >Update password</LazyVButton
+          >{{ $t('btn.update_password') }}</LazyVButton
         >
       </div>
     </form>
@@ -65,6 +65,7 @@
 <script lang="ts" setup>
 const auth = useAuthStore();
 const toast = useToast();
+const { t } = useI18n();
 
 const form = reactive({ current: "", next: "", confirm: "" });
 const error = ref("");
@@ -82,14 +83,16 @@ const submit = async () => {
   saving.value = false;
 
   if (!result.ok) {
-    error.value = "The current password is wrong. Check it and try again.";
-    toast.error("Password not changed", { description: "The current password is wrong." });
+    error.value = t('profile_ui.password_wrong_error');
+    toast.error(t('profile_ui.toast_password_not_changed'), {
+      description: t('profile_ui.toast_password_not_changed_desc'),
+    });
     return;
   }
   Object.assign(form, { current: "", next: "", confirm: "" });
   resetForm();
-  toast.success("Password updated", {
-    description: "Use the new password next time you sign in.",
+  toast.success(t('profile_ui.toast_password_updated'), {
+    description: t('profile_ui.toast_password_updated_desc'),
   });
 };
 </script>

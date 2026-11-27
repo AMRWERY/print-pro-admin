@@ -77,7 +77,7 @@
       <form
         class="min-w-0 space-y-4"
         novalidate
-        aria-label="System settings"
+        :aria-label="$t('settings_ui.system_settings')"
         @submit.prevent="save"
       >
         <p class="meta flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -94,22 +94,13 @@
 
         <settings-inventory v-model="form" :changed="changedKeys" />
 
-        <settings-system
-          v-model="form"
-          :changed="changedKeys"
-          :secret-last4="data?.secretLast4 ?? '----'"
-          :secret-rotated-at="data?.secretRotatedAt ?? ''"
-          :dns="data?.dns ?? []"
-          @rotate="rotateOpen = true"
-        />
-
         <!-- Save bar: stays at the bottom while there are unsaved edits -->
         <Transition name="savebar">
           <div
             v-if="dirty"
             class="sticky bottom-4 z-20 flex flex-wrap items-center justify-between gap-3 rounded-card border border-yellow/60 bg-surface p-3 shadow-lg sm:px-4"
             role="region"
-            aria-label="Unsaved changes"
+            :aria-label="$t('common_ui.unsaved_changes')"
           >
             <p class="flex items-center gap-2 text-sm" aria-live="polite">
               <Icon
@@ -144,37 +135,6 @@
       </form>
     </div>
 
-    <!-- Rotate secret -->
-    <LazyVDialog
-      v-model:open="rotateOpen"
-      :title="$t('settings_ui.rotate_secret_title')"
-      :description="$t('settings_ui.rotate_secret_desc')"
-    >
-      <p class="callout">
-        <Icon
-          name="lucide:triangle-alert"
-          size="14"
-          class="bullet-icon"
-          aria-hidden="true"
-        />
-        {{ $t('settings_ui.rotate_secret_body') }}
-      </p>
-      <template #footer>
-        <LazyVButton
-          variant="secondary"
-          :disabled="rotating"
-          @click="rotateOpen = false"
-          >{{ $t('btn.cancel') }}</LazyVButton
-        >
-
-        <LazyVButton
-          :loading="rotating"
-          icon="lucide:refresh-cw"
-          @click="rotateSecret"
-          >{{ $t('settings_ui.rotate_secret_btn') }}</LazyVButton
-        >
-      </template>
-    </LazyVDialog>
   </div>
 </template>
 
@@ -281,64 +241,60 @@ const discard = () => {
   toast.info(t('settings_ui.toast_discarded'));
 };
 
-// --- Webhook secret: rotating doesn't touch the other edits ---
-const rotateOpen = ref(false);
-const rotating = ref(false);
-const rotateSecret = async () => {
-  rotating.value = true;
-  try {
-    const res = await store.rotateSecret();
-    rotateOpen.value = false;
-    toast.success(t('settings_ui.toast_secret_rotated'), {
-      description: `The new secret ends in ${res.secretLast4}.`,
-    });
-  } catch {
-    toast.error(t('settings_ui.toast_secret_error'), {
-      description: t('settings_ui.toast_secret_error_desc'),
-    });
-  } finally {
-    rotating.value = false;
-  }
-};
-
 // --- Section navigation: the active link follows the scroll ---
 const active = ref(sectionList[0]!.id);
 const reduced = usePreferredReducedMotion();
 
+// A section the visitor clicked stays selected until they scroll by hand: a short last section can never reach the
+// top of the page, so the scroll position alone would pick the one before it.
+let pinned = false;
+
 const goTo = (id: string) => {
   active.value = id;
+  pinned = true;
   document.getElementById(id)?.scrollIntoView({
     behavior: reduced.value === "reduce" ? "auto" : "smooth",
     block: "start",
   });
 };
 
-let observer: IntersectionObserver | null = null;
-const watchSections = async () => {
-  await nextTick();
-  observer?.disconnect();
-  observer = new IntersectionObserver(
-    (entries) => {
-      const top = entries
-        .filter((e) => e.isIntersecting)
-        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-      if (top) active.value = top.target.id;
-    },
-    { rootMargin: "-96px 0px -65% 0px" },
-  );
+/** The current section: the last one whose top has passed a line near the top, or the last one at the page bottom. */
+const syncActive = () => {
+  if (pinned || !form.value) return;
+  const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+  if (atBottom) {
+    active.value = sectionList[sectionList.length - 1]!.id;
+    return;
+  }
+  const line = 96 + window.innerHeight * 0.25;
+  let current = sectionList[0]!.id;
   for (const s of sectionList) {
     const el = document.getElementById(s.id);
-    if (el) observer.observe(el);
+    if (el && el.getBoundingClientRect().top <= line) current = s.id;
   }
+  active.value = current;
 };
+if (import.meta.client) {
+  useEventListener(window, "scroll", syncActive, { passive: true });
+  // Scrolling by hand (wheel, touch or keys) hands control back to the scroll position.
+  const release = () => {
+    pinned = false;
+  };
+  useEventListener(window, "wheel", release, { passive: true });
+  useEventListener(window, "touchmove", release, { passive: true });
+  useEventListener(window, "keydown", (e: KeyboardEvent) => {
+    if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "].includes(e.key)) release();
+  });
+}
 watch(
   () => !!form.value,
-  (ready) => {
-    if (ready && import.meta.client) watchSections();
+  async (ready) => {
+    if (!ready) return;
+    await nextTick();
+    syncActive();
   },
   { immediate: true, flush: "post" },
 );
-onBeforeUnmount(() => observer?.disconnect());
 
 // --- Don't lose unsaved edits by leaving ---
 onBeforeRouteLeave(() => {
@@ -364,8 +320,8 @@ const flatten = (value: unknown, path: string, out: [string, string][]) => {
         ? value.join(", ")
         : typeof value === "boolean"
           ? value
-            ? "On"
-            : "Off"
+            ? t('settings_ui.value_on')
+            : t('settings_ui.value_off')
           : String(value ?? ""),
     ]);
   }
@@ -383,13 +339,20 @@ const exportSettings = async (format: "pdf" | "excel") => {
   }
   try {
     await downloadTable(format, {
-      title: "System settings",
-      subtitle: `${body.length} values · saved ${savedLabel.value}`,
+      title: t('settings_ui.system_settings'),
+      subtitle: t('settings_ui.export_subtitle', {
+        count: body.length,
+        time: savedLabel.value,
+      }),
       fileName: `system-settings-${new Date().toISOString().slice(0, 10)}`,
-      head: ["Section", "Setting", "Value"],
+      head: [
+        t('settings_ui.export_col_section'),
+        t('settings_ui.export_col_setting'),
+        t('settings_ui.export_col_value'),
+      ],
       body,
     });
-    toast.success("Settings exported");
+    toast.success(t('settings_ui.toast_exported'));
   } catch {
     toast.error(t('settings_ui.toast_export_error'), {
       description: t('common_ui.try_again'),

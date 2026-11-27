@@ -3,7 +3,7 @@
     <a
       href="#main"
       class="sr-only focus:not-sr-only focus:fixed focus:start-3 focus:top-3 focus:z-50 focus:rounded-control focus:bg-accent focus:px-4 focus:py-2 focus:text-onaccent"
-      >Skip to content</a
+      >{{ $t("layout_ui.skip_to_content") }}</a
     >
     <sidebar v-model:open="navOpen" />
     <!-- Outside the sticky header: its backdrop blur would trap a fixed panel inside it. -->

@@ -1,11 +1,11 @@
 <template>
   <LazyVPanel
-    title="Gross revenue vs cash collected"
-    subtitle="Current period compared with the previous one, interval by interval"
+    :title="$t('analytics_ui.revenue_chart_title')"
+    :subtitle="$t('analytics_ui.revenue_chart_subtitle')"
     icon="lucide:chart-line"
   >
     <template #actions>
-      <div role="group" aria-label="Series" class="flex flex-wrap gap-1.5">
+      <div role="group" :aria-label="$t('analytics_ui.series_label')" class="flex flex-wrap gap-1.5">
         <button
           v-for="s in toggles"
           :key="s.key"
@@ -24,7 +24,7 @@
             :class="s.dot"
             aria-hidden="true"
           />
-          {{ s.label }}
+          {{ toggleLabel[s.key] }}
         </button>
       </div>
     </template>
@@ -33,7 +33,7 @@
 
     <LazyVErrorBanner
       v-else-if="error"
-      message="The revenue chart could not be loaded."
+      :message="$t('analytics_ui.revenue_chart_error')"
       @retry="emit('retry')"
     />
 
@@ -44,7 +44,7 @@
         dir="ltr"
         tabindex="0"
         role="group"
-        aria-label="Revenue chart. Use the left and right arrow keys to inspect each interval."
+        :aria-label="$t('analytics_ui.chart_aria')"
         @keydown="onKey"
         @pointerleave="active = peakIndex"
       >
@@ -163,29 +163,32 @@
           <p class="font-bold text-paper">
             {{ label(active)
             }}<span v-if="active === peakIndex" class="text-yellow">
-              · peak</span
+              · {{ $t('analytics_ui.peak') }}</span
             >
           </p>
           <p class="text-accent">
-            Revenue {{ compactCurrency(series[active]!.revenue) }}
+            {{ $t('analytics_ui.tooltip_revenue', { value: compactCurrency(series[active]!.revenue) }) }}
           </p>
           <p class="text-mute">
-            Previous {{ compactCurrency(series[active]!.prior) }}
+            {{ $t('analytics_ui.tooltip_previous', { value: compactCurrency(series[active]!.prior) }) }}
           </p>
           <p v-if="visible.collected" class="text-yellow">
-            Collected {{ compactCurrency(series[active]!.collected) }}
+            {{ $t('analytics_ui.tooltip_collected', { value: compactCurrency(series[active]!.collected) }) }}
           </p>
           <p v-if="visible.margin" class="text-cyan">
-            Margin {{ compactCurrency(series[active]!.margin) }}
+            {{ $t('analytics_ui.margin_value', { value: compactCurrency(series[active]!.margin) }) }}
           </p>
         </div>
       </div>
 
       <p class="sr-only" aria-live="polite">
-        {{ label(active) }}: revenue
-        {{ currency(series[active]!.revenue, { maximumFractionDigits: 0 }) }},
-        previous period
-        {{ currency(series[active]!.prior, { maximumFractionDigits: 0 }) }}.
+        {{
+          $t('analytics_ui.chart_point_summary', {
+            label: label(active),
+            revenue: currency(series[active]!.revenue, { maximumFractionDigits: 0 }),
+            previous: currency(series[active]!.prior, { maximumFractionDigits: 0 }),
+          })
+        }}
       </p>
 
       <dl
@@ -193,19 +196,19 @@
       >
         <div class="flex items-center gap-2">
           <span class="h-0.5 w-4 rounded-full bg-accent" aria-hidden="true" />
-          <dt>Current period</dt>
+          <dt>{{ $t('analytics_ui.current_period') }}</dt>
         </div>
         <div class="flex items-center gap-2">
           <span
             class="h-0 w-4 border-t border-dashed border-mute"
             aria-hidden="true"
           />
-          <dt>Previous period</dt>
+          <dt>{{ $t('analytics_ui.series_previous_period') }}</dt>
         </div>
         <div class="flex items-center gap-1.5">
-          <dt>Mean throughput</dt>
+          <dt>{{ $t('analytics_ui.mean_throughput') }}</dt>
           <dd class="font-semibold text-paper">
-            {{ compactCurrency(meanPerDay) }} / day
+            {{ $t('analytics_ui.per_day_value', { value: compactCurrency(meanPerDay) }) }}
           </dd>
         </div>
       </dl>
@@ -228,15 +231,21 @@ const props = defineProps<{
 
 const emit = defineEmits<{ retry: [] }>();
 
+const { t } = useI18n();
 const { currency, compactCurrency } = useFormatters();
 
 const fillId = `analytics-fill-${useId()}`;
 
 const toggles = [
-  { key: "revenue", label: "Gross revenue", dot: "bg-accent" },
-  { key: "margin", label: "Net margin", dot: "bg-cyan" },
-  { key: "collected", label: "Cash collected", dot: "bg-yellow" },
+  { key: "revenue", dot: "bg-accent" },
+  { key: "margin", dot: "bg-cyan" },
+  { key: "collected", dot: "bg-yellow" },
 ] as const;
+const toggleLabel = computed(() => ({
+  revenue: t("analytics_ui.gross_revenue"),
+  margin: t("analytics_ui.net_margin"),
+  collected: t("analytics_ui.cash_collected"),
+}));
 const visible = reactive({ revenue: true, margin: false, collected: false });
 
 const W = 760;

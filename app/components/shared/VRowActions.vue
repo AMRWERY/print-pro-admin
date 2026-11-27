@@ -21,7 +21,7 @@
       class="menu-item w-full"
       @click="emit('edit')"
     >
-      <span class="grid h-4 w-4 shrink-0 place-items-center" aria-hidden="true"><Icon name="lucide:pencil" size="16" /></span> Edit
+      <span class="grid h-4 w-4 shrink-0 place-items-center" aria-hidden="true"><Icon name="lucide:pencil" size="16" /></span> {{ $t("common_ui.edit") }}
     </button>
     <button
       v-if="duplicate"
@@ -30,7 +30,7 @@
       class="menu-item w-full"
       @click="emit('duplicate')"
     >
-      <span class="grid h-4 w-4 shrink-0 place-items-center" aria-hidden="true"><Icon name="lucide:copy" size="16" /></span> Duplicate
+      <span class="grid h-4 w-4 shrink-0 place-items-center" aria-hidden="true"><Icon name="lucide:copy" size="16" /></span> {{ $t("btn.duplicate") }}
     </button>
     <button
       v-if="remove"
@@ -39,7 +39,7 @@
       class="menu-item w-full text-accent"
       @click="emit('remove')"
     >
-      <span class="grid h-4 w-4 shrink-0 place-items-center" aria-hidden="true"><Icon name="lucide:trash-2" size="16" /></span> Delete
+      <span class="grid h-4 w-4 shrink-0 place-items-center" aria-hidden="true"><Icon name="lucide:trash-2" size="16" /></span> {{ $t("common_ui.delete") }}
     </button>
   </LazyVMenu>
 </template>

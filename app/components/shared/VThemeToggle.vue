@@ -2,7 +2,7 @@
   <LazyVButton
     variant="icon"
     class="overflow-hidden"
-    :aria-label="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
+    :aria-label="isDark ? $t('common_ui.switch_to_light_theme') : $t('common_ui.switch_to_dark_theme')"
     @click="onToggle"
   >
     <Transition name="icon-swap" mode="out-in">

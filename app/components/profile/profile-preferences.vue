@@ -1,22 +1,21 @@
 <template>
   <LazyVPanel
-    title="Preferences"
-    subtitle="Applied straight away"
+    :title="$t('profile_ui.preferences_title')"
+    :subtitle="$t('profile_ui.preferences_applied')"
     icon="lucide:sliders-horizontal"
   >
     <div class="space-y-5">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p class="text-sm font-medium">Appearance</p>
+          <p class="text-sm font-medium">{{ $t('profile_ui.appearance') }}</p>
           <p class="text-xs text-mute">
-            Dark is easier on the eyes at night. Light suits bright
-            offices.
+            {{ $t('profile_ui.appearance_hint') }}
           </p>
         </div>
 
         <LazyVSegmented
           v-model="appearance"
-          label="Appearance"
+          :label="$t('profile_ui.appearance')"
           :options="appearanceOptions"
         />
       </div>
@@ -25,8 +24,8 @@
         <LazyVCheckboxImput
           :model-value="account.newsletter"
           name="profileNewsletter"
-          label="Product and stock announcements"
-          description="Occasional email about new equipment, restocks and service notices."
+          :label="$t('profile_ui.newsletter_label')"
+          :description="$t('profile_ui.newsletter_desc')"
           @update:model-value="setNewsletter"
         />
       </div>
@@ -42,12 +41,13 @@ defineProps<{ account: Account }>();
 
 const auth = useAuthStore();
 const toast = useToast();
+const { t } = useI18n();
 const { theme, toggle } = useTheme();
 
-const appearanceOptions = [
-  { value: "dark" as const, label: "Dark" },
-  { value: "light" as const, label: "Light" },
-];
+const appearanceOptions = computed(() => [
+  { value: "dark" as const, label: t('profile_ui.appearance_dark') },
+  { value: "light" as const, label: t('profile_ui.appearance_light') },
+]);
 
 // The theme is a cookie that flips with a short reveal animation, so a change goes through toggle().
 const appearance = computed<Theme>({
@@ -55,20 +55,22 @@ const appearance = computed<Theme>({
   set: (next) => {
     if (next === theme.value) return;
     toggle();
-    toast.success(next === "dark" ? "Dark theme on" : "Light theme on");
+    toast.success(
+      next === "dark" ? t('profile_ui.toast_dark_on') : t('profile_ui.toast_light_on'),
+    );
   },
 });
 
 const setNewsletter = async (value: unknown) => {
   const res = await auth.updateProfile({ newsletter: value === true });
   if (!res.ok) {
-    toast.error("Couldn't update preferences");
+    toast.error(t('profile_ui.toast_prefs_error'));
     return;
   }
   toast.success(
     value === true
-      ? "Subscribed to announcements"
-      : "Unsubscribed from announcements",
+      ? t('profile_ui.toast_subscribed')
+      : t('profile_ui.toast_unsubscribed'),
   );
 };
 </script>

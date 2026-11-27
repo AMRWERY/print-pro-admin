@@ -2,15 +2,15 @@
   <settings-section
     id="store"
     number="01"
-    title="Store information"
-    description="The legal identity shown on invoices, proofs and the storefront footer."
+    :title="$t('settings_ui.sec_store')"
+    :description="$t('settings_ui.store_desc')"
     :changed="changed.includes('store')"
   >
     <div class="grid gap-4 md:grid-cols-2">
       <LazyVInput
         v-model="s.store.legalName"
         name="legalName"
-        label="Company legal name"
+        :label="$t('settings_ui.legal_name')"
         required
         rules="required|min:2|max:120"
         maxlength="120"
@@ -20,7 +20,7 @@
       <LazyVInput
         v-model="s.store.registration"
         name="registration"
-        label="Commercial registration (UID)"
+        :label="$t('settings_ui.registration')"
         optional
         maxlength="60"
         input-class="font-mono"
@@ -30,7 +30,7 @@
     <LazyVInput
       v-model="s.store.address"
       name="address"
-      label="Head office address"
+      :label="$t('settings_ui.head_office')"
       required
       rules="required|min:3|max:200"
       maxlength="200"
@@ -41,9 +41,9 @@
       <LazyVSelectInput
         v-model="s.store.timezone"
         name="timezone"
-        label="Time zone"
+        :label="$t('settings_ui.time_zone')"
         :options="timezoneChoices"
-        hint="Used for scheduled content, cut-off times and report dates."
+        :hint="$t('settings_ui.time_zone_hint')"
       />
     </div>
 
@@ -62,19 +62,19 @@
               size="16"
               aria-hidden="true"
             />
-            Storefront is {{ live ? "live" : "in maintenance" }}
+            {{ live ? $t('settings_ui.storefront_live_title') : $t('settings_ui.storefront_maint_title') }}
           </p>
           <p class="meta mt-0.5">
             {{
               live
-                ? "Customers can browse and order."
-                : "Customers see the maintenance message. The admin keeps working."
+                ? $t('settings_ui.storefront_live_desc')
+                : $t('settings_ui.storefront_maint_desc')
             }}
           </p>
         </div>
         <LazyVSwitch
           :model-value="live"
-          label="Storefront live"
+          :label="$t('settings_ui.storefront_live_label')"
           @update:model-value="
             (v: boolean) => (s.store.storefront = v ? 'live' : 'maintenance')
           "
@@ -84,7 +84,7 @@
         v-if="!live"
         v-model="s.store.maintenanceMessage"
         name="maintenanceMessage"
-        label="Maintenance message"
+        :label="$t('settings_ui.maintenance_message')"
         class="mt-3"
         maxlength="200"
         rules="required|max:200"
@@ -96,8 +96,8 @@
   <settings-section
     id="contact"
     number="02"
-    title="Contact & support desk"
-    description="Where customers and couriers reach you, and the key used to encrypt payment messages."
+    :title="$t('settings_ui.sec_contact')"
+    :description="$t('settings_ui.contact_desc')"
     :changed="changed.includes('contact')"
   >
     <div class="grid gap-4 md:grid-cols-2">
@@ -105,7 +105,7 @@
         v-model="s.contact.email"
         name="contactEmail"
         type="email"
-        label="Collector concierge email"
+        :label="$t('settings_ui.concierge_email')"
         required
         rules="required|email"
         maxlength="120"
@@ -116,7 +116,7 @@
         v-model="s.contact.phone"
         name="contactPhone"
         type="tel"
-        label="Desk phone"
+        :label="$t('settings_ui.desk_phone')"
         required
         :rules="phoneRequiredRule"
         maxlength="24"
@@ -127,7 +127,7 @@
         v-model="s.contact.emergencyPhone"
         name="emergencyPhone"
         type="tel"
-        label="Delivery emergency line"
+        :label="$t('settings_ui.emergency_line')"
         optional
         :rules="phoneOptionalRule"
         maxlength="24"
@@ -137,7 +137,7 @@
       <LazyVInput
         v-model="s.contact.pgpKey"
         name="pgpKey"
-        label="PGP key ID for payment messages"
+        :label="$t('settings_ui.pgp_key')"
         optional
         maxlength="80"
         input-class="font-mono"

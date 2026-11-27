@@ -1,10 +1,10 @@
 <template>
   <LazyVPanel
-    :title="block ? 'Slot inspector' : 'New content block'"
+    :title="block ? $t('content_ui.insp_slot_title') : $t('content_ui.insp_new_title')"
     :subtitle="
       block
-        ? `Live preview · ${kindMeta[form.kind].slot}`
-        : 'Draft, preview, then publish'
+        ? $t('content_ui.insp_live_preview', { slot: kindMeta[form.kind].slot })
+        : $t('content_ui.insp_new_subtitle')
     "
     :icon="block ? 'lucide:panels-top-left' : 'lucide:circle-plus'"
   >
@@ -13,7 +13,8 @@
         variant="icon"
         size="sm"
         icon="lucide:x"
-        aria-label="Close"
+        :aria-label="$t('common_ui.close')"
+        data-close-btn
         @click="emit('close')"
       />
     </template>
@@ -21,11 +22,13 @@
     <!-- Responsive preview: follows the form as you type -->
     <section class="space-y-3" aria-labelledby="cb-preview">
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <h3 id="cb-preview" class="label-caps">Responsive preview</h3>
+        <h3 id="cb-preview" class="label-caps">
+          {{ $t('content_ui.insp_responsive_preview') }}
+        </h3>
 
         <LazyVSegmented
           v-model="device"
-          label="Preview device"
+          :label="$t('content_ui.preview_label')"
           :options="deviceOptions"
         />
       </div>
@@ -33,11 +36,21 @@
         <content-preview
           :block="form"
           :device="device"
-          :caption="`${deviceMeta[device].label} preview of ${form.title}`"
+          :caption="
+            $t('content_ui.insp_preview_caption', {
+              device: deviceMeta[device].label,
+              title: form.title,
+            })
+          "
         />
       </div>
       <p class="meta text-center font-mono">
-        {{ deviceMeta[device].label }} · {{ deviceMeta[device].px }}px wide
+        {{
+          $t('content_ui.insp_device_width', {
+            device: deviceMeta[device].label,
+            px: deviceMeta[device].px,
+          })
+        }}
       </p>
     </section>
 
@@ -48,12 +61,14 @@
       @submit.prevent="submit"
     >
       <section class="space-y-3" aria-labelledby="cb-copy">
-        <h3 id="cb-copy" class="label-caps">01 // Placement &amp; copy</h3>
+        <h3 id="cb-copy" class="label-caps">
+          {{ $t('content_ui.insp_sec_copy') }}
+        </h3>
 
         <LazyVSelectInput
           v-model="form.kind"
           name="cbKind"
-          label="Content type"
+          :label="$t('content_ui.content_type')"
           :options="kindOptions"
           :hint="kindMeta[form.kind].hint"
         />
@@ -61,7 +76,7 @@
         <LazyVInput
           v-model="form.title"
           name="cbTitle"
-          label="Headline"
+          :label="$t('content_ui.insp_headline')"
           required
           rules="required|min:2|max:120"
           maxlength="120"
@@ -70,7 +85,7 @@
         <LazyVTextarea
           v-model="form.subtitle"
           name="cbSubtitle"
-          label="Supporting text"
+          :label="$t('content_ui.insp_supporting')"
           optional
           rows="3"
           maxlength="240"
@@ -79,7 +94,7 @@
           <LazyVInput
             v-model="form.ctaLabel"
             name="cbCta"
-            label="Button label"
+            :label="$t('content_ui.insp_button_label')"
             optional
             maxlength="30"
           />
@@ -87,11 +102,11 @@
           <LazyVInput
             v-model="form.link"
             name="cbLink"
-            label="Links to"
+            :label="$t('content_ui.preview_links_to')"
             required
             :rules="linkRule"
             maxlength="200"
-            placeholder="/photocopiers/…"
+            :placeholder="$t('content_ui.insp_link_placeholder')"
             input-class="font-mono"
             dir="ltr"
           />
@@ -99,7 +114,9 @@
       </section>
 
       <section class="space-y-3" aria-labelledby="cb-media">
-        <h3 id="cb-media" class="label-caps">02 // Image &amp; artwork</h3>
+        <h3 id="cb-media" class="label-caps">
+          {{ $t('content_ui.insp_sec_media') }}
+        </h3>
 
         <div
           v-if="isUpload"
@@ -107,7 +124,7 @@
         >
           <Icon name="lucide:image" size="16" aria-hidden="true" />
           <span class="min-w-0 flex-1 truncate text-sm">{{
-            uploadName || "Uploaded image"
+            uploadName || $t('content_ui.insp_uploaded_image')
           }}</span>
 
           <LazyVButton
@@ -115,7 +132,7 @@
             size="sm"
             icon="lucide:trash-2"
             @click="clearImage"
-            >Remove</LazyVButton
+            >{{ $t('common_ui.remove') }}</LazyVButton
           >
         </div>
 
@@ -123,10 +140,10 @@
           v-else
           v-model="form.imageUrl"
           name="cbImage"
-          label="Image address"
+          :label="$t('content_ui.insp_image_address')"
           optional
           :rules="imageRule"
-          placeholder="https://… or /img/…"
+          :placeholder="$t('content_ui.insp_image_placeholder')"
           input-class="font-mono"
           dir="ltr"
         />
@@ -138,7 +155,7 @@
             accept="image/png,image/jpeg,image/webp,image/avif,image/gif"
             class="sr-only"
             tabindex="-1"
-            aria-label="Upload an image"
+            :aria-label="$t('content_ui.insp_upload_aria')"
             @change="onFile"
           />
 
@@ -147,12 +164,11 @@
             size="sm"
             icon="lucide:upload"
             @click="fileEl?.click()"
-            >Upload image</LazyVButton
+            >{{ $t('common_ui.upload_image') }}</LazyVButton
           >
 
           <span class="meta"
-            >PNG, JPG, WebP, AVIF or GIF up to 1 MB. Without a picture the
-            artwork below is used.</span
+            >{{ $t('content_ui.insp_upload_note', { size: '1 MB' }) }}</span
           >
         </div>
 
@@ -169,14 +185,14 @@
         <LazyVInput
           v-model="form.imageAlt"
           name="cbAlt"
-          label="Image description (alt text)"
+          :label="$t('content_ui.insp_alt_label')"
           optional
           maxlength="160"
-          hint="Read aloud by screen readers. Blocks without it are flagged on the dashboard."
+          :hint="$t('content_ui.insp_alt_hint')"
         />
 
         <fieldset>
-          <legend class="label">Artwork colour</legend>
+          <legend class="label">{{ $t('content_ui.insp_artwork_colour') }}</legend>
           <div class="mt-1.5 flex flex-wrap gap-2">
             <label
               v-for="p in paletteOptions"
@@ -207,27 +223,27 @@
 
       <section class="space-y-3" aria-labelledby="cb-schedule">
         <h3 id="cb-schedule" class="label-caps">
-          03 // Scheduling &amp; publishing
+          {{ $t('content_ui.insp_sec_schedule') }}
         </h3>
         <div class="grid gap-3 sm:grid-cols-2">
           <LazyVDatePicker
             v-model="form.startsAt"
             name="cbStart"
-            label="Goes live (UTC)"
+            :label="$t('content_ui.insp_goes_live')"
             optional
             clearable
             :shortcuts="false"
-            placeholder="Immediately"
+            :placeholder="$t('content_ui.insp_immediately')"
           />
 
           <LazyVDatePicker
             v-model="form.endsAt"
             name="cbEnd"
-            label="Expires (UTC)"
+            :label="$t('content_ui.insp_expires')"
             optional
             clearable
             :shortcuts="false"
-            placeholder="Never expires"
+            :placeholder="$t('content_ui.insp_never_expires')"
             :min="form.startsAt || undefined"
           />
         </div>
@@ -235,7 +251,7 @@
         <LazyVSelectInput
           v-model="form.status"
           name="cbStatus"
-          label="Status"
+          :label="$t('common_ui.status')"
           :options="statusChoices"
         />
         <p class="callout" aria-live="polite">
@@ -270,7 +286,7 @@
         class="!text-accent"
         :disabled="saving"
         @click="emit('remove')"
-        >Delete block</LazyVButton
+        >{{ $t('content_ui.insp_delete_block') }}</LazyVButton
       >
 
       <span v-else />
@@ -282,7 +298,7 @@
           icon="lucide:undo-2"
           :disabled="saving"
           @click="revert"
-          >Revert</LazyVButton
+          >{{ $t('content_ui.insp_revert') }}</LazyVButton
         >
 
         <LazyVButton
@@ -290,7 +306,7 @@
           form="content-form"
           :loading="saving"
           icon="lucide:save"
-          >{{ block ? "Save changes" : "Create block" }}</LazyVButton
+          >{{ block ? $t("btn.save_changes") : $t("content_ui.insp_create_block") }}</LazyVButton
         >
       </div>
     </div>
@@ -346,6 +362,8 @@ const start = (): BlockInput => {
   };
 };
 
+const { t } = useI18n();
+
 const form = reactive<BlockInput>(start());
 
 const device = ref<PreviewDevice>("desktop");
@@ -367,10 +385,10 @@ const revert = () => {
 // A link is a storefront path or an https address.
 const linkRule = (v: unknown) => {
   const s = String(v ?? "").trim();
-  if (!s) return "Enter where this block should link to.";
+  if (!s) return t("content_ui.rule_link_required");
   return /^\/[^\s]*$/.test(s) || /^https:\/\/[^\s/]+\.[^\s]+$/.test(s)
     ? true
-    : "Use a storefront path like /photocopiers or a full https:// address.";
+    : t("content_ui.rule_link_invalid");
 };
 
 const imageRule = (v: unknown) => {
@@ -378,7 +396,7 @@ const imageRule = (v: unknown) => {
   if (!s) return true;
   return /^https:\/\/\S+$/.test(s) || /^\/\S+$/.test(s)
     ? true
-    : "Use an https:// address or a path like /img/banner.jpg.";
+    : t("content_ui.rule_image_invalid");
 };
 
 // --- Upload: read the picture in the browser and keep it with the block ---
@@ -395,13 +413,11 @@ const onFile = (e: Event) => {
   uploadError.value = "";
   if (!file) return;
   if (!file.type.startsWith("image/")) {
-    uploadError.value =
-      "That file is not an image. Choose a PNG, JPG, WebP, AVIF or GIF.";
+    uploadError.value = t("content_ui.upload_not_image");
     return;
   }
   if (file.size > MAX_BYTES) {
-    uploadError.value =
-      "That image is over 1 MB. Compress it or use a smaller one.";
+    uploadError.value = t("content_ui.upload_too_big", { size: "1 MB" });
     return;
   }
   const reader = new FileReader();
@@ -410,7 +426,7 @@ const onFile = (e: Event) => {
     uploadName.value = file.name;
   };
   reader.onerror = () => {
-    uploadError.value = "The image could not be read. Try another file.";
+    uploadError.value = t("content_ui.upload_read_error");
   };
   reader.readAsDataURL(file);
 };
@@ -422,8 +438,13 @@ const clearImage = () => {
 
 const scheduleNote = computed(() => {
   if (form.status === "draft")
-    return "Draft: this block stays hidden from the storefront until you publish it.";
-  return `Published: shown on the storefront ${windowLabel(form.startsAt, form.endsAt).replace(/^Always on$/, "all the time")}.`;
+    return t("content_ui.schedule_note_draft");
+  return t("content_ui.schedule_note_published", {
+    window: windowLabel(form.startsAt, form.endsAt).replace(
+      /^Always on$/,
+      t("content_ui.schedule_all_time"),
+    ),
+  });
 });
 
 const localError = ref("");
@@ -433,7 +454,7 @@ const submit = async () => {
   const { valid } = await validate();
   if (!valid) return;
   if (form.startsAt && form.endsAt && form.endsAt < form.startsAt) {
-    localError.value = "The expiry date must be on or after the go-live date.";
+    localError.value = t("content_ui.err_expiry_before");
     return;
   }
   emit("save", {

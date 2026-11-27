@@ -6,18 +6,18 @@
           v-model="q"
           name="couponSearch"
           type="search"
-          label="Search vouchers"
+          :label="$t('coupons_ui.tb_search_label')"
           hide-label
           icon="lucide:search"
           autocomplete="off"
-          placeholder="Search code or campaign…"
+          :placeholder="$t('coupons_ui.tb_search_placeholder')"
         />
       </form>
 
       <LazyVSelectInput
         v-model="type"
         name="couponType"
-        label="Type"
+        :label="$t('coupons_ui.tb_type')"
         hide-label
         :options="typeOptions"
       />
@@ -25,7 +25,7 @@
       <LazyVSelectInput
         v-model="tier"
         name="couponTier"
-        label="Tier"
+        :label="$t('orders_ui.filter_tier_label')"
         hide-label
         :options="tierOptions"
       />
@@ -33,7 +33,7 @@
       <LazyVSelectInput
         v-model="sort"
         name="couponSort"
-        label="Sort"
+        :label="$t('orders_ui.filter_sort_label')"
         hide-label
         :options="sortOptions"
       />
@@ -41,7 +41,7 @@
 
     <div
       role="group"
-      aria-label="Voucher status"
+      :aria-label="$t('coupons_ui.tb_status_group')"
       class="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1"
     >
       <button

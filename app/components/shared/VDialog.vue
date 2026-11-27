@@ -24,7 +24,7 @@
           variant="icon"
           size="sm"
           icon="lucide:x"
-          aria-label="Close dialog"
+          :aria-label="$t('common_ui.close_dialog')"
           @click="open = false"
         />
       </header>

@@ -1,12 +1,12 @@
 <template>
   <LazyVPanel
-    title="Order conversion funnel"
-    subtitle="From first visit to paid order"
+    :title="$t('analytics_ui.funnel_title')"
+    :subtitle="$t('analytics_ui.funnel_subtitle')"
     icon="lucide:funnel"
   >
     <template v-if="funnel" #actions>
       <LazyVStatusBadge tone="success" icon="lucide:trending-up"
-        >{{ percent(funnel.conversion, 2) }} yield</LazyVStatusBadge
+        >{{ $t('analytics_ui.yield_value', { value: percent(funnel.conversion, 2) }) }}</LazyVStatusBadge
       >
     </template>
 
@@ -22,7 +22,7 @@
           >
             <span>
               <span class="font-mono text-xs text-mute">{{ i + 1 }}.</span>
-              {{ funnelLabel[s.key].title }}
+              {{ $t('analytics_ui.stage_' + s.key) }}
             </span>
             <span class="font-mono text-xs tabular-nums"
               >{{ number(s.count) }}
@@ -35,14 +35,14 @@
             class="mt-1"
             :value="Math.max(s.pct, 1.5)"
             :tone="tones[i]!"
-            :label="`${funnelLabel[s.key].title}: ${percent(s.pct, 1)} of sessions`"
+            :label="$t('analytics_ui.stage_session_share', { name: $t('analytics_ui.stage_' + s.key), value: percent(s.pct, 1) })"
           />
           <p class="meta mt-0.5">
-            {{ funnelLabel[s.key].hint
+            {{ $t('analytics_ui.stage_' + s.key + '_hint')
             }}<template v-if="s.drop !== null">
               ·
               <span class="text-accent"
-                >−{{ percent(s.drop, 1) }} drop-off</span
+                >{{ $t('analytics_ui.drop_off_value', { value: percent(s.drop, 1) }) }}</span
               ></template
             >
           </p>
@@ -53,11 +53,11 @@
         class="mt-4 flex items-center justify-between gap-2 rounded-card border border-line bg-ink px-3 py-2 font-mono text-xs"
       >
         <span class="flex items-center gap-1.5 text-mute"
-          ><Icon name="lucide:clock" size="14" aria-hidden="true" /> B2B
-          enterprise velocity</span
+          ><Icon name="lucide:clock" size="14" aria-hidden="true" />
+          {{ $t('analytics_ui.b2b_velocity') }}</span
         >
         <span class="font-semibold text-success"
-          >{{ funnel.velocityHours }} hrs median</span
+          >{{ $t('analytics_ui.median_hours', { n: funnel.velocityHours }) }}</span
         >
       </p>
     </template>
@@ -65,7 +65,6 @@
 </template>
 
 <script lang="ts" setup>
-import { funnelLabel } from "~/data/analytics-meta";
 import type { AnalyticsResponse } from "~/types/admin/analytics";
 import type { Tone } from "~/types/admin/dashboard";
 

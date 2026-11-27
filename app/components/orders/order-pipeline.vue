@@ -1,7 +1,7 @@
 <template>
   <LazyVPanel
     :title="$t('orders_ui.pipeline_title')"
-    subtitle="ISO 14644-1 class 4 protocol"
+    :subtitle="$t('orders_ui.pipeline_subtitle')"
     icon="lucide:link-2"
   >
     <ol class="grid gap-2 md:grid-cols-5">
@@ -82,7 +82,7 @@ watch(
 const options = computed(() =>
   props.phases.map((p, i) => ({
     value: p.stage,
-    label: `Stage ${i + 1}: ${p.title}${p.stage === props.current ? t('orders_ui.pipeline_stage_current') : ""}`,
+    label: `${t('orders_ui.pipeline_stage_option', { n: i + 1, title: p.title })}${p.stage === props.current ? t('orders_ui.pipeline_stage_current') : ""}`,
   })),
 );
 

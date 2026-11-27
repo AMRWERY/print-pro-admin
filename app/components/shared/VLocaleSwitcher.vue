@@ -8,7 +8,7 @@
     :class="!compact && 'h-10 !px-3'"
     :hreflang="target.code"
     :lang="target.code"
-    :aria-label="`Switch language to ${target.name}`"
+    :aria-label="$t('common_ui.switch_language_to', { name: target.name })"
     @click.prevent="switchTo"
   >
     <Icon name="lucide:globe" size="18" class="icon-spin" aria-hidden="true" />

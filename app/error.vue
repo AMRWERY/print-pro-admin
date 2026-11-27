@@ -38,7 +38,7 @@
         </div>
 
         <p class="text-xs text-mute">
-          Still stuck? Call the concierge on
+          {{ t("error_ui.still_stuck") }}
           <LazyVButton
             variant="tertiary"
             href="tel:+18004925866"

@@ -65,7 +65,7 @@ if (from) {
     } = source;
     initial.value = {
       ...rest,
-      name: `${source.name} (copy)`,
+      name: t("products_ui.copy_name", { name: source.name }),
       sku: `${source.sku}-COPY`,
       slug: `${source.slug}-copy`,
       publication: "published",

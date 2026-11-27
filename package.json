@@ -11,7 +11,9 @@
     "check:vocab": "node scripts/check-vocabulary.mjs",
     "smoke": "node scripts/smoke-routes.mjs",
     "typecheck": "nuxt prepare && vue-tsc --noEmit -p .nuxt/tsconfig.app.json && vue-tsc --noEmit -p .nuxt/tsconfig.server.json",
-    "check:i18n": "node scripts/check-i18n.mjs"
+    "check:i18n": "node scripts/check-i18n.mjs",
+    "check:hardcoded": "node scripts/check-hardcoded.mjs",
+    "merge:i18n": "node scripts/merge-i18n.mjs"
   },
   "dependencies": {
     "@nuxt/icon": "^2.2.1",

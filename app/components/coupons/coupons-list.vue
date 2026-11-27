@@ -12,7 +12,7 @@
       >
         <LazyVCheckboxImput
           name="pickAllVouchers"
-          label="Select all vouchers on this page"
+          :label="$t('coupons_ui.list_select_all')"
           hide-label
           size="sm"
           :model-value="allSelected"
@@ -21,9 +21,9 @@
           @update:model-value="toggleAll"
         />
 
-        <span class="label-caps">Voucher identity / code</span>
+        <span class="label-caps">{{ $t('coupons_ui.list_col_identity') }}</span>
         <span class="label-caps ms-auto hidden md:block"
-          >Valuation · usage · status</span
+          >{{ $t('coupons_ui.list_col_valuation') }}</span
         >
       </div>
 
@@ -36,7 +36,7 @@
         >
           <LazyVCheckboxImput
             :name="`pick-${c.id}`"
-            :label="`Select ${c.code}`"
+            :label="$t('coupons_ui.list_select_one', { code: c.code })"
             hide-label
             size="sm"
             class="mt-2"
@@ -57,14 +57,14 @@
                   :aria-current="selectedId === c.id ? 'true' : undefined"
                   @click="emit('select', c)"
                 >
-                  {{ c.code }}<span class="sr-only"> — edit</span>
+                  {{ c.code }}<span class="sr-only"> — {{ $t('btn.edit') }}</span>
                 </button>
 
                 <LazyVButton
                   variant="icon"
                   size="sm"
                   icon="lucide:copy"
-                  :aria-label="`Copy code ${c.code}`"
+                  :aria-label="$t('coupons_ui.list_copy_code', { code: c.code })"
                   @click="copy(c.code)"
                 />
 
@@ -94,7 +94,7 @@
                   <span>{{ number(c.used) }}</span>
                   <span class="text-mute">{{
                     c.limit === null
-                      ? "unlimited"
+                      ? $t('coupons_ui.list_unlimited')
                       : `/ ${number(c.limit)} (${pct(c)}%)`
                   }}</span>
                 </p>
@@ -109,16 +109,16 @@
                         ? 'warning'
                         : 'success'
                   "
-                  :label="`Redemptions used for ${c.code}`"
+                  :label="$t('coupons_ui.list_redemptions_used', { code: c.code })"
                 />
               </div>
-              <p v-if="c.endsAt" class="meta">Ends {{ c.endsAt }}</p>
+              <p v-if="c.endsAt" class="meta">{{ $t('coupons_ui.list_ends', { date: c.endsAt }) }}</p>
             </div>
           </div>
 
           <LazyVRowActions
             class="mt-1"
-            :label="`Actions for ${c.code}`"
+            :label="$t('coupons_ui.list_actions_for', { code: c.code })"
             duplicate
             @edit="emit('select', c)"
             @duplicate="emit('duplicate', c)"
@@ -131,7 +131,7 @@
               class="menu-item w-full"
               @click="emit('pause', c)"
             >
-              <Icon name="lucide:pause" size="16" aria-hidden="true" /> Pause
+              <Icon name="lucide:pause" size="16" aria-hidden="true" /> {{ $t('coupons_ui.bulk_pause') }}
             </button>
             <button
               v-if="c.status === 'paused'"
@@ -140,7 +140,7 @@
               class="menu-item w-full"
               @click="emit('resume', c)"
             >
-              <Icon name="lucide:play" size="16" aria-hidden="true" /> Resume
+              <Icon name="lucide:play" size="16" aria-hidden="true" /> {{ $t('coupons_ui.bulk_resume') }}
             </button>
           </LazyVRowActions>
         </li>
@@ -175,6 +175,7 @@ const selected = defineModel<string[]>("selected", { default: () => [] });
 
 const { number, currency } = useFormatters();
 const toast = useToast();
+const { t } = useI18n();
 
 const money = (n: number) => currency(n, { maximumFractionDigits: 0 });
 const pct = (c: CouponRow) =>
@@ -183,7 +184,7 @@ const pct = (c: CouponRow) =>
 // A small tag next to the code: who or what the voucher is for.
 const badge = (c: CouponRow): { label: string; tone: Tone } | null =>
   c.tier !== "all"
-    ? { label: `${c.tier} only`, tone: "warning" }
+    ? { label: t("coupons_ui.list_tier_only", { tier: c.tier }), tone: "warning" }
     : c.type === "freight" || c.type === "serviceCredit"
       ? { label: typeMeta[c.type].short, tone: "info" }
       : c.categories.length === 1
@@ -192,11 +193,13 @@ const badge = (c: CouponRow): { label: string; tone: Tone } | null =>
 
 const thresholds = (c: CouponRow) =>
   [
-    c.minOrder ? `Min ${money(c.minOrder)}` : "No minimum",
+    c.minOrder
+      ? t("coupons_ui.list_min", { amount: money(c.minOrder) })
+      : t("coupons_ui.list_no_min"),
     c.categories.length
       ? c.categories.map((x) => categories.label(x)).join(", ")
-      : "All categories",
-    c.perAccount === 1 ? "single use per account" : null,
+      : t("coupons_ui.list_all_categories"),
+    c.perAccount === 1 ? t("coupons_ui.list_single_use") : null,
   ]
     .filter(Boolean)
     .join(" · ");
@@ -219,10 +222,10 @@ const toggleAll = () => {
 const copy = async (code: string) => {
   try {
     await navigator.clipboard.writeText(code);
-    toast.success("Code copied", { description: code });
+    toast.success(t("coupons_ui.list_code_copied"), { description: code });
   } catch {
-    toast.error("Couldn't copy", {
-      description: "Select the code and copy it manually.",
+    toast.error(t("coupons_ui.list_copy_failed"), {
+      description: t("coupons_ui.list_copy_failed_desc"),
     });
   }
 };

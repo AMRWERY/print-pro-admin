@@ -4,7 +4,7 @@
       <div
         class="flex gap-1.5"
         role="progressbar"
-        aria-label="Password strength"
+        :aria-label="$t('auth_ui.password_strength')"
         aria-valuemin="0"
         aria-valuemax="4"
         :aria-valuenow="score"
@@ -17,13 +17,13 @@
         />
       </div>
       <p class="meta">
-        Strength: <span :class="text">{{ label }}</span>
+        {{ $t("auth_ui.strength_label") }} <span :class="text">{{ label }}</span>
       </p>
     </div>
 
     <ul
       class="grid gap-x-4 gap-y-1.5 rounded-card border border-line bg-raised p-3 text-sm sm:grid-cols-2"
-      aria-label="Password requirements"
+      :aria-label="$t('auth_ui.password_requirements')"
     >
       <li
         v-for="c in checks"
@@ -37,8 +37,8 @@
           :class="c.passed && 'text-success'"
           aria-hidden="true"
         />
-        {{ c.label }}
-        <span class="sr-only">{{ c.passed ? "(met)" : "(not met)" }}</span>
+        {{ checkLabel(c) }}
+        <span class="sr-only">{{ c.passed ? $t("auth_ui.req_met") : $t("auth_ui.req_not_met") }}</span>
       </li>
     </ul>
   </div>
@@ -47,15 +47,35 @@
 <script lang="ts" setup>
 const props = defineProps<{ password: string }>();
 
+const { t } = useI18n();
+
 const checks = computed(() => passwordChecks(props.password));
+
+// Labels are keyed by the check's `key` (the rule text itself lives in utils/validators.ts).
+const checkLabel = (c: { key: string; label: string }) =>
+  c.key === "length"
+    ? t("auth_ui.check_length", { n: 12 })
+    : c.key === "case"
+      ? t("auth_ui.check_case")
+      : c.key === "digit"
+        ? t("auth_ui.check_digit")
+        : c.key === "symbol"
+          ? t("auth_ui.check_symbol", { symbols: "!@#$%^&*" })
+          : c.label;
 
 const score = computed(() => checks.value.filter((c) => c.passed).length);
 
 // Words and colour together, never colour alone.
 const label = computed(() =>
   props.password
-    ? ["Weak", "Weak", "Fair", "Good", "Strong"][score.value]
-    : "Not entered",
+    ? [
+        t("auth_ui.strength_weak"),
+        t("auth_ui.strength_weak"),
+        t("auth_ui.strength_fair"),
+        t("auth_ui.strength_good"),
+        t("auth_ui.strength_strong"),
+      ][score.value]
+    : t("auth_ui.strength_empty"),
 );
 
 const bar = computed(() =>

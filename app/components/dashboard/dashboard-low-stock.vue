@@ -39,7 +39,7 @@
           <VMeter
             :value="(item.remaining / item.threshold) * 100"
             :tone="tone[item.status]"
-            :label="`Stock level for ${item.name}`"
+            :label="t('dashboard_ui.stock_level_for', { name: item.name })"
           />
           <p class="flex flex-wrap justify-between gap-x-2 font-mono text-2xs text-mute">
             <span>{{ t('dashboard_ui.remaining') }}: {{ `${item.remaining} ${item.unit}` }}</span>

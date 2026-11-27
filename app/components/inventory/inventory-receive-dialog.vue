@@ -1,8 +1,8 @@
 <template>
   <LazyVDialog
     v-model:open="open"
-    title="Receive delivery"
-    description="Book delivered units into stock. The history records the delivery reference."
+    :title="$t('inventory_ui.receive_title')"
+    :description="$t('inventory_ui.receive_desc')"
   >
     <form
       id="receive-form"
@@ -18,7 +18,7 @@
             v-model="qty"
             name="receiveQty"
             type="number"
-            label="Units received"
+            :label="$t('inventory_ui.receive_units')"
             required
             rules="required|integer|min_value:1"
             min="1"
@@ -27,11 +27,11 @@
           <LazyVInput
             v-model="reference"
             name="receiveRef"
-            label="Delivery reference"
+            :label="$t('inventory_ui.receive_reference')"
             required
             rules="required|min:3|max:200"
             maxlength="200"
-            placeholder="Delivery note or PO number"
+            :placeholder="$t('inventory_ui.receive_reference_placeholder')"
           />
         </div>
         <p
@@ -45,11 +45,14 @@
             class="bullet-icon"
             aria-hidden="true"
           />
-          <span
-            >Stock goes from {{ product.stock }} to
-            <strong>{{ product.stock + qty }}</strong
-            >.</span
-          >
+          <span>
+            <i18n-t keypath="inventory_ui.receive_stock_change">
+              <template #from>{{ product.stock }}</template>
+              <template #to
+                ><strong>{{ product.stock + qty }}</strong></template
+              >
+            </i18n-t>
+          </span>
         </p>
       </template>
 
@@ -66,7 +69,7 @@
 
     <template #footer>
       <LazyVButton variant="secondary" :disabled="loading" @click="open = false"
-        >Cancel</LazyVButton
+        >{{ $t('btn.cancel') }}</LazyVButton
       >
 
       <LazyVButton
@@ -75,7 +78,7 @@
         :loading="loading"
         :disabled="!product"
         icon="lucide:package-plus"
-        >Receive into stock</LazyVButton
+        >{{ $t('inventory_ui.receive_submit') }}</LazyVButton
       >
     </template>
   </LazyVDialog>
@@ -89,6 +92,7 @@ const emit = defineEmits<{ done: [item: InventoryItem] }>();
 const open = defineModel<boolean>("open", { default: false });
 
 const toast = useToast();
+const { t } = useI18n();
 
 const product = ref<InventoryItem | null>(null);
 const qty = ref<number | null>(null);
@@ -120,14 +124,13 @@ const submit = async () => {
       qty: qty.value,
       reference: reference.value,
     });
-    toast.success("Delivery received", {
-      description: `${updated.name}: now ${updated.stock} in stock.`,
+    toast.success(t('inventory_ui.toast_received'), {
+      description: t('inventory_ui.toast_received_desc', { name: updated.name, stock: updated.stock }),
     });
     emit("done", updated);
     open.value = false;
   } catch {
-    error.value =
-      "The delivery could not be booked. Check the details and try again.";
+    error.value = t('inventory_ui.error_receive');
   } finally {
     loading.value = false;
   }

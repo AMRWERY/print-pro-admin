@@ -2,16 +2,18 @@
   <div class="space-y-5">
     <LazyVPageHeader
       :title="
-        mode === 'create' ? 'Add new product / SKU' : `Edit ${initial.name}`
+        mode === 'create'
+          ? $t('products_ui.editor_create_title')
+          : $t('products_ui.editor_edit_title', { name: initial.name })
       "
       :breadcrumb="[
-        { label: 'Dashboard', to: '/' },
-        { label: 'Products', to: '/products' },
-        { label: mode === 'create' ? 'New product' : initial.sku },
+        { label: $t('nav.dashboard'), to: '/' },
+        { label: $t('nav.products'), to: '/products' },
+        { label: mode === 'create' ? $t('products_ui.new_product') : initial.sku },
       ]"
       :description="
         mode === 'create'
-          ? 'Add a product with its price and stock. Everything else is optional.'
+          ? $t('products_ui.editor_desc')
           : undefined
       "
     >
@@ -22,13 +24,13 @@
           }}</LazyVStatusBadge>
 
           <LazyVStatusBadge v-if="dirty" tone="warning" icon="lucide:pencil"
-            >Unsaved changes</LazyVStatusBadge
+            >{{ $t('common_ui.unsaved_changes') }}</LazyVStatusBadge
           >
 
           <span
             v-else-if="mode === 'edit'"
             class="font-mono text-2xs text-success"
-            >All changes saved</span
+            >{{ $t('common_ui.all_changes_saved') }}</span
           >
         </p>
       </template>
@@ -37,7 +39,7 @@
           variant="tertiary"
           :disabled="!dirty || !!saving"
           @click="discard"
-          >Discard changes</LazyVButton
+          >{{ $t('btn.discard_changes') }}</LazyVButton
         >
 
         <LazyVButton
@@ -46,7 +48,7 @@
           :loading="saving === 'continue'"
           :disabled="!!saving"
           @click="save(true)"
-          >Save &amp; Continue</LazyVButton
+          >{{ $t('btn.save_and_continue') }}</LazyVButton
         >
 
         <LazyVButton
@@ -54,14 +56,14 @@
           :loading="saving === 'exit'"
           :disabled="!!saving"
           @click="save(false)"
-          >Save SKU</LazyVButton
+          >{{ $t('btn.save_sku') }}</LazyVButton
         >
       </template>
     </LazyVPageHeader>
 
     <!-- Section jump links: single-screen scroll with anchors -->
     <nav
-      aria-label="Editor sections"
+      :aria-label="$t('products_ui.editor_sections')"
       class="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1"
     >
       <a
@@ -107,16 +109,16 @@
 
     <LazyVDialog
       v-model:open="leaveOpen"
-      title="Leave without saving?"
-      description="This product has changes that haven't been saved."
+      :title="$t('products_ui.leave_title')"
+      :description="$t('products_ui.leave_desc')"
     >
       <template #footer>
         <LazyVButton variant="secondary" @click="leaveOpen = false"
-          >Keep editing</LazyVButton
+          >{{ $t('products_ui.keep_editing') }}</LazyVButton
         >
 
         <LazyVButton icon="lucide:log-out" @click="leave"
-          >Discard and leave</LazyVButton
+          >{{ $t('products_ui.discard_and_leave') }}</LazyVButton
         >
       </template>
     </LazyVDialog>
@@ -135,23 +137,24 @@ const props = defineProps<{
 
 const emit = defineEmits<{ saved: [product: Product] }>();
 
+const { t } = useI18n();
 const toast = useToast();
 const localePath = useLocalePath();
 
-const publicationMeta: Record<Publication, { label: string; tone: Tone }> = {
-  draft: { label: "Draft", tone: "neutral" },
-  published: { label: "Active · published", tone: "success" },
-  archived: { label: "Archived", tone: "warning" },
-};
+const publicationMeta = computed<Record<Publication, { label: string; tone: Tone }>>(() => ({
+  draft: { label: t("common_ui.draft"), tone: "neutral" },
+  published: { label: t("products_ui.status_published"), tone: "success" },
+  archived: { label: t("common_ui.archived"), tone: "warning" },
+}));
 
-const sections = [
-  { id: "identity", label: "General info" },
-  { id: "media", label: "Media & assets" },
-  { id: "pricing", label: "Pricing" },
-  { id: "inventory", label: "Inventory & stock" },
-  { id: "specs", label: "Specifications" },
-  { id: "dimensions", label: "Dimensions" },
-];
+const sections = computed(() => [
+  { id: "identity", label: t("products_ui.sec_general") },
+  { id: "media", label: t("products_ui.sec_media_assets") },
+  { id: "pricing", label: t("products_ui.pricing") },
+  { id: "inventory", label: t("products_ui.sec_inventory_stock") },
+  { id: "specs", label: t("products_ui.specifications") },
+  { id: "dimensions", label: t("products_ui.dimensions") },
+]);
 
 const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v));
 
@@ -175,15 +178,15 @@ const discard = () => {
 // --- Saving ---
 const { validate, setErrors } = useForm();
 // Plain names for the fields the server can complain about.
-const fieldLabels: Record<string, string> = {
-  name: "Product title",
-  category: "Category",
-  sku: "SKU",
-  brand: "Brand",
-  price: "Price",
-  stock: "Stock on hand",
-  min: "Low-stock alert",
-};
+const fieldLabels = computed<Record<string, string>>(() => ({
+  name: t("products_ui.product_title"),
+  category: t("products_ui.field_category"),
+  sku: t("products_ui.col_sku"),
+  brand: t("products_ui.brand"),
+  price: t("products_ui.price"),
+  stock: t("products_ui.stock_on_hand"),
+  min: t("products_ui.low_stock_alert"),
+}));
 const saving = ref<"" | "continue" | "exit">("");
 const formError = ref("");
 
@@ -194,8 +197,7 @@ const save = async (stay: boolean) => {
 
   const result = await validate();
   if (!result.valid) {
-    formError.value =
-      "Some fields need attention. Fix the highlighted fields and try again.";
+    formError.value = t("products_ui.fix_fields_error");
     await nextTick();
     const bad = document.querySelector<HTMLElement>('[aria-invalid="true"]');
     bad?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -213,7 +215,7 @@ const save = async (stay: boolean) => {
         : await productsStore.create(clone(form));
     snapshot.value = JSON.stringify(form);
     allowLeave = true;
-    toast.success(props.mode === "create" ? "SKU saved" : "SKU updated", { description: saved.name });
+    toast.success(props.mode === "create" ? t("products_ui.sku_saved") : t("products_ui.sku_updated"), { description: saved.name });
     emit("saved", saved);
     if (!stay) {
       await navigateTo(localePath("/products"));
@@ -231,7 +233,9 @@ const save = async (stay: boolean) => {
     if (names.length) {
       // Mark each field and say which ones, so nothing has to be guessed.
       setErrors(fields);
-      formError.value = `Please fix: ${names.map((n) => fieldLabels[n] ?? n).join(", ")}. Each one is marked below.`;
+      formError.value = t("products_ui.fix_named_error", {
+        fields: names.map((n) => fieldLabels.value[n] ?? n).join(t("products_ui.list_separator")),
+      });
       await nextTick();
       const bad = document.querySelector<HTMLElement>('[aria-invalid="true"]');
       bad?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -239,10 +243,10 @@ const save = async (stay: boolean) => {
     } else {
       formError.value =
         status === 409
-          ? "A product with that SKU already exists. Use a different SKU."
+          ? t("products_ui.sku_exists_error")
           : status === 0 || status >= 500
-            ? "The server could not be reached or had a problem. Try again in a moment."
-            : "The product could not be saved. Check the details and try again.";
+            ? t("products_ui.server_error")
+            : t("products_ui.save_failed_error");
     }
   } finally {
     saving.value = "";

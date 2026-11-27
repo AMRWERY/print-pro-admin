@@ -4,30 +4,30 @@
     <div class="hidden lg:block">
       <table class="w-full text-sm">
         <caption class="sr-only">
-          Inventory
+          {{ $t('inventory_ui.title') }}
         </caption>
         <thead>
           <tr class="border-y border-line bg-ink">
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Product
+              {{ $t('inventory_ui.col_product') }}
             </th>
             <th
               scope="col"
               class="label-caps px-2.5 py-3 text-start font-normal"
             >
-              SKU &amp; bin
+              {{ $t('inventory_ui.col_sku_bin') }}
             </th>
             <th
               scope="col"
               class="label-caps px-2.5 py-3 text-start font-normal"
             >
-              Stock
+              {{ $t('inventory_ui.col_stock') }}
             </th>
             <th scope="col" class="label-caps px-2.5 py-3 text-end font-normal">
-              Value
+              {{ $t('inventory_ui.col_value') }}
             </th>
             <th scope="col" class="px-3 py-3">
-              <span class="sr-only">Actions</span>
+              <span class="sr-only">{{ $t('common_ui.actions') }}</span>
             </th>
           </tr>
         </thead>
@@ -80,16 +80,16 @@
                 <span class="text-base font-semibold">{{
                   number(i.stock)
                 }}</span>
-                <span class="text-2xs text-mute">Min {{ i.min }}</span>
+                <span class="text-2xs text-mute">{{ $t('inventory_ui.min_level', { n: i.min }) }}</span>
               </p>
               <LazyVMeter
                 class="my-1.5"
                 :value="(i.stock / (Math.max(i.min, 1) * 4)) * 100"
                 :tone="stockMeta[i.state].tone"
-                :label="`Stock level for ${i.name}`"
+                :label="$t('inventory_ui.stock_level_for', { name: i.name })"
               />
               <p class="meta">
-                {{ i.reserved }} reserved · {{ i.available }} free
+                {{ $t('inventory_ui.reserved_free', { reserved: i.reserved, free: i.available }) }}
               </p>
               <LazyVStatusBadge
                 v-if="i.state !== 'ok'"
@@ -112,7 +112,7 @@
             <td class="px-3 py-3.5">
               <div class="flex justify-end">
                 <LazyVRowActions
-                  :label="`Actions for ${i.name}`"
+                  :label="$t('inventory_ui.actions_for', { name: i.name })"
                   duplicate
                   @edit="emit('edit', i)"
                   @duplicate="emit('duplicate', i)"
@@ -129,7 +129,7 @@
                       size="16"
                       aria-hidden="true"
                     />
-                    Adjust stock
+                    {{ $t('inventory_ui.adjust_stock') }}
                   </button>
                 </LazyVRowActions>
               </div>
@@ -173,14 +173,14 @@
               ></span
             >
             <span class="text-2xs text-mute"
-              >Min {{ i.min }} · {{ i.available }} free</span
+              >{{ $t('inventory_ui.min_free', { min: i.min, free: i.available }) }}</span
             >
           </p>
           <LazyVMeter
             class="mt-1.5"
             :value="(i.stock / (Math.max(i.min, 1) * 4)) * 100"
             :tone="stockMeta[i.state].tone"
-            :label="`Stock level for ${i.name}`"
+            :label="$t('inventory_ui.stock_level_for', { name: i.name })"
           />
         </div>
         <div class="flex flex-wrap items-center gap-2">
@@ -193,7 +193,7 @@
 
           <LazyVRowActions
             class="ms-auto"
-            :label="`Actions for ${i.name}`"
+            :label="$t('inventory_ui.actions_for', { name: i.name })"
             duplicate
             @edit="emit('edit', i)"
             @duplicate="emit('duplicate', i)"
@@ -210,7 +210,7 @@
                 size="16"
                 aria-hidden="true"
               />
-              Adjust stock
+              {{ $t('inventory_ui.adjust_stock') }}
             </button>
           </LazyVRowActions>
         </div>

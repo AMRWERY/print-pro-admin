@@ -3,9 +3,9 @@
     <header class="flex flex-wrap items-center justify-between gap-3">
       <h2 id="pricing-title" class="flex items-center gap-2 font-display text-lg font-bold">
         <Icon name="lucide:banknote" size="18" class="text-accent" aria-hidden="true" />
-        03 // Pricing
+        03 // {{ $t('products_ui.pricing') }}
       </h2>
-      <div class="shrink-0"><span class="chip">Currency: EGP</span></div>
+      <div class="shrink-0"><span class="chip">{{ $t('products_ui.currency_egp') }}</span></div>
     </header>
 
     <div class="grid gap-4 sm:grid-cols-3">
@@ -13,7 +13,7 @@
         v-model="form.price"
         name="price"
         type="number"
-        label="Listing price (EGP)"
+        :label="$t('products_ui.listing_price_egp')"
         required
         rules="required|min_value:0"
         min="0"
@@ -24,7 +24,7 @@
         v-model="form.compareAt"
         name="compareAt"
         type="number"
-        label="Compare-at price"
+        :label="$t('products_ui.compare_at_price')"
         optional
         rules="min_value:0"
         min="0"
@@ -36,7 +36,7 @@
         v-model="form.cost"
         name="cost"
         type="number"
-        label="Cost per unit (COGS)"
+        :label="$t('products_ui.cost_per_unit')"
         optional
         rules="min_value:0"
         min="0"
@@ -49,26 +49,26 @@
         class="rounded-card border border-line bg-ink p-4"
         aria-live="polite"
       >
-        <p class="label-caps">Estimated gross profit</p>
+        <p class="label-caps">{{ $t('products_ui.estimated_gross_profit') }}</p>
         <template v-if="profit !== null">
           <p
             class="font-display text-3xl font-bold tabular-nums"
             :class="profit >= 0 ? 'text-success' : 'text-accent'"
           >
             {{ currency(profit, cents) }}
-            <span class="text-sm text-mute">/ unit</span>
+            <span class="text-sm text-mute">{{ $t('products_ui.per_unit') }}</span>
           </p>
           <LazyVStatusBadge
             class="mt-1"
             :tone="
               margin! >= 20 ? 'success' : margin! >= 0 ? 'warning' : 'accent'
             "
-            >{{ margin!.toFixed(1) }}% margin</LazyVStatusBadge
+            >{{ $t('products_ui.margin_pct', { pct: margin!.toFixed(1) }) }}</LazyVStatusBadge
           >
         </template>
 
         <p v-else class="mt-1 text-sm text-mute">
-          Enter a listing price and a cost per unit to see the margin.
+          {{ $t('products_ui.margin_empty') }}
         </p>
       </div>
 
@@ -76,8 +76,8 @@
         <LazyVCheckboxImput
           v-model="form.taxExempt"
           name="taxExempt"
-          label="Exempt from VAT for verified business clients"
-          description="Reverse charge applies to enterprise accounts with a tax number on file."
+          :label="$t('products_ui.vat_exempt')"
+          :description="$t('products_ui.vat_exempt_desc')"
         />
       </div>
     </div>
@@ -89,6 +89,7 @@ import type { ProductFormValues } from "~/types/admin/products";
 
 const props = defineProps<{ form: ProductFormValues }>();
 
+const { t } = useI18n();
 const { currency } = useFormatters();
 
 const cents = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
@@ -111,7 +112,7 @@ const saving = computed(() => {
   const price = num(props.form.price);
   const compare = num(props.form.compareAt);
   return price && compare && compare > price
-    ? `Shows a ${Math.round(((compare - price) / compare) * 100)}% saving`
-    : "Shown struck through when higher than the listing price";
+    ? t("products_ui.saving_shows", { pct: Math.round(((compare - price) / compare) * 100) })
+    : t("products_ui.saving_hint");
 });
 </script>

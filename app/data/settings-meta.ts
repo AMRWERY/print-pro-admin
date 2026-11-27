@@ -8,32 +8,45 @@ import type {
 } from "~/types/admin/settings";
 
 // Labels and the section map for the settings screen (no Tailwind classes, see order-meta.ts).
+// Labels are getters so they are translated when read, in the current language.
+
+/** The language the interface is showing now (for date names). */
+const currentLocale = (): string => {
+  const l = tryUseNuxtApp()?.$i18n?.locale as unknown;
+  const v = l && typeof l === "object" && "value" in (l as object) ? (l as { value: unknown }).value : l;
+  return typeof v === "string" && v ? v : "en";
+};
+
 export const sectionList: SettingsSectionMeta[] = [
   {
     id: "store",
-    label: "Store information",
+    get label() { return tr("settings_ui.sec_store"); },
     key: "store",
-    group: "Store & brand",
+    get group() { return tr("settings_ui.group_store_brand"); },
   },
   {
     id: "contact",
-    label: "Contact & support desk",
+    get label() { return tr("settings_ui.sec_contact"); },
     key: "contact",
-    group: "Store & brand",
+    get group() { return tr("settings_ui.group_store_brand"); },
   },
-  { id: "payments", label: "Payments", key: "payments", group: "Commerce" },
-  { id: "shipping", label: "Delivery", key: "shipping", group: "Commerce" },
-  { id: "orders", label: "Order processing", key: "orders", group: "Commerce" },
+  { id: "payments", get label() { return tr("settings_ui.sec_payments"); }, key: "payments", get group() { return tr("settings_ui.group_commerce"); } },
+  { id: "shipping", get label() { return tr("settings_ui.sec_shipping"); }, key: "shipping", get group() { return tr("settings_ui.group_commerce"); } },
+  { id: "orders", get label() { return tr("settings_ui.sec_orders"); }, key: "orders", get group() { return tr("settings_ui.group_commerce"); } },
   {
     id: "inventory",
-    label: "Inventory & warehouses",
+    get label() { return tr("settings_ui.sec_inventory"); },
     key: "inventory",
-    group: "Operations",
+    get group() { return tr("settings_ui.group_operations"); },
   },
 ];
 
-export const sectionKeyLabel: Record<SettingsKey, string> = Object.fromEntries(
-  sectionList.map((s) => [s.key, s.label]),
+// Each entry reads the section label when asked, so it follows the language.
+export const sectionKeyLabel = Object.defineProperties(
+  {},
+  Object.fromEntries(
+    sectionList.map((s) => [s.key, { enumerable: true, get: () => s.label }]),
+  ),
 ) as Record<SettingsKey, string>;
 
 export const timezoneOptions = [
@@ -50,17 +63,17 @@ export const timezoneOptions = [
 ].map((value) => ({ value, label: value.replace("_", " ") }));
 
 export const currencyOptions: { value: CurrencyCode; label: string }[] = [
-  { value: "EGP", label: "EGP · Egyptian pound" },
-  { value: "EUR", label: "EUR · Euro" },
-  { value: "CHF", label: "CHF · Swiss franc" },
-  { value: "USD", label: "USD · US dollar" },
-  { value: "GBP", label: "GBP · Pound sterling" },
+  { value: "EGP", get label() { return tr("settings_ui.currency_egp"); } },
+  { value: "EUR", get label() { return tr("settings_ui.currency_eur"); } },
+  { value: "CHF", get label() { return tr("settings_ui.currency_chf"); } },
+  { value: "USD", get label() { return tr("settings_ui.currency_usd"); } },
+  { value: "GBP", get label() { return tr("settings_ui.currency_gbp"); } },
 ];
 
 export const roundingOptions: { value: RoundingMode; label: string }[] = [
-  { value: "cent", label: "Exact (to the cent)" },
-  { value: "unit", label: "Whole units" },
-  { value: "five", label: "Nearest 5" },
+  { value: "cent", get label() { return tr("settings_ui.rounding_cent"); } },
+  { value: "unit", get label() { return tr("settings_ui.rounding_unit"); } },
+  { value: "five", get label() { return tr("settings_ui.rounding_five"); } },
 ];
 
 export const cardMethodOptions: {
@@ -68,17 +81,25 @@ export const cardMethodOptions: {
   label: string;
   description: string;
 }[] = [
-  { value: "wallet", label: "Wallets", description: "Apple Pay, Google Pay" },
-  { value: "sepa", label: "SEPA debit", description: "Direct debit mandates" },
+  {
+    value: "wallet",
+    get label() { return tr("settings_ui.card_wallet_label"); },
+    get description() { return tr("settings_ui.card_wallet_hint"); },
+  },
+  {
+    value: "sepa",
+    get label() { return tr("settings_ui.card_sepa_label"); },
+    get description() { return tr("settings_ui.card_sepa_hint"); },
+  },
   {
     value: "zero-liability",
-    label: "Zero-liability cards",
-    description: "Chargeback protection",
+    get label() { return tr("settings_ui.card_zero_label"); },
+    get description() { return tr("settings_ui.card_zero_hint"); },
   },
   {
     value: "local",
-    label: "Local methods",
-    description: "Region-specific payment options",
+    get label() { return tr("settings_ui.card_local_label"); },
+    get description() { return tr("settings_ui.card_local_hint"); },
   },
 ];
 
@@ -89,28 +110,28 @@ export const escortOptions: {
 }[] = [
   {
     value: "standard",
-    label: "Standard courier",
-    description: "Tracked courier, signature on delivery",
+    get label() { return tr("settings_ui.escort_standard_label"); },
+    get description() { return tr("settings_ui.escort_standard_hint"); },
   },
   {
     value: "dedicated",
-    label: "Same-day courier",
-    description: "Single-parcel courier, same day in-city",
+    get label() { return tr("settings_ui.escort_dedicated_label"); },
+    get description() { return tr("settings_ui.escort_dedicated_hint"); },
   },
   {
     value: "armored",
-    label: "Installation team",
-    description: "Technician delivery and installation for heavy machines",
+    get label() { return tr("settings_ui.escort_armored_label"); },
+    get description() { return tr("settings_ui.escort_armored_hint"); },
   },
   {
     value: "diplomatic",
-    label: "Cross-border freight",
-    description: "Sealed freight with customs paperwork",
+    get label() { return tr("settings_ui.escort_diplomatic_label"); },
+    get description() { return tr("settings_ui.escort_diplomatic_hint"); },
   },
 ];
 
 export const dayLabel = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-US", {
+  new Date(iso).toLocaleDateString(currentLocale(), {
     month: "short",
     day: "2-digit",
     year: "numeric",

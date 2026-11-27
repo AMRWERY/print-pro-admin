@@ -5,7 +5,7 @@
         v-if="!ready"
         class="space-y-3"
         aria-busy="true"
-        aria-label="Checking your link"
+        :aria-label="$t('auth_ui.checking_link')"
       >
         <LazyVSkeletonLoader variant="line" class="!h-8 w-2/3" />
         <LazyVSkeletonLoader class="h-24" />
@@ -74,7 +74,7 @@
             :label="t('profile_ui.confirm_new_password')"
             required
             revealable
-            :rules="matchesRule(() => password)"
+            :rules="matchesRule(() => password, t('auth_ui.passwords_dont_match'))"
             autocomplete="new-password"
             icon="lucide:shield-check"
           />

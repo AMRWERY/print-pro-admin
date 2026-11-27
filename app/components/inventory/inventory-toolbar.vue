@@ -6,18 +6,18 @@
           v-model="q"
           name="inventorySearch"
           type="search"
-          label="Filter inventory"
+          :label="$t('inventory_ui.filter_inventory')"
           hide-label
           icon="lucide:search"
           autocomplete="off"
-          placeholder="Filter by SKU, name or bin…"
+          :placeholder="$t('inventory_ui.filter_placeholder')"
         />
       </form>
 
       <LazyVSelectInput
         v-model="category"
         name="inventoryDivision"
-        label="Division"
+        :label="$t('inventory_ui.item_division')"
         hide-label
         :options="categories.options(true)"
       />
@@ -25,7 +25,7 @@
       <LazyVSelectInput
         v-model="warehouse"
         name="inventoryWarehouse"
-        label="Warehouse"
+        :label="$t('inventory_ui.warehouse')"
         hide-label
         :options="warehouseOptions"
       />
@@ -33,7 +33,7 @@
       <LazyVSelectInput
         v-model="sort"
         name="inventorySort"
-        label="Sort"
+        :label="$t('orders_ui.filter_sort_label')"
         hide-label
         :options="sortOptions"
       />
@@ -41,7 +41,7 @@
 
     <div
       role="group"
-      aria-label="Stock level"
+      :aria-label="$t('inventory_ui.stock_level')"
       class="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1"
     >
       <button

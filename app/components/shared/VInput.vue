@@ -42,7 +42,7 @@
         v-if="revealable && type === 'password'"
         variant="plain"
         class="absolute end-1.5 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-control text-mute transition-colors duration-200 hover:text-paper"
-        :aria-label="shown ? 'Hide password' : 'Show password'"
+        :aria-label="shown ? $t('common_ui.hide_password') : $t('common_ui.show_password')"
         :aria-pressed="shown"
         @click="shown = !shown"
       >

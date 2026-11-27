@@ -16,7 +16,7 @@
           :label="$t('customers_ui.kpi_total_accounts')"
           icon="lucide:users"
           :value="number(kpis.total)"
-          :hint="`+${number(kpis.newThisQuarter)} this quarter · ${percent(kpis.retentionPct)} retention`"
+          :hint="$t('customers_ui.kpi_total_hint', { count: number(kpis.newThisQuarter), retention: percent(kpis.retentionPct) })"
         />
       </li>
       <li>
@@ -30,7 +30,7 @@
               notation: 'compact',
             })
           "
-          :hint="`Average lifetime value ${currency(kpis.avgLtv, { maximumFractionDigits: 0 })}`"
+          :hint="$t('customers_ui.kpi_active_hint', { value: currency(kpis.avgLtv, { maximumFractionDigits: 0 }) })"
         />
       </li>
       <li>
@@ -40,7 +40,7 @@
           :label="$t('orders_ui.tab_all')"
           icon="lucide:shield-check"
           :value="number(kpis.activeOrders)"
-          :hint="`Across ${number(kpis.activeClients)} regions`"
+          :hint="$t('customers_ui.kpi_regions_hint', { count: number(kpis.activeClients) })"
         />
       </li>
       <li>
@@ -49,7 +49,7 @@
           :label="$t('customers_ui.kpi_enterprise')"
           icon="lucide:award"
           :value="number(kpis.vip)"
-          hint="Dedicated account manager"
+          :hint="$t('customers_ui.kpi_enterprise_hint')"
         />
       </li>
     </template>

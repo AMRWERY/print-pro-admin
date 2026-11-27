@@ -11,7 +11,7 @@
       <li>
         <LazyVStatCard
           size="lg"
-          label="Total valuation"
+          :label="$t('inventory_ui.kpi_total_valuation')"
           icon="lucide:landmark"
           :value="
             currency(kpis.valuation, {
@@ -19,27 +19,26 @@
               notation: 'compact',
             })
           "
-          :hint="`${number(kpis.units)} units across ${number(kpis.skus)} SKUs`"
+          :hint="$t('inventory_ui.kpi_valuation_hint', { units: number(kpis.units), skus: number(kpis.skus) })"
         />
       </li>
       <li>
         <LazyVStatCard
           size="lg"
-          label="Healthy reserves"
+          :label="$t('inventory_ui.kpi_healthy_reserves')"
           icon="lucide:circle-check"
-          :hint="`${percent(kpis.healthyPct)} at a nominal level`"
+          :hint="$t('inventory_ui.kpi_healthy_hint', { pct: percent(kpis.healthyPct) })"
         >
           <template #value
             >{{
-              number(Math.round((kpis.healthyPct / 100) * kpis.skus))
-            }}
-            SKUs</template
+              $t('inventory_ui.sku_count', { n: number(Math.round((kpis.healthyPct / 100) * kpis.skus)) })
+            }}</template
           >
 
           <LazyVMeter
             :value="kpis.healthyPct"
             tone="success"
-            label="Share of SKUs with healthy stock"
+            :label="$t('inventory_ui.kpi_healthy_meter')"
           />
         </LazyVStatCard>
       </li>
@@ -47,20 +46,20 @@
         <LazyVStatCard
           size="lg"
           tone="warning"
-          label="Low stock, critical"
+          :label="$t('inventory_ui.kpi_low_critical')"
           icon="lucide:triangle-alert"
-          :value="`${number(kpis.low)} SKUs`"
-          hint="At or below their reorder point"
+          :value="$t('inventory_ui.sku_count', { n: number(kpis.low) })"
+          :hint="$t('inventory_ui.kpi_low_hint')"
         />
       </li>
       <li>
         <LazyVStatCard
           size="lg"
           tone="accent"
-          label="Out of stock"
+          :label="$t('inventory_ui.tab_out')"
           icon="lucide:circle-alert"
-          :value="`${pad(kpis.out)} SKUs`"
-          :hint="`${currency(kpis.reorderValue, { maximumFractionDigits: 0 })} to restock`"
+          :value="$t('inventory_ui.sku_count', { n: pad(kpis.out) })"
+          :hint="$t('inventory_ui.kpi_restock_hint', { amount: currency(kpis.reorderValue, { maximumFractionDigits: 0 }) })"
         />
       </li>
     </template>

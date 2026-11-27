@@ -25,8 +25,8 @@
       icon="lucide:user-round-x"
       :title="$t('profile_ui.not_signed_in_title')"
       :description="$t('profile_ui.not_signed_in_desc')"
-      eyebrow="ACCOUNT :: NO_SESSION"
-      tag="SIGNED OUT"
+      :eyebrow="$t('profile_ui.no_session_eyebrow')"
+      :tag="$t('profile_ui.signed_out_tag')"
     >
       <LazyVButton to="/auth" icon="lucide:log-in">{{ $t('btn.sign_in') }}</LazyVButton>
     </LazyVEmptyState>
@@ -152,7 +152,7 @@ const initials = computed(() =>
 );
 
 const tierTitle = computed(
-  () => tiers.find((t) => t.id === account.value?.tier)?.title ?? "Member",
+  () => tiers.find((t) => t.id === account.value?.tier)?.title ?? t('profile_ui.member_default'),
 );
 
 const memberSince = computed(() =>

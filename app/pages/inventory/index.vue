@@ -58,7 +58,7 @@
     <inventory-kpis :kpis="data?.kpis" />
 
     <div class="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
-      <section class="card min-w-0" aria-label="Inventory ledger">
+      <section class="card min-w-0" :aria-label="$t('inventory_ui.ledger_title')">
         <div class="border-b border-line p-4 sm:p-5">
           <inventory-toolbar
             v-model:q="filters.q"
@@ -76,8 +76,8 @@
               icon="lucide:triangle-alert"
               :title="$t('inventory_ui.error_title')"
               :description="$t('inventory_ui.error_desc')"
-              eyebrow="LEDGER :: SYNC_ERROR"
-              tag="OFFLINE"
+              :eyebrow="$t('inventory_ui.sync_error_eyebrow')"
+              :tag="$t('inventory_ui.offline_tag')"
               tag-tone="accent"
             >
               <LazyVButton icon="lucide:refresh-cw" @click="() => refresh()"
@@ -322,19 +322,19 @@ const exportRows = async (format: "pdf" | "excel") => {
   try {
     await downloadTable(format, {
       title: t('inventory_ui.ledger_title'),
-      subtitle: `${list.length} SKU${list.length > 1 ? "s" : ""}`,
+      subtitle: t('inventory_ui.export_subtitle', { n: list.length }),
       fileName: `inventory-ledger-${new Date().toISOString().slice(0, 10)}`,
       head: [
-        "SKU",
-        "Name",
-        "Division",
-        "Warehouse",
-        "Bin",
-        "Stock",
-        "Reserved",
-        "Available",
-        "Reorder at",
-        "Stock value",
+        t('inventory_ui.item_sku'),
+        t('common_ui.name'),
+        t('inventory_ui.item_division'),
+        t('inventory_ui.warehouse'),
+        t('inventory_ui.export_col_bin'),
+        t('inventory_ui.col_stock'),
+        t('inventory_ui.export_col_reserved'),
+        t('inventory_ui.export_col_available'),
+        t('inventory_ui.export_col_reorder_at'),
+        t('inventory_ui.export_col_stock_value'),
       ],
       body: list.map((i) => [
         i.sku,
@@ -351,7 +351,7 @@ const exportRows = async (format: "pdf" | "excel") => {
       moneyCols: [9],
       numberCols: [5, 6, 7, 8],
     });
-    toast.success(`Exported ${list.length} SKU${list.length > 1 ? "s" : ""}`);
+    toast.success(t('inventory_ui.toast_exported', { n: list.length }));
   } catch {
     toast.error(t('inventory_ui.toast_export_error'), {
       description: t('common_ui.try_again'),

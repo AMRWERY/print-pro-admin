@@ -7,9 +7,9 @@
   >
     <header class="border-b border-line p-4 sm:p-5">
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <p class="label-caps text-accent">Domain {{ number }}</p>
+        <p class="label-caps text-accent">{{ $t('settings_ui.domain_label', { number }) }}</p>
         <LazyVStatusBadge v-if="changed" tone="warning" icon="lucide:pencil"
-          >Unsaved changes</LazyVStatusBadge
+          >{{ $t('common_ui.unsaved_changes') }}</LazyVStatusBadge
         >
       </div>
 

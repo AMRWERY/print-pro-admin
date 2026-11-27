@@ -4,7 +4,7 @@
 
     <LazyVErrorBanner
       v-else-if="error || !series"
-      :message="`The ${title.toLowerCase()} could not be loaded.`"
+      :message="$t('dashboard_ui.chart_error', { title: title.toLowerCase() })"
       @retry="emit('retry')"
     />
 
@@ -15,7 +15,7 @@
         dir="ltr"
         tabindex="0"
         role="group"
-        :aria-label="`${title}. Use the left and right arrow keys to inspect each point.`"
+        :aria-label="$t('dashboard_ui.chart_keys_hint', { title })"
         @keydown="onKey"
         @pointerleave="active = series.peakIndex"
       >
@@ -82,7 +82,7 @@
 
       <p class="flex items-center gap-1.5 border-t border-line pt-3 font-mono text-xs text-mute">
         <Icon name="lucide:gauge" size="14" aria-hidden="true" />
-        Peak
+        {{ $t('dashboard_ui.peak') }}
         <span class="font-semibold text-paper">{{ format(valueAt(series.peakIndex)) }} · {{ pointLabel(series.peakIndex) }}</span>
       </p>
     </div>
@@ -156,12 +156,18 @@ const ticks = computed(() =>
   }),
 );
 
-const unitNames = { day: "Day", week: "Week", month: "Month" } as const;
+const { t } = useI18n();
+
+const unitKeys = {
+  day: "dashboard_ui.unit_day",
+  week: "dashboard_ui.unit_week",
+  month: "dashboard_ui.unit_month",
+} as const;
 
 const pointLabel = (i: number) => {
   const unit = props.series?.unit ?? "day";
   const n = unit === "hour" ? i : i + 1;
-  return unit === "hour" ? `${n}:00` : `${unitNames[unit]} ${n}`;
+  return unit === "hour" ? `${n}:00` : t(unitKeys[unit], { n });
 };
 
 const xTicks = computed(() => {

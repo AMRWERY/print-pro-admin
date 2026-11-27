@@ -1,11 +1,11 @@
 <template>
   <LazyVDialog
     v-model:open="open"
-    :title="editing ? 'Edit inventory item' : copy ? 'Duplicate inventory item' : 'Add inventory item'"
+    :title="editing ? $t('inventory_ui.dialog_edit_title') : copy ? $t('inventory_ui.dialog_dup_title') : $t('inventory_ui.dialog_add_title')"
     :description="
       editing
-        ? 'Changes to the count and the location are written to the movement history.'
-        : 'Registers a new SKU and books its starting stock into a warehouse.'
+        ? $t('inventory_ui.dialog_desc_edit')
+        : $t('inventory_ui.dialog_desc_add')
     "
     size="lg"
   >
@@ -14,7 +14,7 @@
         <LazyVInput
           v-model="form.name"
           name="itemName"
-          label="Product name"
+          :label="$t('inventory_ui.item_name')"
           required
           rules="required|min:2|max:120"
           maxlength="120"
@@ -24,17 +24,17 @@
         <LazyVInput
           v-model="form.sku"
           name="itemSku"
-          label="SKU"
+          :label="$t('inventory_ui.item_sku')"
           required
           rules="required|min:3|max:31"
-          hint="Letters, numbers and dashes. Must be unique."
+          :hint="$t('inventory_ui.sku_hint')"
           input-class="font-mono uppercase"
         />
 
         <LazyVInput
           v-model="form.brand"
           name="itemBrand"
-          label="Brand / make"
+          :label="$t('inventory_ui.item_brand')"
           required
           rules="required|min:2|max:60"
           maxlength="60"
@@ -43,7 +43,7 @@
         <LazyVSelectInput
           v-model="form.category"
           name="itemCategory"
-          label="Division"
+          :label="$t('inventory_ui.item_division')"
           required
           rules="required"
           :options="categoryChoices"
@@ -53,7 +53,7 @@
           v-model="form.price"
           name="itemPrice"
           type="number"
-          label="Unit value"
+          :label="$t('inventory_ui.item_price')"
           required
           rules="required|min_value:0"
           min="0"
@@ -64,7 +64,7 @@
           v-model="form.stock"
           name="itemStock"
           type="number"
-          label="Units in stock"
+          :label="$t('inventory_ui.item_units_in_stock')"
           required
           rules="required|integer|min_value:0"
           min="0"
@@ -74,17 +74,17 @@
           v-model="form.min"
           name="itemMin"
           type="number"
-          label="Reorder point"
+          :label="$t('inventory_ui.item_reorder_point')"
           required
           rules="required|integer|min_value:0"
           min="0"
-          hint="At or below this the item shows as low stock."
+          :hint="$t('inventory_ui.item_reorder_hint')"
         />
 
         <LazyVSelectInput
           v-model="form.warehouse"
           name="itemWarehouse"
-          label="Warehouse"
+          :label="$t('inventory_ui.warehouse')"
           required
           rules="required"
           :options="warehouseChoices"
@@ -93,7 +93,7 @@
         <LazyVInput
           v-model="form.bin"
           name="itemBin"
-          label="Bin location"
+          :label="$t('inventory_ui.bin_location')"
           required
           rules="required|min:2|max:20"
           maxlength="20"
@@ -115,7 +115,7 @@
 
     <template #footer>
       <LazyVButton variant="secondary" :disabled="loading" @click="open = false"
-        >Cancel</LazyVButton
+        >{{ $t('btn.cancel') }}</LazyVButton
       >
 
       <LazyVButton
@@ -123,7 +123,7 @@
         form="item-form"
         :loading="loading"
         icon="lucide:check"
-        >{{ editing ? "Save changes" : "Add item" }}</LazyVButton
+        >{{ editing ? $t('btn.save_changes') : $t('btn.add_item') }}</LazyVButton
       >
     </template>
   </LazyVDialog>
@@ -149,6 +149,7 @@ const emit = defineEmits<{
 const open = defineModel<boolean>("open", { default: false });
 
 const toast = useToast();
+const { t } = useI18n();
 
 const categoryChoices = computed(() => categories.options());
 
@@ -183,7 +184,7 @@ watch(open, (isOpen) => {
     form,
     i
       ? {
-          name: props.copy ? `${i.name} (copy)` : i.name,
+          name: props.copy ? t('inventory_ui.item_copy_name', { name: i.name }) : i.name,
           sku: props.copy ? `${i.sku}-COPY` : i.sku,
           category: i.category,
           brand: i.brand,
@@ -217,15 +218,15 @@ const submit = async () => {
     const saved = target
       ? await store.updateItem(target.id, { ...form })
       : await store.createItem({ ...form });
-    toast.success(target ? "Item updated" : "Item added", { description: saved.name });
+    toast.success(target ? t('inventory_ui.toast_item_updated') : t('inventory_ui.toast_item_added'), { description: saved.name });
     emit("done", saved, target ? "edit" : "create");
     open.value = false;
   } catch (e) {
     const status = statusOf(e);
     error.value =
       status === 409
-        ? "An item with that SKU already exists. Use a different SKU."
-        : "The item could not be saved. Check the details and try again.";
+        ? t('inventory_ui.error_sku_exists')
+        : t('inventory_ui.error_item_save');
   } finally {
     loading.value = false;
   }

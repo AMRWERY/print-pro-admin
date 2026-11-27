@@ -1,10 +1,10 @@
 <template>
   <LazyVPanel
-    :title="coupon ? 'Edit voucher' : 'Create voucher'"
+    :title="coupon ? $t('coupons_ui.insp_edit_title') : $t('coupons_ui.insp_create_title')"
     :subtitle="
       coupon
-        ? `Live inspection · ${coupon.code}`
-        : 'Set up a voucher for your customers'
+        ? $t('coupons_ui.insp_live_inspection', { code: coupon.code })
+        : $t('coupons_ui.insp_create_subtitle')
     "
     :icon="coupon ? 'lucide:ticket-percent' : 'lucide:circle-plus'"
   >
@@ -13,7 +13,8 @@
         variant="icon"
         size="sm"
         icon="lucide:x"
-        aria-label="Close"
+        :aria-label="$t('common_ui.close')"
+        data-close-btn
         @click="emit('close')"
       />
     </template>
@@ -27,13 +28,13 @@
       <!-- 01 -->
       <section class="space-y-3" aria-labelledby="cp-identity">
         <h3 id="cp-identity" class="label-caps">
-          01 // Voucher identity &amp; code
+          {{ $t('coupons_ui.insp_sec_identity') }}
         </h3>
         <div class="flex items-end gap-2">
           <LazyVInput
             v-model="form.code"
             name="cpCode"
-            label="Coupon code"
+            :label="$t('coupons_ui.coupon_code')"
             required
             rules="required|min:3|max:40"
             class="min-w-0 flex-1"
@@ -45,13 +46,13 @@
             variant="secondary"
             icon="lucide:shuffle"
             @click="generate"
-            >Generate</LazyVButton
+            >{{ $t('coupons_ui.insp_generate') }}</LazyVButton
           >
         </div>
         <LazyVInput
           v-model="form.campaign"
           name="cpCampaign"
-          label="Campaign / internal name"
+          :label="$t('coupons_ui.campaign_name')"
           required
           rules="required|min:2|max:120"
           maxlength="120"
@@ -60,7 +61,7 @@
         <LazyVTextarea
           v-model="form.description"
           name="cpDescription"
-          label="Public storefront description"
+          :label="$t('coupons_ui.insp_description_label')"
           optional
           rows="3"
           maxlength="300"
@@ -70,10 +71,10 @@
       <!-- 02 -->
       <section class="space-y-3" aria-labelledby="cp-mechanism">
         <h3 id="cp-mechanism" class="label-caps">
-          02 // Discount mechanism &amp; valuation
+          {{ $t('coupons_ui.insp_sec_mechanism') }}
         </h3>
         <fieldset>
-          <legend class="label">Concession type</legend>
+          <legend class="label">{{ $t('coupons_ui.insp_concession_type') }}</legend>
           <div class="mt-1.5 grid gap-2 sm:grid-cols-2">
             <LazyVRadioInput
               v-for="t in typeChoices"
@@ -95,8 +96,8 @@
             type="number"
             :label="
               form.type === 'percentage'
-                ? 'Discount value (%)'
-                : 'Concession value'
+                ? $t('coupons_ui.insp_value_percent')
+                : $t('coupons_ui.insp_value_fixed')
             "
             required
             :rules="
@@ -113,7 +114,7 @@
             v-model="form.cap"
             name="cpCap"
             type="number"
-            label="Cap per order (margin safety)"
+            :label="$t('coupons_ui.insp_cap')"
             optional
             rules="min_value:0"
             min="0"
@@ -133,7 +134,7 @@
       <!-- 03 -->
       <section class="space-y-3" aria-labelledby="cp-usage">
         <h3 id="cp-usage" class="label-caps">
-          03 // Usage rules &amp; cap
+          {{ $t('coupons_ui.insp_sec_usage') }}
         </h3>
         <div class="grid gap-3 sm:grid-cols-2">
           <div>
@@ -142,7 +143,7 @@
               v-model="form.limit"
               name="cpLimit"
               type="number"
-              label="Total redemptions"
+              :label="$t('coupons_ui.kpi_total_claims')"
               :required="!form.unlimited"
               :rules="form.unlimited ? '' : 'required|integer|min_value:1'"
               min="1"
@@ -152,7 +153,7 @@
             <LazyVCheckboxImput
               v-model="form.unlimited"
               name="cpUnlimited"
-              label="Unlimited"
+              :label="$t('coupons_ui.insp_unlimited')"
               size="sm"
               class="mt-1.5"
             />
@@ -161,7 +162,7 @@
           <LazyVSelectInput
             v-model="form.perAccount"
             name="cpPerAccount"
-            label="Per-account limit"
+            :label="$t('coupons_ui.insp_per_account')"
             :options="perAccountOptions"
           />
         </div>
@@ -170,7 +171,7 @@
           v-model="form.minOrder"
           name="cpMin"
           type="number"
-          label="Minimum order value"
+          :label="$t('coupons_ui.insp_min_order')"
           optional
           rules="min_value:0"
           min="0"
@@ -180,19 +181,19 @@
       <!-- 04 -->
       <section class="space-y-3" aria-labelledby="cp-eligibility">
         <h3 id="cp-eligibility" class="label-caps">
-          04 // Eligibility &amp; hardware bounds
+          {{ $t('coupons_ui.insp_sec_eligibility') }}
         </h3>
         <LazyVSelectInput
           v-model="form.tier"
           name="cpTier"
-          label="Customer tier"
+          :label="$t('coupons_ui.insp_customer_tier')"
           :options="tierChoices"
         />
 
         <fieldset>
           <legend class="label">
-            Allowed categories
-            <span class="font-normal text-mute">(none selected means all)</span>
+            {{ $t('coupons_ui.insp_allowed_categories') }}
+            <span class="font-normal text-mute">{{ $t('coupons_ui.insp_none_means_all') }}</span>
           </legend>
           <div class="mt-1.5 grid gap-2 sm:grid-cols-2">
             <LazyVCheckboxImput
@@ -210,26 +211,26 @@
 
       <!-- 05 -->
       <section class="space-y-3" aria-labelledby="cp-schedule">
-        <h3 id="cp-schedule" class="label-caps">05 // Schedule &amp; status</h3>
+        <h3 id="cp-schedule" class="label-caps">{{ $t('coupons_ui.insp_sec_schedule') }}</h3>
         <div class="grid gap-3 sm:grid-cols-2">
           <LazyVDatePicker
             v-model="form.startsAt"
             name="cpStart"
-            label="Starts"
+            :label="$t('coupons_ui.insp_starts')"
             optional
             clearable
             :shortcuts="false"
-            placeholder="No start date"
+            :placeholder="$t('coupons_ui.insp_no_start')"
           />
 
           <LazyVDatePicker
             v-model="form.endsAt"
             name="cpEnd"
-            label="Ends"
+            :label="$t('coupons_ui.insp_ends')"
             optional
             clearable
             :shortcuts="false"
-            placeholder="No end date"
+            :placeholder="$t('coupons_ui.insp_no_end')"
             :min="form.startsAt || undefined"
           />
         </div>
@@ -237,7 +238,7 @@
         <LazyVSelectInput
           v-model="form.status"
           name="cpStatus"
-          label="Status"
+          :label="$t('common_ui.status')"
           :options="statusOptions"
         />
       </section>
@@ -263,7 +264,7 @@
         class="!text-accent"
         :disabled="saving"
         @click="emit('remove')"
-        >Delete voucher</LazyVButton
+        >{{ $t('coupons_ui.insp_delete') }}</LazyVButton
       >
 
       <span v-else />
@@ -273,7 +274,7 @@
         form="coupon-form"
         :loading="saving"
         icon="lucide:save"
-        >{{ coupon ? "Save changes" : "Create voucher" }}</LazyVButton
+        >{{ coupon ? $t('btn.save_changes') : $t('coupons_ui.insp_create_title') }}</LazyVButton
       >
     </div>
   </LazyVPanel>
@@ -307,6 +308,7 @@ const emit = defineEmits<{
 }>();
 
 const { currency } = useFormatters();
+const { t } = useI18n();
 
 const typeChoices = (Object.keys(typeMeta) as CouponType[]).map((value) => ({
   value,
@@ -317,7 +319,7 @@ const categoryChoices = computed(() => categories.options());
 
 const tierChoices = tierOptions.map((o) => ({
   ...o,
-  label: o.value === "all" ? "All customers" : o.label,
+  label: o.value === "all" ? t("btn.all_customers") : o.label,
 }));
 
 const c = props.coupon ?? props.seed ?? null;
@@ -350,14 +352,19 @@ const generate = () => {
 // What one redemption is worth, on the smallest basket the voucher allows.
 const preview = computed(() => {
   const v = Number(form.value);
-  if (!v) return "Enter a value to see a sample concession.";
+  if (!v) return t("coupons_ui.insp_preview_empty");
   const basket = Math.max(Number(form.minOrder) || 0, 5000);
   const money = (n: number) => currency(n, { maximumFractionDigits: 2 });
   if (form.type !== "percentage")
-    return `Each redemption takes ${money(v)} off the order.`;
+    return t("coupons_ui.insp_preview_fixed", { amount: money(v) });
   const raw = (basket * v) / 100;
   const capped = form.cap ? Math.min(raw, Number(form.cap)) : raw;
-  return `On a ${money(basket)} basket the concession is ${money(capped)}${capped < raw ? " (capped)" : ""}.`;
+  return t(
+    capped < raw
+      ? "coupons_ui.insp_preview_percent_capped"
+      : "coupons_ui.insp_preview_percent",
+    { basket: money(basket), amount: money(capped) },
+  );
 });
 
 const { validate } = useForm();
@@ -368,7 +375,7 @@ const submit = async () => {
   const { valid } = await validate();
   if (!valid) return;
   if (form.startsAt && form.endsAt && form.endsAt < form.startsAt) {
-    localError.value = "The end date must be on or after the start date.";
+    localError.value = t("coupons_ui.insp_end_before_start");
     return;
   }
   emit("save", {

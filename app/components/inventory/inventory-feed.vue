@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-4">
     <LazyVPanel
-      title="Stock movements"
-      subtitle="Immutable audit trail of every stock change"
+      :title="$t('inventory_ui.movements_title')"
+      :subtitle="$t('inventory_ui.movements_subtitle')"
       icon="lucide:history"
     >
       <template #actions>
@@ -10,7 +10,7 @@
           variant="icon"
           size="sm"
           icon="lucide:refresh-cw"
-          aria-label="Refresh movements"
+          :aria-label="$t('inventory_ui.refresh_movements')"
           @click="emit('refresh')"
         />
       </template>
@@ -46,7 +46,7 @@
         </li>
 
         <li v-if="movements && !movements.length" class="text-sm text-mute">
-          No movements recorded yet.
+          {{ $t('inventory_ui.movements_empty') }}
         </li>
       </ul>
 

@@ -3,9 +3,9 @@
     <header class="flex flex-wrap items-center justify-between gap-3">
       <h2 id="media-title" class="flex items-center gap-2 font-display text-lg font-bold">
         <Icon name="lucide:image" size="18" class="text-accent" aria-hidden="true" />
-        02 // Images
+        02 // {{ $t('products_ui.heading_images') }}
       </h2>
-      <div class="shrink-0"><span class="chip">{{ form.media.length }} / {{ MAX }} assets</span></div>
+      <div class="shrink-0"><span class="chip">{{ $t('products_ui.assets_count', { count: form.media.length, max: MAX }) }}</span></div>
     </header>
 
     <ul
@@ -39,7 +39,7 @@
             :title="file.name"
           >
             <LazyVStatusBadge v-if="i === 0" tone="accent"
-              >Cover</LazyVStatusBadge
+              >{{ $t('products_ui.cover') }}</LazyVStatusBadge
             >
             <span class="truncate">{{ file.name }}</span>
           </p>
@@ -51,14 +51,14 @@
             variant="secondary"
             size="sm"
             @click="makeCover(i)"
-            >Set as cover</LazyVButton
+            >{{ $t('products_ui.set_as_cover') }}</LazyVButton
           >
 
           <LazyVButton
             variant="icon"
             size="sm"
             icon="lucide:trash-2"
-            :aria-label="`Remove ${file.name}`"
+            :aria-label="$t('common_ui.remove_file', { name: file.name })"
             class="ms-auto hover:!border-accent hover:!text-accent"
             @click="remove(i)"
           />
@@ -71,12 +71,12 @@
       :max-files="MAX"
       :max-size-mb="25"
       :accept="['.png', '.jpg', '.jpeg', '.webp']"
-      title="Drag and drop product images (JPG, PNG or WebP)"
-      description="The first image is the cover."
-      button-label="Select local files"
+      :title="$t('products_ui.upload_title')"
+      :description="$t('products_ui.upload_desc')"
+      :button-label="$t('products_ui.select_local_files')"
       @select="add"
       @reject="
-        (message) => toast.warning('File not added', { description: message })
+        (message) => toast.warning(t('products_ui.file_not_added'), { description: message })
       "
     />
     <p class="callout mt-3">
@@ -86,10 +86,7 @@
         class="bullet-icon"
         aria-hidden="true"
       />
-      <span
-        >Photos are resized to fit (up to 1000 px wide) so the page stays
-        fast.</span
-      >
+      <span>{{ $t('products_ui.resize_note') }}</span>
     </p>
   </section>
 </template>
@@ -99,27 +96,28 @@ import type { ProductFormValues } from "~/types/admin/products";
 
 const props = defineProps<{ form: ProductFormValues }>();
 
+const { t } = useI18n();
 const MAX = 12;
 const toast = useToast();
 
 const formatSize = (b: number) =>
   b >= 1e6
-    ? `${(b / 1e6).toFixed(1)} MB`
-    : `${Math.max(1, Math.round(b / 1e3))} KB`;
+    ? t("products_ui.size_mb", { size: (b / 1e6).toFixed(1) })
+    : t("products_ui.size_kb", { size: Math.max(1, Math.round(b / 1e3)) });
 
 const add = async (files: File[]) => {
   const room = MAX - props.form.media.length;
   if (files.length > room)
-    toast.warning("Media reel is full", {
-      description: `Only ${room} more file${room === 1 ? "" : "s"} fit.`,
+    toast.warning(t("products_ui.media_full_title"), {
+      description: t(room === 1 ? "products_ui.media_full_one" : "products_ui.media_full_other", { count: room }),
     });
   for (const f of files.slice(0, Math.max(0, room))) {
     try {
       const { url, bytes } = await toWebImage(f);
       props.form.media.push({ name: f.name, size: bytes, url });
     } catch {
-      toast.warning("File not added", {
-        description: `${f.name} could not be read as an image. Try a JPG, PNG or WebP.`,
+      toast.warning(t("products_ui.file_not_added"), {
+        description: t("products_ui.image_read_error", { name: f.name }),
       });
     }
   }

@@ -3,14 +3,14 @@
     <header class="flex flex-wrap items-center justify-between gap-3">
       <h2 id="identity-title" class="flex items-center gap-2 font-display text-lg font-bold">
         <Icon name="lucide:file-text" size="18" class="text-accent" aria-hidden="true" />
-        01 // Identity & description
+        01 // {{ $t('products_ui.heading_identity') }}
       </h2>
     </header>
     <div class="space-y-4">
       <LazyVInput
         v-model="form.name"
         name="name"
-        label="Product title"
+        :label="$t('products_ui.product_title')"
         required
         rules="required|min:2|max:120"
         maxlength="120"
@@ -20,7 +20,7 @@
         <LazyVSelectInput
           v-model="form.category"
           name="category"
-          label="Category"
+          :label="$t('products_ui.field_category')"
           required
           rules="required"
           :options="categoryChoices"
@@ -29,7 +29,7 @@
         <LazyVInput
           v-model="form.brand"
           name="brand"
-          label="Brand"
+          :label="$t('products_ui.brand')"
           required
           rules="required|min:2|max:60"
           maxlength="60"
@@ -37,43 +37,43 @@
       </div>
 
       <div ref="editor">
-        <p class="label">Description</p>
+        <p class="label">{{ $t('common_ui.description') }}</p>
         <div class="mt-1.5 overflow-hidden rounded-control border border-line">
           <div
             class="flex flex-wrap items-center gap-1 border-b border-line bg-ink p-1.5"
             role="toolbar"
-            aria-label="Text formatting"
+            :aria-label="$t('products_ui.text_formatting')"
           >
             <LazyVButton
               variant="icon"
               size="sm"
               icon="lucide:bold"
-              aria-label="Bold"
-              @click="wrap('**', '**', 'bold text')"
+              :aria-label="$t('products_ui.bold')"
+              @click="wrap('**', '**', t('products_ui.placeholder_bold'))"
             />
 
             <LazyVButton
               variant="icon"
               size="sm"
               icon="lucide:italic"
-              aria-label="Italic"
-              @click="wrap('_', '_', 'italic text')"
+              :aria-label="$t('products_ui.italic')"
+              @click="wrap('_', '_', t('products_ui.placeholder_italic'))"
             />
 
             <LazyVButton
               variant="icon"
               size="sm"
               icon="lucide:list"
-              aria-label="Bulleted list"
-              @click="wrap('\n- ', '', 'list item')"
+              :aria-label="$t('products_ui.bulleted_list')"
+              @click="wrap('\n- ', '', t('products_ui.placeholder_list_item'))"
             />
 
             <LazyVButton
               variant="icon"
               size="sm"
               icon="lucide:link"
-              aria-label="Link"
-              @click="wrap('[', '](https://)', 'link text')"
+              :aria-label="$t('products_ui.link')"
+              @click="wrap('[', '](https://)', t('products_ui.placeholder_link_text'))"
             />
             <span class="ms-auto me-2 font-mono text-2xs text-mute tabular-nums"
               >{{ form.description.length }} / 4000</span
@@ -83,7 +83,7 @@
           <LazyVTextarea
             v-model="form.description"
             name="description"
-            label="Description"
+            :label="$t('common_ui.description')"
             hide-label
             rows="8"
             maxlength="4000"
@@ -99,6 +99,7 @@
 <script lang="ts" setup>
 import type { ProductFormValues } from "~/types/admin/products";
 
+const { t } = useI18n();
 const categories = useCategories();
 
 const props = defineProps<{ form: ProductFormValues }>();

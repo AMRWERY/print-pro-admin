@@ -67,7 +67,7 @@
           :label="$t('customers_ui.region_branch')"
           optional
           maxlength="60"
-          placeholder="Cairo"
+          :placeholder="$t('customers_ui.region_placeholder')"
         />
 
         <LazyVInput
@@ -82,14 +82,14 @@
         <LazyVSelectInput
           v-model="form.segment"
           name="clientSegment"
-          :label="$t('nav.customers')"
+          :label="$t('customers_ui.col_segment')"
           :options="segmentOptions"
         />
 
         <LazyVSelectInput
           v-model="form.tier"
           name="clientTier"
-          :label="$t('customers_ui.kpi_enterprise')"
+          :label="$t('customers_ui.col_tier')"
           :options="tierOptions"
         />
 
@@ -103,7 +103,7 @@
         <LazyVInput
           v-model="form.paymentTerms"
           name="clientPayment"
-          label="Payment terms"
+          :label="$t('customers_ui.payment_terms')"
           optional
           maxlength="120"
         />
@@ -147,11 +147,12 @@
 </template>
 
 <script lang="ts" setup>
-import { segmentOptions, statusMeta, tierOptions } from "~/data/customer-meta";
 import type {
   Customer,
   CustomerInput,
+  CustomerSegment,
   CustomerStatus,
+  CustomerTier,
 } from "~/types/admin/customers";
 
 const props = defineProps<{ customer: Customer | null }>();
@@ -163,10 +164,27 @@ const emit = defineEmits<{
 const open = defineModel<boolean>("open", { default: false });
 
 const toast = useToast();
+const { t } = useI18n();
 
-const statusChoices = (Object.keys(statusMeta) as CustomerStatus[]).map(
-  (value) => ({ value, label: statusMeta[value].label }),
-);
+const statusChoices = computed<{ value: CustomerStatus; label: string }[]>(() => [
+  { value: "active", label: t("customers_ui.status_active") },
+  { value: "audit", label: t("customers_ui.status_audit") },
+  { value: "dormant", label: t("customers_ui.status_dormant") },
+]);
+
+const segmentOptions = computed<{ value: CustomerSegment; label: string }[]>(() => [
+  { value: "enterprise", label: t("customers_ui.segment_enterprise") },
+  { value: "business", label: t("customers_ui.segment_business") },
+  { value: "printShop", label: t("customers_ui.segment_print_shop") },
+  { value: "home", label: t("customers_ui.segment_home") },
+  { value: "highLtv", label: t("customers_ui.segment_high_ltv") },
+]);
+
+const tierOptions = computed<{ value: CustomerTier; label: string }[]>(() => [
+  { value: "AAA", label: t("customers_ui.tier_aaa") },
+  { value: "AA", label: t("customers_ui.tier_aa") },
+  { value: "A", label: t("customers_ui.tier_a") },
+]);
 
 const blank = (): CustomerInput => ({
   name: "",
@@ -180,7 +198,7 @@ const blank = (): CustomerInput => ({
   status: "active",
   taxId: "",
   deliveryAddress: "",
-  paymentTerms: "Net-30 invoice, bank transfer",
+  paymentTerms: t("customers_ui.default_payment_terms"),
 });
 
 const form = reactive<CustomerInput>(blank());
@@ -234,7 +252,7 @@ const submit = async () => {
     const saved = await (editing
       ? customers.update(editing.id, { ...form })
       : customers.create({ ...form }));
-    toast.success(editing ? "Client updated" : "Client registered", {
+    toast.success(editing ? t("customers_ui.toast_updated") : t("customers_ui.toast_registered"), {
       description: saved.name,
     });
     emit("saved", saved, editing ? "edit" : "create");
@@ -243,8 +261,8 @@ const submit = async () => {
     const status = statusOf(e);
     error.value =
       status === 409
-        ? "A client with that email is already registered."
-        : "The client could not be saved. Check the details and try again.";
+        ? t("customers_ui.error_email_taken")
+        : t("customers_ui.error_save_failed");
   } finally {
     loading.value = false;
   }

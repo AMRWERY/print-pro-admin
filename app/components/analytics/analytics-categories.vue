@@ -1,7 +1,7 @@
 <template>
   <LazyVPanel
-    title="Category turnover & margin matrix"
-    subtitle="Revenue share and margin by division"
+    :title="$t('analytics_ui.category_matrix_title')"
+    :subtitle="$t('analytics_ui.category_matrix_subtitle')"
     icon="lucide:chart-column"
   >
     <div v-if="!categories" class="space-y-3" aria-busy="true">
@@ -13,7 +13,7 @@
       <div
         class="flex h-3 gap-0.5 overflow-hidden rounded-full"
         role="img"
-        aria-label="Revenue share by division"
+        :aria-label="$t('analytics_ui.revenue_share_by_division')"
       >
         <span
           v-for="(c, i) in categories"
@@ -40,8 +40,8 @@
               {{ categoryNames.label(c.category) }}
             </p>
             <p class="meta">
-              {{ percent(c.share) }} share ·
-              <span class="text-success">{{ signedPercent(c.yoy) }} YoY</span>
+              {{ $t('analytics_ui.share_value', { value: percent(c.share) }) }} ·
+              <span class="text-success">{{ $t('analytics_ui.yoy_change', { value: signedPercent(c.yoy) }) }}</span>
             </p>
           </div>
           <div class="text-end">
@@ -49,7 +49,7 @@
               {{ currency(c.revenue, { maximumFractionDigits: 0 }) }}
             </p>
             <LazyVStatusBadge :tone="c.margin >= 40 ? 'success' : 'neutral'"
-              >Margin {{ percent(c.margin) }}</LazyVStatusBadge
+              >{{ $t('analytics_ui.margin_value', { value: percent(c.margin) }) }}</LazyVStatusBadge
             >
           </div>
         </li>
@@ -58,9 +58,9 @@
       <p
         class="mt-4 flex items-center justify-between gap-2 border-t border-line pt-3 font-mono text-xs text-mute"
       >
-        <span>Portfolio weighted margin</span>
+        <span>{{ $t('analytics_ui.portfolio_weighted_margin') }}</span>
         <span class="font-semibold text-paper"
-          >{{ percent(portfolioMargin) }} net margin</span
+          >{{ $t('analytics_ui.net_margin_value', { value: percent(portfolioMargin) }) }}</span
         >
       </p>
     </template>

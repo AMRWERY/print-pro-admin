@@ -1,20 +1,20 @@
 <template>
   <LazyVDialog
     v-model:open="open"
-    title="Stock adjustment / transfer"
-    description="Correct a count after an audit, or move an item to another warehouse. Every change is written to the movement history."
+    :title="$t('inventory_ui.adjust_modal_title')"
+    :description="$t('inventory_ui.adjust_desc')"
     size="lg"
   >
     <form id="stock-form" class="space-y-4" novalidate @submit.prevent="submit">
       <inventory-product-picker v-model="product" :changeable="!fixed" />
 
       <template v-if="product">
-        <LazyVSegmented v-model="tab" label="Action" :options="tabOptions" />
+        <LazyVSegmented v-model="tab" :label="$t('common_ui.action')" :options="tabOptions" />
 
         <template v-if="tab === 'adjust'">
           <LazyVSegmented
             v-model="mode"
-            label="Adjustment type"
+            :label="$t('inventory_ui.adjust_type')"
             :options="modeOptions"
           />
 
@@ -26,8 +26,8 @@
               type="number"
               :label="
                 mode === 'delta'
-                  ? 'Change in units (use a minus to remove)'
-                  : 'Counted units'
+                  ? $t('inventory_ui.adjust_delta_label')
+                  : $t('inventory_ui.adjust_counted_label')
               "
               required
               :rules="
@@ -41,7 +41,7 @@
               class="rounded-card border border-line bg-ink p-3"
               aria-live="polite"
             >
-              <p class="label-caps">Stock after</p>
+              <p class="label-caps">{{ $t('inventory_ui.stock_after') }}</p>
               <p
                 v-if="next !== null"
                 class="font-display text-2xl font-bold tabular-nums"
@@ -49,13 +49,13 @@
               >
                 {{ product.stock }} <span class="text-mute">→</span> {{ next }}
               </p>
-              <p v-else class="text-sm text-mute">Enter a quantity.</p>
+              <p v-else class="text-sm text-mute">{{ $t('inventory_ui.enter_quantity') }}</p>
 
               <p
                 v-if="next !== null && next < 0"
                 class="mt-1 text-xs text-accent"
               >
-                Stock can't go below zero.
+                {{ $t('inventory_ui.stock_below_zero') }}
               </p>
             </div>
           </div>
@@ -63,11 +63,11 @@
           <LazyVInput
             v-model="reason"
             name="reason"
-            label="Reason"
+            :label="$t('inventory_ui.reason')"
             required
             rules="required|min:3|max:200"
             maxlength="200"
-            placeholder="Cycle count, damaged in handling, returned by customer…"
+            :placeholder="$t('inventory_ui.reason_placeholder')"
           />
         </template>
 
@@ -75,7 +75,7 @@
           <LazyVSelectInput
             v-model="warehouse"
             name="warehouse"
-            label="Move to warehouse"
+            :label="$t('inventory_ui.move_to_warehouse')"
             required
             rules="required"
             :options="warehouseChoices"
@@ -87,12 +87,14 @@
               class="bullet-icon"
               aria-hidden="true"
             />
-            <span
-              >Currently kept in
-              <strong>{{ warehouseLabel[product.warehouse] }}</strong> ({{
-                product.bin
-              }}). The whole stock record moves.</span
-            >
+            <span>
+              <i18n-t keypath="inventory_ui.currently_kept_in">
+                <template #warehouse
+                  ><strong>{{ warehouseLabel[product.warehouse] }}</strong></template
+                >
+                <template #bin>{{ product.bin }}</template>
+              </i18n-t>
+            </span>
           </p>
         </template>
       </template>
@@ -110,7 +112,7 @@
 
     <template #footer>
       <LazyVButton variant="secondary" :disabled="loading" @click="open = false"
-        >Cancel</LazyVButton
+        >{{ $t('btn.cancel') }}</LazyVButton
       >
 
       <LazyVButton
@@ -119,7 +121,7 @@
         :loading="loading"
         :disabled="!product || (tab === 'adjust' && next !== null && next < 0)"
         icon="lucide:check"
-        >{{ tab === "adjust" ? "Record adjustment" : "Move item" }}</LazyVButton
+        >{{ tab === "adjust" ? $t('inventory_ui.record_adjustment') : $t('inventory_ui.move_item') }}</LazyVButton
       >
     </template>
   </LazyVDialog>
@@ -136,15 +138,16 @@ const emit = defineEmits<{ done: [item: InventoryItem] }>();
 const open = defineModel<boolean>("open", { default: false });
 
 const toast = useToast();
+const { t } = useI18n();
 
-const tabOptions = [
-  { value: "adjust" as const, label: "Adjust stock" },
-  { value: "transfer" as const, label: "Move to another warehouse" },
-];
-const modeOptions = [
-  { value: "delta" as const, label: "Add or remove" },
-  { value: "set" as const, label: "Set counted total" },
-];
+const tabOptions = computed(() => [
+  { value: "adjust" as const, label: t('inventory_ui.adjust_stock') },
+  { value: "transfer" as const, label: t('inventory_ui.tab_move_warehouse') },
+]);
+const modeOptions = computed(() => [
+  { value: "delta" as const, label: t('inventory_ui.mode_delta') },
+  { value: "set" as const, label: t('inventory_ui.mode_set') },
+]);
 
 const product = ref<InventoryItem | null>(null);
 const fixed = ref(false);
@@ -173,7 +176,7 @@ watch(open, (isOpen) => {
 });
 
 const warehouseChoices = computed(() => [
-  { value: "", label: "Select a warehouse…" },
+  { value: "", label: t('inventory_ui.select_warehouse') },
   ...(Object.keys(warehouseLabel) as Warehouse[])
     .filter((v) => v !== product.value?.warehouse)
     .map((v) => ({ value: v, label: warehouseLabel[v] })),
@@ -202,7 +205,7 @@ const submit = async () => {
             reason: reason.value,
           })
         : await inventory.transfer({ productId: product.value.id, warehouse: warehouse.value });
-    toast.success(tab.value === "adjust" ? "Stock adjusted" : "Item moved", {
+    toast.success(tab.value === "adjust" ? t('inventory_ui.toast_stock_adjusted') : t('inventory_ui.toast_item_moved'), {
       description: updated.name,
     });
     emit("done", updated);
@@ -211,10 +214,10 @@ const submit = async () => {
     const status = statusOf(e);
     error.value =
       status === 409
-        ? "That would put the stock below zero or over the limit."
+        ? t('inventory_ui.error_stock_limit')
         : status === 400
-          ? "Nothing to change. Check the quantity or the warehouse."
-          : "The change could not be saved. Try again.";
+          ? t('inventory_ui.error_nothing_to_change')
+          : t('inventory_ui.error_change_save');
   } finally {
     loading.value = false;
   }

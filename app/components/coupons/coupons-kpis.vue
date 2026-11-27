@@ -11,7 +11,7 @@
       <li>
         <LazyVStatCard
           size="lg"
-          label="Total discount value"
+          :label="$t('coupons_ui.kpi_total_discount_value')"
           icon="lucide:landmark"
           :value="
             currency(kpis.discountValue, {
@@ -19,30 +19,30 @@
               notation: 'compact',
             })
           "
-          :hint="`Across ${number(kpis.redemptions)} redemptions`"
+          :hint="$t('coupons_ui.kpi_across_redemptions', { count: number(kpis.redemptions) })"
         />
       </li>
       <li>
         <LazyVStatCard
           size="lg"
-          label="Active vouchers"
+          :label="$t('coupons_ui.kpi_active_vouchers')"
           icon="lucide:ticket-percent"
           :value="number(kpis.active)"
-          :hint="`${kpis.singleUse} single-use, ${kpis.tiered} public or tiered · ${percent(kpis.allocatedPct)} allocated`"
+          :hint="$t('coupons_ui.kpi_active_hint', { singleUse: kpis.singleUse, tiered: kpis.tiered, percent: percent(kpis.allocatedPct) })"
         />
       </li>
       <li>
         <LazyVStatCard
           size="lg"
-          label="Total redemptions"
+          :label="$t('coupons_ui.kpi_total_claims')"
           icon="lucide:badge-check"
           :value="number(kpis.redemptions)"
-          :hint="`${percent(kpis.capPct)} of the ${number(kpis.capTotal)} cap`"
+          :hint="$t('coupons_ui.kpi_cap_hint', { percent: percent(kpis.capPct), total: number(kpis.capTotal) })"
         >
           <LazyVMeter
             :value="kpis.capPct"
             tone="accent"
-            label="Share of the total redemption cap used"
+            :label="$t('coupons_ui.kpi_cap_meter')"
           />
         </LazyVStatCard>
       </li>
@@ -50,10 +50,10 @@
         <LazyVStatCard
           size="lg"
           :tone="kpis.alerts ? 'accent' : 'default'"
-          label="Depleted or expiring soon"
+          :label="$t('coupons_ui.kpi_alerts_label')"
           icon="lucide:triangle-alert"
-          :value="`${pad(kpis.alerts)} alerts`"
-          :hint="`${kpis.depleted} reached their cap · ${kpis.expiringSoon} expiring within 48h`"
+          :value="$t('coupons_ui.kpi_alerts_value', { count: pad(kpis.alerts) })"
+          :hint="$t('coupons_ui.kpi_alerts_hint', { depleted: kpis.depleted, expiring: kpis.expiringSoon })"
         />
       </li>
     </template>
