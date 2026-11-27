@@ -1,7 +1,7 @@
 <template>
   <VPanel
-    title="Best-selling products"
-    subtitle="Ranked by revenue, last 30 days"
+    :title="t('dashboard_ui.best_selling_products')"
+    :subtitle="t('dashboard_ui.best_selling_subtitle')"
     icon="lucide:trending-up"
     body-class=""
   >
@@ -24,8 +24,8 @@
         <div class="min-w-0 flex-1">
           <p class="truncate text-sm font-medium">{{ item.name }}</p>
           <p class="meta truncate">
-            {{ item.volume }} {{ item.volumeUnit }} sold ·
-            {{ currency(item.unitValue, { maximumFractionDigits: 0 }) }} each
+            {{ item.volume }} {{ item.volumeUnit }} {{ t('dashboard_ui.sold') }} ·
+            {{ currency(item.unitValue, { maximumFractionDigits: 0 }) }} {{ t('dashboard_ui.each') }}
           </p>
         </div>
         <p
@@ -43,5 +43,6 @@ import type { TopProduct } from "~/types/admin/dashboard";
 
 defineProps<{ items?: TopProduct[] | null }>();
 
+const { t } = useI18n();
 const { currency, compactCurrency } = useFormatters();
 </script>

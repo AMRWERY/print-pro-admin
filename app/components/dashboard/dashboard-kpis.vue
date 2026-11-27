@@ -10,7 +10,7 @@
     <template v-else>
       <li>
         <LazyVStatCard
-          label="Revenue"
+          :label="t('dashboard_ui.revenue')"
           icon="lucide:banknote"
           :value="currency(kpis.revenue.value, { maximumFractionDigits: 0 })"
         >
@@ -26,7 +26,7 @@
       </li>
       <li>
         <LazyVStatCard
-          label="Orders"
+          :label="t('dashboard_ui.orders')"
           icon="lucide:receipt-text"
           :value="number(kpis.orders.value)"
         >
@@ -40,7 +40,7 @@
       </li>
       <li>
         <LazyVStatCard
-          label="Customers"
+          :label="t('dashboard_ui.customers')"
           icon="lucide:users"
           :value="number(kpis.customers.value)"
         >
@@ -48,36 +48,36 @@
             class="self-start"
             tone="success"
             icon="lucide:trending-up"
-            >+{{ number(kpis.customers.delta) }} new</LazyVStatusBadge
+            >{{ t('dashboard_ui.new_customers', { n: number(kpis.customers.delta) }) }}</LazyVStatusBadge
           >
         </LazyVStatCard>
       </li>
       <li>
         <LazyVStatCard
-          label="Products"
+          :label="t('dashboard_ui.products')"
           icon="lucide:package"
           :value="number(kpis.products.value)"
-          hint="in catalog"
+          :hint="t('dashboard_ui.in_catalog')"
         />
       </li>
       <li>
         <LazyVStatCard
-          label="Low-stock alerts"
+          :label="t('dashboard_ui.inventory_alerts')"
           icon="lucide:triangle-alert"
           tone="accent"
           to="/inventory"
           :value="number(kpis.lowStock.value)"
-          hint="Review inventory"
+          :hint="t('btn.view_inventory')"
         />
       </li>
       <li>
         <LazyVStatCard
-          label="Pending orders"
+          :label="t('orders_ui.tab_awaiting_payment')"
           icon="lucide:clock"
           tone="warning"
           to="/orders"
           :value="number(kpis.pendingOrders.value)"
-          hint="Awaiting release"
+          :hint="t('orders_ui.stage_awaiting_payment')"
         />
       </li>
     </template>
@@ -89,5 +89,6 @@ import type { DashboardKpis } from "~/types/admin/dashboard";
 
 defineProps<{ kpis?: DashboardKpis | null }>();
 
+const { t } = useI18n();
 const { number, currency, signedPercent } = useFormatters();
 </script>

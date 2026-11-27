@@ -1,5 +1,5 @@
 <template>
-  <LazyVMenu label="Account" width="w-64">
+  <LazyVMenu :label="t('layout_ui.account')" width="w-64">
     <template #trigger="{ attrs, toggle, open }">
       <button
         v-bind="attrs"
@@ -10,7 +10,7 @@
         <span class="hidden text-center leading-tight md:block">
           <span class="block text-xs font-semibold">{{ name }}</span>
           <span class="block font-mono text-2xs text-success"
-            >Administrator</span
+            >{{ t("layout_ui.administrator") }}</span
           >
         </span>
 
@@ -23,7 +23,7 @@
           :class="open && 'rotate-180'"
           aria-hidden="true"
         />
-        <span class="sr-only">Account menu</span>
+        <span class="sr-only">{{ t("common_ui.account_menu") }}</span>
       </button>
     </template>
 
@@ -36,23 +36,24 @@
 
     <div class="py-1">
       <nuxt-link-locale to="/profile" role="menuitem" class="menu-item">
-        <Icon name="lucide:user-round" size="16" aria-hidden="true" /> Profile
+        <Icon name="lucide:user-round" size="16" aria-hidden="true" /> {{ t("nav.profile") }}
       </nuxt-link-locale>
 
       <nuxt-link-locale to="/settings" role="menuitem" class="menu-item">
-        <Icon name="lucide:settings" size="16" aria-hidden="true" /> Settings
+        <Icon name="lucide:settings" size="16" aria-hidden="true" /> {{ t("nav.settings") }}
       </nuxt-link-locale>
     </div>
 
     <div class="border-t border-line py-1">
       <button type="button" role="menuitem" class="menu-item w-full text-accent" @click="signOut">
-        <Icon name="lucide:log-out" size="16" aria-hidden="true" /> Sign out
+        <Icon name="lucide:log-out" size="16" aria-hidden="true" /> {{ t("btn.sign_out") }}
       </button>
     </div>
   </LazyVMenu>
 </template>
 
 <script lang="ts" setup>
+const { t } = useI18n();
 const auth = useAuthStore();
 const localePath = useLocalePath();
 
@@ -62,7 +63,7 @@ const signOut = async () => {
 };
 
 const name = computed(() => auth.user?.name ?? "Admin");
-const email = computed(() => auth.user?.email ?? "Not signed in");
+const email = computed(() => auth.user?.email ?? t("layout_ui.not_signed_in"));
 const initials = computed(() =>
   name.value
     .split(/\s+/)

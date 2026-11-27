@@ -18,7 +18,7 @@
           : 'max-lg:invisible max-lg:-translate-x-full max-lg:rtl:translate-x-full'
       "
       :inert="inert ? '' : undefined"
-      aria-label="Main navigation"
+      :aria-label="t('common_ui.main_navigation')"
       @keydown.esc="close"
     >
       <div
@@ -32,14 +32,14 @@
           size="sm"
           icon="lucide:x"
           class="lg:hidden"
-          aria-label="Close navigation"
+          :aria-label="t('common_ui.close_navigation')"
           @click="close"
         />
       </div>
 
       <nav
         class="flex-1 overflow-y-auto px-3 py-4"
-        aria-label="Main navigation"
+        :aria-label="t('common_ui.main_navigation')"
       >
         <ul class="space-y-0.5">
           <li v-for="item in adminNav" :key="item.to">
@@ -54,7 +54,7 @@
               :aria-current="isActive(item.to) ? 'page' : undefined"
             >
               <Icon :name="item.icon" size="16" aria-hidden="true" />
-              <span class="truncate">{{ item.label }}</span>
+              <span class="truncate">{{ t(`nav.${navKey(item)}`) }}</span>
             </nuxt-link-locale>
           </li>
         </ul>
@@ -72,7 +72,7 @@
             class="icon-nudge rtl:-scale-x-100"
             aria-hidden="true"
           />
-          Sign out
+          {{ t("btn.sign_out") }}
         </button>
       </div>
     </aside>
@@ -81,6 +81,14 @@
 
 <script lang="ts" setup>
 import { adminNav } from "~/data/admin-nav";
+import type { AdminNavItem } from "~/types/admin/admin-nav";
+
+const { t } = useI18n();
+
+const navKey = (item: AdminNavItem) => {
+  if (item.to === "/") return "dashboard";
+  return item.to.replace(/^\//, "");
+};
 
 /** Fixed rail from `lg`; below that it is a drawer controlled by `open`. */
 const open = defineModel<boolean>("open", { default: false });

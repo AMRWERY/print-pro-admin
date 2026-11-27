@@ -14,6 +14,7 @@
 <script lang="ts" setup>
 import type { ProductFormValues } from "~/types/admin/products";
 
+const { t } = useI18n();
 const route = useRoute();
 
 const from = typeof route.query.from === "string" ? route.query.from : "";
@@ -79,7 +80,7 @@ definePageMeta({
 });
 
 useSeoMeta({
-  title: "Add product",
-  description: "Register a new product or SKU.",
+  title: () => t('products_ui.editor_create_title'),
+  description: () => t('products_ui.editor_desc'),
 });
 </script>

@@ -1,7 +1,7 @@
 <template>
   <VPanel
-    title="Recent customers"
-    subtitle="Newest verified accounts"
+    :title="t('dashboard_ui.recent_customers')"
+    :subtitle="t('dashboard_ui.recent_customers_subtitle')"
     icon="lucide:users"
   >
     <template #actions>
@@ -11,7 +11,7 @@
         to="/customers"
         icon-end="lucide:arrow-up-right"
         icon-end-class="rtl:-scale-x-100"
-        >All customers</LazyVButton
+        >{{ t('btn.all_customers') }}</LazyVButton
       >
     </template>
 
@@ -46,12 +46,13 @@ import type { RecentCustomer } from "~/types/admin/dashboard";
 
 defineProps<{ items?: RecentCustomer[] | null }>();
 
+const { t } = useI18n();
 const { currency } = useFormatters();
 
-const tierText: Record<RecentCustomer["tier"], string> = {
-  enterprise: "Enterprise",
-  business: "Business",
-  printShop: "Print shop",
-  home: "Home office",
-};
+const tierText = computed<Record<RecentCustomer["tier"], string>>(() => ({
+  enterprise: t("customers_ui.segment_enterprise"),
+  business: t("customers_ui.segment_business"),
+  printShop: t("customers_ui.segment_print_shop"),
+  home: t("customers_ui.segment_home"),
+}));
 </script>

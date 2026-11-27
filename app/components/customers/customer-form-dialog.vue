@@ -1,11 +1,11 @@
 <template>
   <LazyVDialog
     v-model:open="open"
-    :title="customer ? 'Edit customer' : 'Register customer'"
+    :title="customer ? $t('customers_ui.dialog_title_edit') : $t('customers_ui.dialog_title_create')"
     :description="
       customer
-        ? 'Changes apply to the registry straight away.'
-        : 'Adds a customer record to the directory.'
+        ? $t('customers_ui.dialog_desc_edit')
+        : $t('customers_ui.dialog_desc_create')
     "
     size="lg"
   >
@@ -19,7 +19,7 @@
         <LazyVInput
           v-model="form.name"
           name="clientName"
-          label="Full name"
+          :label="$t('customers_ui.full_name')"
           required
           rules="required|min:2|max:80"
           maxlength="80"
@@ -28,7 +28,7 @@
         <LazyVInput
           v-model="form.role"
           name="clientRole"
-          label="Role / title"
+          :label="$t('customers_ui.role_title')"
           optional
           maxlength="100"
         />
@@ -36,7 +36,7 @@
         <LazyVInput
           v-model="form.org"
           name="clientOrg"
-          label="Organization"
+          :label="$t('customers_ui.organization')"
           required
           rules="required|min:2|max:120"
           maxlength="120"
@@ -47,7 +47,7 @@
           v-model="form.email"
           name="clientEmail"
           type="email"
-          label="Primary email"
+          :label="$t('customers_ui.primary_email')"
           required
           rules="required|email"
         />
@@ -56,7 +56,7 @@
           v-model="form.phone"
           name="clientPhone"
           type="tel"
-          label="Direct line"
+          :label="$t('customers_ui.direct_line')"
           optional
           maxlength="30"
         />
@@ -64,7 +64,7 @@
         <LazyVInput
           v-model="form.node"
           name="clientRegion"
-          label="Region or branch"
+          :label="$t('customers_ui.region_branch')"
           optional
           maxlength="60"
           placeholder="Cairo"
@@ -73,7 +73,7 @@
         <LazyVInput
           v-model="form.taxId"
           name="clientTax"
-          label="Tax / legal ID"
+          :label="$t('customers_ui.tax_id')"
           optional
           maxlength="40"
           input-class="font-mono"
@@ -82,21 +82,21 @@
         <LazyVSelectInput
           v-model="form.segment"
           name="clientSegment"
-          label="Segment"
+          :label="$t('nav.customers')"
           :options="segmentOptions"
         />
 
         <LazyVSelectInput
           v-model="form.tier"
           name="clientTier"
-          label="Account tier"
+          :label="$t('customers_ui.kpi_enterprise')"
           :options="tierOptions"
         />
 
         <LazyVSelectInput
           v-model="form.status"
           name="clientStatus"
-          label="Status"
+          :label="$t('common_ui.status')"
           :options="statusChoices"
         />
 
@@ -111,7 +111,7 @@
         <LazyVTextarea
           v-model="form.deliveryAddress"
           name="clientAddress"
-          label="Delivery address"
+          :label="$t('customers_ui.billing_address')"
           optional
           rows="2"
           maxlength="200"
@@ -132,7 +132,7 @@
 
     <template #footer>
       <LazyVButton variant="secondary" :disabled="loading" @click="open = false"
-        >Cancel</LazyVButton
+        >{{ $t('btn.cancel') }}</LazyVButton
       >
 
       <LazyVButton
@@ -140,7 +140,7 @@
         form="customer-form"
         :loading="loading"
         icon="lucide:check"
-        >{{ customer ? "Save changes" : "Register client" }}</LazyVButton
+        >{{ customer ? $t('btn.save_changes') : $t('btn.register_customer') }}</LazyVButton
       >
     </template>
   </LazyVDialog>

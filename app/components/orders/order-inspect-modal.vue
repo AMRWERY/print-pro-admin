@@ -1,8 +1,8 @@
 <template>
   <LazyVDialog
     v-model:open="open"
-    :title="row ? `Order ${row.id}` : 'Order'"
-    description="Order status, payment and items"
+    :title="row ? `${$t('orders_ui.title')} ${row.id}` : $t('orders_ui.title')"
+    :description="$t('orders_ui.inspect_modal_title')"
     size="lg"
   >
     <div v-if="row" class="space-y-5">
@@ -26,7 +26,7 @@
 
       <dl class="grid gap-x-6 gap-y-4 sm:grid-cols-2">
         <div>
-          <dt class="label-caps">Customer</dt>
+          <dt class="label-caps">{{ $t('orders_ui.customer_card') }}</dt>
           <dd class="font-medium">{{ row.customer.name }}</dd>
           <dd class="meta">{{ row.customer.org }}</dd>
           <dd class="mt-1">
@@ -36,7 +36,7 @@
           </dd>
         </div>
         <div>
-          <dt class="label-caps">Placed</dt>
+          <dt class="label-caps">{{ $t('common_ui.timestamp') }}</dt>
           <dd class="font-mono text-sm tabular-nums" dir="ltr">
             {{ formatUtc(row.placedAt) }}
           </dd>
@@ -53,7 +53,7 @@
           </dd>
         </div>
         <div class="sm:col-span-2">
-          <dt class="label-caps">Items ordered</dt>
+          <dt class="label-caps">{{ $t('orders_ui.line_items') }}</dt>
           <dd class="font-medium">{{ row.allocation.title }}</dd>
           <dd class="meta">
             {{ row.allocation.quantity }}× {{ row.allocation.unit
@@ -62,14 +62,14 @@
           </dd>
         </div>
         <div>
-          <dt class="label-caps">Order value</dt>
+          <dt class="label-caps">{{ $t('orders_ui.total_amount') }}</dt>
           <dd class="font-display text-2xl font-bold tabular-nums">
             {{ currency(row.amount, { maximumFractionDigits: 0 }) }}
           </dd>
           <dd class="meta">{{ row.paymentNote }}</dd>
         </div>
         <div>
-          <dt class="label-caps">Status</dt>
+          <dt class="label-caps">{{ $t('common_ui.status') }}</dt>
           <dd class="font-medium">{{ stageMeta[row.stage].status }}</dd>
           <dd class="meta">{{ row.statusNote }}</dd>
         </div>
@@ -77,14 +77,14 @@
     </div>
 
     <template #footer>
-      <LazyVButton variant="secondary" @click="open = false">Close</LazyVButton>
+      <LazyVButton variant="secondary" @click="open = false">{{ $t('btn.close') }}</LazyVButton>
 
       <LazyVButton
         v-if="row"
         :to="`/orders/${row.id.slice(1)}`"
         icon-end="lucide:arrow-up-right"
         icon-end-class="rtl:-scale-x-100"
-        >Open full details</LazyVButton
+        >{{ $t('common_ui.details') }}</LazyVButton
       >
     </template>
   </LazyVDialog>

@@ -1,7 +1,7 @@
 <template>
-  <VPanel title="Quick actions" icon="lucide:zap">
+  <VPanel :title="t('dashboard_ui.quick_actions')" icon="lucide:zap">
     <ul class="grid grid-cols-2 gap-3 md:grid-cols-4">
-      <li v-for="action in actions" :key="action.label">
+      <li v-for="action in actions" :key="action.to">
         <LazyVButton
           variant="plain"
           :to="action.to"
@@ -16,10 +16,12 @@
 </template>
 
 <script lang="ts" setup>
-const actions = [
-  { label: "New order", icon: "lucide:circle-plus", to: "/orders?create=1" },
-  { label: "Add product", icon: "lucide:package-plus", to: "/products" },
-  { label: "Add customer", icon: "lucide:user-plus", to: "/customers" },
-  { label: "Restock inventory", icon: "lucide:warehouse", to: "/inventory" },
-];
+const { t } = useI18n();
+
+const actions = computed(() => [
+  { label: t("dashboard_ui.qa_new_order"), icon: "lucide:circle-plus", to: "/orders?create=1" },
+  { label: t("dashboard_ui.qa_add_product"), icon: "lucide:package-plus", to: "/products" },
+  { label: t("dashboard_ui.qa_add_customer"), icon: "lucide:user-plus", to: "/customers" },
+  { label: t("dashboard_ui.qa_restock_inventory"), icon: "lucide:warehouse", to: "/inventory" },
+]);
 </script>

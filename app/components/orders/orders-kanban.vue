@@ -30,7 +30,7 @@
         v-else-if="!col.rows.length"
         class="rounded-card border border-dashed border-line px-3 py-6 text-center text-xs text-mute"
       >
-        No orders on this page
+        {{ $t('orders_ui.kanban_no_orders') }}
       </p>
       <ul v-else class="space-y-2">
         <li v-for="row in col.rows" :key="row.id">

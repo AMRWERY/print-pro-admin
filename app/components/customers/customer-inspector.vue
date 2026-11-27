@@ -1,18 +1,18 @@
 <template>
-  <LazyVPanel title="Customer details" icon="lucide:contact-round">
+  <LazyVPanel :title="$t('customers_ui.inspector_title')" icon="lucide:contact-round">
     <template #actions>
       <LazyVButton
         variant="icon"
         size="sm"
         icon="lucide:x"
-        aria-label="Close inspector"
+        :aria-label="$t('common_ui.close_inspector')"
         @click="emit('close')"
       />
     </template>
 
     <div v-if="error" class="space-y-3">
       <LazyVErrorBanner
-        message="This client could not be loaded."
+        :message="$t('common_ui.connection_error')"
         @retry="() => refresh()"
       />
     </div>
@@ -52,19 +52,19 @@
       <!-- Numbers -->
       <dl class="grid grid-cols-2 gap-2">
         <div class="rounded-card border border-line bg-ink p-3">
-          <dt class="label-caps">Lifetime value</dt>
+          <dt class="label-caps">{{ $t('customers_ui.ltv_label') }}</dt>
           <dd class="font-display text-lg font-bold tabular-nums">
             {{ currency(detail.ltv, { maximumFractionDigits: 0 }) }}
           </dd>
         </div>
         <div class="rounded-card border border-line bg-ink p-3">
-          <dt class="label-caps">Completed orders</dt>
+          <dt class="label-caps">{{ $t('customers_ui.orders_count') }}</dt>
           <dd class="font-display text-lg font-bold tabular-nums">
             {{ number(detail.orders) }}
           </dd>
         </div>
         <div class="rounded-card border border-line bg-ink p-3">
-          <dt class="label-caps">Open orders</dt>
+          <dt class="label-caps">{{ $t('customers_ui.unpaid_balance') }}</dt>
           <dd
             class="font-display text-lg font-bold tabular-nums"
             :class="detail.activeOrders && 'text-yellow'"
@@ -83,13 +83,13 @@
       <!-- Contact -->
       <section aria-labelledby="dossier-contact" class="space-y-2">
         <h4 id="dossier-contact" class="label-caps">
-          Contact &amp; legal identity
+          {{ $t('customers_ui.contact_info') }}
         </h4>
         <dl
           class="space-y-2 rounded-card border border-line bg-ink p-3 text-sm"
         >
           <div>
-            <dt class="label-caps">Primary email</dt>
+            <dt class="label-caps">{{ $t('customers_ui.primary_email') }}</dt>
             <dd class="break-all font-mono text-xs">
               <a
                 :href="`mailto:${detail.email}`"
@@ -99,17 +99,17 @@
             </dd>
           </div>
           <div>
-            <dt class="label-caps">Direct line</dt>
+            <dt class="label-caps">{{ $t('customers_ui.direct_line') }}</dt>
             <dd class="font-mono text-xs" dir="ltr">
               {{ detail.phone || "Not provided" }}
             </dd>
           </div>
           <div>
-            <dt class="label-caps">Delivery address</dt>
+            <dt class="label-caps">{{ $t('customers_ui.billing_address') }}</dt>
             <dd class="text-xs">{{ detail.deliveryAddress || "Not provided" }}</dd>
           </div>
           <div>
-            <dt class="label-caps">Tax / legal ID</dt>
+            <dt class="label-caps">{{ $t('customers_ui.tax_id') }}</dt>
             <dd class="font-mono text-xs" dir="ltr">
               {{ detail.taxId || "Not provided" }}
             </dd>
@@ -131,7 +131,7 @@
 
       <!-- Recent orders -->
       <section aria-labelledby="dossier-orders" class="space-y-2">
-        <h4 id="dossier-orders" class="label-caps">Recent orders</h4>
+        <h4 id="dossier-orders" class="label-caps">{{ $t('customers_ui.order_history') }}</h4>
         <p
           v-if="!detail.recentOrders.length"
           class="rounded-card border border-dashed border-line p-3 text-sm text-mute"
@@ -166,7 +166,7 @@
       <!-- Actions -->
       <div class="flex flex-wrap items-center gap-2 border-t border-line pt-4">
         <LazyVButton to="/orders?create=1" icon="lucide:circle-plus"
-          >Create new order</LazyVButton
+          >{{ $t('btn.create_order') }}</LazyVButton
         >
 
         <LazyVButton
@@ -174,14 +174,14 @@
           icon="lucide:printer"
           :loading="printing"
           @click="print"
-          >Print customer record</LazyVButton
+          >{{ $t('btn.print_invoice') }}</LazyVButton
         >
         <div class="ms-auto flex items-center gap-1.5">
           <LazyVButton
             variant="secondary"
             icon="lucide:pencil"
             @click="emit('edit', detail)"
-            >Edit</LazyVButton
+            >{{ $t('btn.edit') }}</LazyVButton
           >
 
           <LazyVButton

@@ -1,9 +1,9 @@
 <template>
   <div class="space-y-5">
     <LazyVPageHeader
-      title="Storefront Content & Banners"
-      description="Hero and promotional banners, featured categories and products, brand sections and homepage offers: preview, schedule, publish and reorder."
-      :breadcrumb="[{ label: 'Dashboard', to: '/' }, { label: 'Content' }]"
+      :title="$t('content_ui.title')"
+      :description="$t('content_ui.description')"
+      :breadcrumb="[{ label: $t('nav.dashboard'), to: '/' }, { label: $t('nav.content') }]"
     >
       <template #actions>
         <LazyVButton
@@ -11,11 +11,11 @@
           icon="lucide:zap"
           :loading="flushing"
           @click="flushCache"
-          >Flush edge cache</LazyVButton
+          >{{ $t('btn.flush_cache') }}</LazyVButton
         >
 
         <LazyVButton icon="lucide:circle-plus" @click="openCreate()"
-          >Create content block</LazyVButton
+          >{{ $t('btn.create_content_block') }}</LazyVButton
         >
       </template>
     </LazyVPageHeader>
@@ -36,14 +36,14 @@
           <div v-if="error" class="p-5">
             <LazyVEmptyState
               icon="lucide:triangle-alert"
-              title="Content could not be loaded"
-              description="The content list could not be reached. Your filters are kept, so retrying picks up where you left off."
+              :title="$t('content_ui.error_title')"
+              :description="$t('content_ui.error_desc')"
               eyebrow="CONTENT :: SYNC_ERROR"
               tag="OFFLINE"
               tag-tone="accent"
             >
               <LazyVButton icon="lucide:refresh-cw" @click="() => refresh()"
-                >Retry</LazyVButton
+                >{{ $t('btn.retry') }}</LazyVButton
               >
             </LazyVEmptyState>
           </div>
@@ -53,13 +53,13 @@
             class="p-5"
           >
             <LazyVEmptyState
-              title="No content matches these filters"
-              description="Try another headline or link, a different content type, or the All modules tab."
+              :title="$t('content_ui.empty_filter_title')"
+              :description="$t('content_ui.empty_filter_desc')"
               eyebrow="QUERY :: NO_RESULTS"
               tag="0 RESULTS"
             >
               <LazyVButton variant="secondary" @click="resetFilters"
-                >Clear all filters</LazyVButton
+                >{{ $t('common_ui.clear_all_filters') }}</LazyVButton
               >
             </LazyVEmptyState>
           </div>
@@ -68,11 +68,11 @@
             <LazyVEmptyState
             bare
               icon="lucide:panels-top-left"
-              title="No content blocks yet"
-              description="Create a banner, a featured category or a brand section to shape what visitors see on the storefront."
+              :title="$t('content_ui.empty_title')"
+              :description="$t('content_ui.empty_desc')"
             >
               <LazyVButton icon="lucide:circle-plus" @click="openCreate()"
-                >Create content block</LazyVButton
+                >{{ $t('btn.create_content_block') }}</LazyVButton
               >
             </LazyVEmptyState>
           </div>
@@ -103,7 +103,7 @@
             :total="data?.total ?? 0"
             :per-page-options="[8, 16, 32]"
             show-per-page
-            item-label="blocks"
+            :item-label="$t('content_ui.item_label')"
             scroll-to="#blocks"
           />
         </div>
@@ -149,10 +149,9 @@
       />
     </aside>
 
-    <!-- Full preview -->
     <LazyVDialog
       v-model:open="previewOpen"
-      :title="previewing?.title ?? 'Preview'"
+      :title="previewing?.title ?? $t('common_ui.view')"
       :description="previewing ? kindMeta[previewing.kind].label : ''"
       size="xl"
     >
@@ -160,7 +159,7 @@
         <div class="flex flex-wrap items-center justify-between gap-2">
           <LazyVSegmented
             v-model="previewDevice"
-            label="Preview device"
+            :label="$t('content_ui.preview_label')"
             :options="deviceOptions"
           />
 
@@ -181,24 +180,24 @@
 
         <dl class="grid gap-3 text-sm sm:grid-cols-3">
           <div>
-            <dt class="label-caps">Links to</dt>
+            <dt class="label-caps">{{ $t('content_ui.preview_links_to') }}</dt>
             <dd class="break-all font-mono text-xs" dir="ltr">
               {{ previewing.link }}
             </dd>
           </div>
           <div>
-            <dt class="label-caps">Schedule (UTC)</dt>
+            <dt class="label-caps">{{ $t('content_ui.preview_schedule') }}</dt>
             <dd class="text-xs">
               {{ windowLabel(previewing.startsAt, previewing.endsAt) }}
             </dd>
           </div>
           <div>
-            <dt class="label-caps">Performance</dt>
+            <dt class="label-caps">{{ $t('content_ui.preview_performance') }}</dt>
             <dd class="text-xs tabular-nums">
               {{
                 previewing.views
                   ? `${number(previewing.views)} views · ${percent(previewing.ctr, 2)} CTR`
-                  : "No traffic yet"
+                  : $t('content_ui.preview_no_traffic')
               }}
             </dd>
           </div>
@@ -206,21 +205,21 @@
       </div>
       <template #footer>
         <LazyVButton variant="secondary" @click="previewOpen = false"
-          >Close</LazyVButton
+          >{{ $t('btn.close') }}</LazyVButton
         >
 
         <LazyVButton
           v-if="previewing"
           icon="lucide:pencil"
           @click="editFromPreview"
-          >Edit block</LazyVButton
+          >{{ $t('content_ui.preview_edit_block') }}</LazyVButton
         >
       </template>
     </LazyVDialog>
 
     <LazyVDialog
       v-model:open="deleteOpen"
-      title="Delete this content block?"
+      :title="$t('content_ui.delete_block_title')"
       :description="pendingDelete?.title ?? ''"
     >
       <p class="callout">
@@ -230,23 +229,21 @@
           class="bullet-icon"
           aria-hidden="true"
         />
-        It disappears from the storefront straight away and its performance
-        history is removed. To hide it without losing it, unpublish it instead.
-        This cannot be undone from this screen.
+        {{ $t('content_ui.delete_block_body') }}
       </p>
       <template #footer>
         <LazyVButton
           variant="secondary"
           :disabled="deleting"
           @click="deleteOpen = false"
-          >Keep</LazyVButton
+          >{{ $t('btn.cancel') }}</LazyVButton
         >
 
         <LazyVButton
           :loading="deleting"
           icon="lucide:trash-2"
           @click="confirmDelete"
-          >Delete</LazyVButton
+          >{{ $t('btn.delete') }}</LazyVButton
         >
       </template>
     </LazyVDialog>
@@ -271,6 +268,7 @@ import type {
 } from "~/types/admin/content";
 
 const toast = useToast();
+const { t } = useI18n();
 const { number, percent } = useFormatters();
 
 const filters = reactive({
@@ -401,7 +399,7 @@ const save = async (values: BlockInput) => {
   const target = panel.value?.block;
   try {
     const saved = await store.save(target ? target.id : null, values);
-    toast.success(target ? "Content block updated" : "Content block created", {
+    toast.success(target ? t('content_ui.toast_block_updated') : t('content_ui.toast_block_created'), {
       description: saved.title,
     });
     if (!target) {
@@ -429,7 +427,7 @@ const setPublished = async (b: BlockRow, publish: boolean) => {
   b.status = status; // the switch moves at once
   try {
     const saved = await store.setStatus(b.id, status);
-    toast.success(publish ? "Published" : "Unpublished", {
+    toast.success(publish ? t('content_ui.toast_published') : t('content_ui.toast_unpublished'), {
       description:
         publish && saved.state === "scheduled"
           ? `${saved.title} goes live on ${windowLabel(saved.startsAt, null).replace("From ", "")}.`
@@ -438,8 +436,8 @@ const setPublished = async (b: BlockRow, publish: boolean) => {
     await reload();
   } catch {
     b.status = before;
-    toast.error("Couldn't change the status", {
-      description: "Nothing was changed. Try again.",
+    toast.error(t('content_ui.toast_status_error'), {
+      description: t('common_ui.try_again'),
     });
   }
 };
@@ -449,12 +447,12 @@ const reorder = async (ids: string[]) => {
   if (!data.value) return;
   try {
     await store.reorder(ids);
-    toast.success("Order saved", {
-      description: "The storefront follows the new sequence.",
+    toast.success(t('content_ui.toast_order_saved'), {
+      description: t('content_ui.toast_order_saved_desc'),
     });
   } catch {
-    toast.error("Couldn't save the order", {
-      description: "The list was put back as it was.",
+    toast.error(t('content_ui.toast_order_error'), {
+      description: t('content_ui.toast_order_error_desc'),
     });
     await reload();
   }
@@ -495,13 +493,13 @@ const confirmDelete = async () => {
   deleting.value = true;
   try {
     await store.remove(b.id);
-    toast.success("Content block deleted", { description: b.title });
+    toast.success(t('content_ui.toast_block_deleted'), { description: b.title });
     if (panel.value?.block?.id === b.id) closePanel();
     deleteOpen.value = false;
     await reload();
   } catch {
-    toast.error("Couldn't delete", {
-      description: "Nothing was removed. Try again.",
+    toast.error(t('content_ui.toast_delete_error'), {
+      description: t('common_ui.try_again'),
     });
   } finally {
     deleting.value = false;
@@ -514,12 +512,12 @@ const flushCache = async () => {
   flushing.value = true;
   try {
     await store.flush();
-    toast.success("Edge cache flushed", {
-      description: "Visitors see the latest content within a minute.",
+    toast.success(t('content_ui.toast_cache_flushed'), {
+      description: t('content_ui.toast_cache_flushed_desc'),
     });
   } catch {
-    toast.error("Couldn't flush the cache", {
-      description: "Try again in a moment.",
+    toast.error(t('content_ui.toast_cache_error'), {
+      description: t('common_ui.try_again'),
     });
   } finally {
     flushing.value = false;
@@ -531,8 +529,7 @@ definePageMeta({
 });
 
 useSeoMeta({
-  title: "Content / Banners",
-  description:
-    "Manage homepage banners, featured categories and products, and brand sections.",
+  title: () => t('content_ui.seo_title'),
+  description: () => t('content_ui.seo_description'),
 });
 </script>

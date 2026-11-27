@@ -1,9 +1,9 @@
 <template>
   <div class="space-y-5">
     <LazyVPageHeader
-      title="Profile"
-      description="Your account details, password and preferences."
-      :breadcrumb="[{ label: 'Dashboard', to: '/' }, { label: 'Profile' }]"
+      :title="$t('profile_ui.title')"
+      :description="$t('profile_ui.description')"
+      :breadcrumb="[{ label: $t('nav.dashboard'), to: '/' }, { label: $t('nav.profile') }]"
     />
 
     <!-- The account lives in this browser and loads after the page does. -->
@@ -23,12 +23,12 @@
     <LazyVEmptyState
       v-else-if="!account"
       icon="lucide:user-round-x"
-      title="You're not signed in"
-      description="Sign in to see and change your profile, password and preferences."
+      :title="$t('profile_ui.not_signed_in_title')"
+      :description="$t('profile_ui.not_signed_in_desc')"
       eyebrow="ACCOUNT :: NO_SESSION"
       tag="SIGNED OUT"
     >
-      <LazyVButton to="/auth" icon="lucide:log-in">Sign in</LazyVButton>
+      <LazyVButton to="/auth" icon="lucide:log-in">{{ $t('btn.sign_in') }}</LazyVButton>
     </LazyVEmptyState>
 
     <div
@@ -36,7 +36,7 @@
       class="grid items-start gap-4 lg:grid-cols-[18rem_minmax(0,1fr)]"
     >
       <LazyVPanel
-        title="Account"
+        :title="$t('layout_ui.account')"
         icon="lucide:id-card"
         class="lg:sticky lg:top-24"
       >
@@ -55,7 +55,7 @@
               type="button"
               class="absolute -end-0 -top-0 grid h-5 w-5 place-items-center rounded-full border border-line bg-surface text-mute shadow transition duration-fast hover:border-accent hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent disabled:opacity-50"
               :disabled="photoBusy"
-              aria-label="Remove profile photo"
+              :aria-label="$t('btn.remove_photo')"
               @click="removePhoto"
             >
               <Icon name="lucide:x" size="14" aria-hidden="true" />
@@ -65,10 +65,10 @@
           <LazyVButton
             size="sm"
             variant="secondary"
-            icon="lucide:camera"
+            icon="lucide:image"
             :loading="photoBusy"
             @click="photoInput?.click()"
-            >{{ account.avatar ? "Change photo" : "Add photo" }}</LazyVButton
+            >{{ account.avatar ? $t('btn.change_photo') : $t('btn.add_photo') }}</LazyVButton
           >
           <input
             ref="photoInput"
@@ -76,7 +76,7 @@
             accept="image/png,image/jpeg,image/webp"
             class="sr-only"
             tabindex="-1"
-            aria-label="Choose a profile photo"
+            :aria-label="$t('profile_ui.choose_photo')"
             @change="onPhoto"
           />
           <div class="min-w-0">
@@ -94,17 +94,17 @@
 
         <dl class="mt-4 space-y-2 border-t border-line pt-4 text-sm">
           <div>
-            <dt class="label-caps">Email</dt>
+            <dt class="label-caps">{{ $t('auth_ui.email_label') }}</dt>
             <dd class="break-all font-mono text-xs" dir="ltr">
               {{ account.email }}
             </dd>
           </div>
           <div v-if="account.phone">
-            <dt class="label-caps">Phone</dt>
+            <dt class="label-caps">{{ $t('profile_ui.phone') }}</dt>
             <dd class="font-mono text-xs" dir="ltr">{{ account.phone }}</dd>
           </div>
           <div>
-            <dt class="label-caps">Member since</dt>
+            <dt class="label-caps">{{ $t('profile_ui.member_since') }}</dt>
             <dd class="font-mono text-xs">{{ memberSince }}</dd>
           </div>
         </dl>
@@ -115,7 +115,7 @@
           variant="secondary"
           icon="lucide:log-out"
           @click="signOut"
-          >Sign out</LazyVButton
+          >{{ $t('btn.sign_out') }}</LazyVButton
         >
       </LazyVPanel>
 
@@ -133,6 +133,7 @@
 <script lang="ts" setup>
 import { tiers } from "~/data/auth";
 
+const { t } = useI18n();
 const auth = useAuthStore();
 const localePath = useLocalePath();
 
@@ -173,7 +174,7 @@ const savePhoto = async (avatar: string, done: string) => {
   const res = await auth.updateProfile({ avatar });
   photoBusy.value = false;
   if (res.ok) toast.success(done);
-  else toast.warning("Photo not saved", { description: "The server could not be reached or refused the image. Try again." });
+  else toast.warning(t('profile_ui.photo_not_saved'), { description: t('profile_ui.photo_not_saved_desc') });
 };
 
 const onPhoto = async (e: Event) => {
@@ -182,20 +183,20 @@ const onPhoto = async (e: Event) => {
   input.value = ""; // so choosing the same file again still fires
   if (!file) return;
   if (!file.type.startsWith("image/")) {
-    toast.warning("Not an image", { description: "Choose a JPG, PNG or WebP photo." });
+    toast.warning(t('profile_ui.not_an_image'), { description: t('profile_ui.not_an_image_desc') });
     return;
   }
   photoBusy.value = true;
   try {
     const { url } = await toWebImage(file, 320, 40_000);
-    await savePhoto(url, "Profile photo updated");
+    await savePhoto(url, t('profile_ui.photo_updated'));
   } catch {
     photoBusy.value = false;
-    toast.warning("Photo not added", { description: "That file could not be read as an image. Try another one." });
+    toast.warning(t('profile_ui.photo_not_added'), { description: t('profile_ui.photo_not_added_desc') });
   }
 };
 
-const removePhoto = () => savePhoto("", "Profile photo removed");
+const removePhoto = () => savePhoto("", t('profile_ui.photo_removed'));
 
 const signOut = async () => {
   auth.logout();
@@ -207,7 +208,7 @@ definePageMeta({
 });
 
 useSeoMeta({
-  title: "Profile",
-  description: "Your admin profile, password and preferences.",
+  title: () => t('profile_ui.seo_title'),
+  description: () => t('profile_ui.seo_description'),
 });
 </script>

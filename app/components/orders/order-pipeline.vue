@@ -1,6 +1,6 @@
 <template>
   <LazyVPanel
-    title="Order progress"
+    :title="$t('orders_ui.pipeline_title')"
     subtitle="ISO 14644-1 class 4 protocol"
     icon="lucide:link-2"
   >
@@ -15,7 +15,7 @@
         <p
           class="flex items-center justify-between gap-2 font-mono text-2xs uppercase"
         >
-          <span>Phase {{ String(i + 1).padStart(2, "0") }}</span>
+          <span>{{ $t('orders_ui.pipeline_phase', { n: String(i + 1).padStart(2, "0") }) }}</span>
           <Icon
             :name="phaseIcon[phase.state]"
             size="14"
@@ -30,7 +30,7 @@
           v-if="phase.state === 'active'"
           class="self-start"
           tone="accent"
-          >Active</LazyVStatusBadge
+          >{{ $t('orders_ui.pipeline_active_badge') }}</LazyVStatusBadge
         >
 
         <p class="meta">{{ phase.detail }}</p>
@@ -44,7 +44,7 @@
       <LazyVSelectInput
         v-model="target"
         name="stageOverride"
-        label="Move to stage"
+        :label="$t('orders_ui.pipeline_move_to_stage')"
         class="min-w-0 flex-1 basis-64"
         :options="options"
       />
@@ -54,7 +54,7 @@
         variant="secondary"
         :loading="busy"
         :disabled="target === current"
-        >Apply override</LazyVButton
+        >{{ $t('orders_ui.pipeline_apply_override') }}</LazyVButton
       >
     </form>
   </LazyVPanel>
@@ -70,6 +70,8 @@ const props = defineProps<{
 }>();
 const emit = defineEmits<{ override: [stage: OrderStage] }>();
 
+const { t } = useI18n();
+
 const target = ref<OrderStage>(props.current);
 // Follow the order when it moves (after an override or a release).
 watch(
@@ -80,7 +82,7 @@ watch(
 const options = computed(() =>
   props.phases.map((p, i) => ({
     value: p.stage,
-    label: `Stage ${i + 1}: ${p.title}${p.stage === props.current ? " (current)" : ""}`,
+    label: `Stage ${i + 1}: ${p.title}${p.stage === props.current ? t('orders_ui.pipeline_stage_current') : ""}`,
   })),
 );
 
@@ -102,9 +104,9 @@ const iconClass: Record<PhaseState, string> = {
   pending: "text-mute",
 };
 
-const stateLabel: Record<PhaseState, string> = {
-  done: "Completed",
-  active: "In progress",
-  pending: "Not started",
-};
+const stateLabel = computed<Record<PhaseState, string>>(() => ({
+  done: t('orders_ui.pipeline_state_done'),
+  active: t('orders_ui.pipeline_state_active'),
+  pending: t('orders_ui.pipeline_state_pending'),
+}));
 </script>

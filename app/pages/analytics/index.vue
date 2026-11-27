@@ -1,12 +1,12 @@
 <template>
   <div class="space-y-5">
     <LazyVPageHeader
-      title="Analytics"
-      description="Reporting on machine sales, supplies consumption and customer orders."
-      :breadcrumb="[{ label: 'Dashboard', to: '/' }, { label: 'Analytics' }]"
+      :title="$t('analytics_ui.title')"
+      :description="$t('analytics_ui.description')"
+      :breadcrumb="[{ label: $t('nav.dashboard'), to: '/' }, { label: $t('nav.analytics') }]"
     >
       <template #actions>
-        <LazyVMenu label="Filter cohorts">
+        <LazyVMenu :label="$t('analytics_ui.filter_cohorts')">
           <template #trigger="{ attrs, toggle }">
             <LazyVButton
               v-bind="attrs"
@@ -17,7 +17,7 @@
             >
               {{
                 filters.cohort === "all"
-                  ? "Filter cohorts"
+                  ? $t('analytics_ui.filter_cohorts')
                   : cohortLabel[filters.cohort]
               }}
             </LazyVButton>
@@ -39,7 +39,7 @@
           </button>
         </LazyVMenu>
 
-        <LazyVMenu label="Export report">
+        <LazyVMenu :label="$t('common_ui.export_report')">
           <template #trigger="{ attrs, toggle }">
             <LazyVButton
               v-bind="attrs"
@@ -49,7 +49,7 @@
               :loading="exporting"
               :disabled="!data"
               @click="toggle"
-              >Export report</LazyVButton
+              >{{ $t('common_ui.export_report') }}</LazyVButton
             >
           </template>
           <button
@@ -72,7 +72,7 @@
         </LazyVMenu>
 
         <LazyVButton icon="lucide:refresh-cw" :loading="pending" @click="sync"
-          >Sync ledger</LazyVButton
+          >{{ $t('analytics_ui.sync_ledger') }}</LazyVButton
         >
       </template>
     </LazyVPageHeader>
@@ -83,7 +83,7 @@
         <LazyVSegmented
           v-model="filters.range"
           :options="rangeOptions"
-          label="Reporting period"
+          :label="$t('dashboard_ui.reporting_period')"
         />
         <LazyVSegmented
           v-model="filters.granularity"
@@ -119,13 +119,13 @@
         <span class="flex items-center gap-1.5 text-paper">
           <Icon name="lucide:calendar-range" size="14" aria-hidden="true" />
           <template v-if="data"
-            >{{ dateLabel(data.period.from) }} to
+            >{{ dateLabel(data.period.from) }} {{ $t('analytics_ui.period_label_to') }}
             {{ dateLabel(data.period.to) }}</template
           >
-          <template v-else>Loading period…</template>
+          <template v-else>{{ $t('analytics_ui.period_loading') }}</template>
         </span>
         <span v-if="data"
-          >vs {{ dateLabel(data.period.prevFrom) }} to
+          >vs {{ dateLabel(data.period.prevFrom) }} {{ $t('analytics_ui.period_label_to') }}
           {{ dateLabel(data.period.prevTo) }}</span
         >
         <span
@@ -139,13 +139,13 @@
           many points for
           {{ filters.granularity === "day" ? "daily" : "weekly" }}</span
         >
-        <span>Net of tax</span>
+        <span>{{ $t('analytics_ui.net_of_tax') }}</span>
       </p>
     </section>
 
     <LazyVErrorBanner
       v-if="error"
-      message="The analytics could not be loaded. Check your connection and try again."
+      :message="$t('analytics_ui.error_desc')"
       @retry="() => refresh()"
     />
 
@@ -200,6 +200,7 @@ import type {
 } from "~/types/admin/analytics";
 
 const toast = useToast();
+const { t } = useI18n();
 
 const filters = reactive({
   range: "30d" as AnalyticsRange,
@@ -219,8 +220,8 @@ watch(() => ({ ...filters }), (q) => store.fetchReport(q), { immediate: true });
 const sync = async () => {
   await refresh();
   if (!error.value)
-    toast.success("Ledger synced", {
-      description: "The figures are up to date.",
+    toast.success(t('analytics_ui.toast_synced'), {
+      description: t('analytics_ui.toast_synced_desc'),
     });
 };
 
@@ -242,11 +243,11 @@ const exportReport = async (format: "pdf" | "excel") => {
       top.rows,
     );
     toast.success(
-      format === "pdf" ? "PDF report downloaded" : "Excel report downloaded",
+      format === "pdf" ? t('analytics_ui.toast_export_pdf') : t('analytics_ui.toast_export_excel'),
     );
   } catch {
-    toast.error("Couldn't create the report", {
-      description: "Try again in a moment.",
+    toast.error(t('analytics_ui.toast_export_error'), {
+      description: t('common_ui.try_again'),
     });
   } finally {
     exporting.value = false;
@@ -258,8 +259,7 @@ definePageMeta({
 });
 
 useSeoMeta({
-  title: "Analytics",
-  description:
-    "Revenue, conversion, category margin and stock velocity for the chosen period.",
+  title: () => t('analytics_ui.seo_title'),
+  description: () => t('analytics_ui.seo_description'),
 });
 </script>

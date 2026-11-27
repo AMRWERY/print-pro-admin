@@ -5,8 +5,7 @@
       <template v-if="sent">
         <div class="space-y-2">
           <p class="eyebrow flex items-center gap-2 text-success">
-            <Icon name="lucide:mail-check" size="14" aria-hidden="true" />Check
-            your inbox
+            <Icon name="lucide:mail-check" size="14" aria-hidden="true" />{{ t("auth_ui.check_inbox") }}
           </p>
           <h1
             id="forgot-title"
@@ -14,12 +13,10 @@
             tabindex="-1"
             class="font-display text-3xl focus:outline-none"
           >
-            Recovery link sent
+            {{ t("auth_ui.link_sent_title") }}
           </h1>
           <p class="text-sm text-mute">
-            If <span class="text-paper">{{ email }}</span> belongs to an account,
-            you'll receive a one-time link valid for 15 minutes. Check
-            your spam folder if it doesn't arrive.
+            {{ t("auth_ui.link_sent_desc", { email }) }}
           </p>
         </div>
 
@@ -33,10 +30,10 @@
               name="lucide:flask-conical"
               size="16"
               aria-hidden="true"
-            />Demo mode
+            />{{ t("auth_ui.demo_mode") }}
           </p>
           <p class="text-mute">
-            No email service is connected in this environment. Use the link below to continue.
+            {{ t("auth_ui.demo_mode_desc") }}
           </p>
           <LazyVButton
             variant="primary"
@@ -44,7 +41,7 @@
             :to="{ path: '/reset-password', query: { token: sent.token } }"
             icon-end="lucide:arrow-right"
             icon-end-class="icon-nudge rtl:-scale-x-100"
-            >Open reset link</LazyVButton
+            >{{ t("auth_ui.open_reset_link") }}</LazyVButton
           >
         </div>
 
@@ -53,7 +50,7 @@
           to="/auth"
           icon="lucide:arrow-left"
           icon-class="rtl:-scale-x-100"
-          >Back to sign in</LazyVButton
+          >{{ t("btn.back_to_sign_in") }}</LazyVButton
         >
       </template>
 
@@ -61,15 +58,13 @@
       <template v-else>
         <div class="space-y-2">
           <p class="eyebrow flex items-center gap-2">
-            <span class="pip" aria-hidden="true" />Account
-            recovery
+            <span class="pip" aria-hidden="true" />{{ t("auth_ui.admin_account") }}
           </p>
           <h1 id="forgot-title" class="font-display text-3xl sm:text-4xl">
-            Reset your password
+            {{ t("auth_ui.forgot_title") }}
           </h1>
           <p class="text-sm text-mute">
-            Enter your account email. We'll send a one-time link, valid for 15
-            minutes, to set a new password.
+            {{ t("auth_ui.forgot_desc") }}
           </p>
         </div>
 
@@ -79,8 +74,8 @@
             v-model="email"
             name="email"
             type="email"
-            label="Email"
-            placeholder="name@company.com"
+            :label="t('auth_ui.email_label')"
+            :placeholder="t('auth_ui.email_placeholder')"
             required
             rules="required|email"
             autocomplete="email"
@@ -95,7 +90,7 @@
             :loading="loading"
             icon-end="lucide:arrow-right"
             icon-end-class="icon-nudge rtl:-scale-x-100"
-            >Send recovery link</LazyVButton
+            >{{ t("btn.send_recovery_link") }}</LazyVButton
           >
         </form>
 
@@ -107,14 +102,7 @@
             to="/auth"
             icon="lucide:arrow-left"
             icon-class="rtl:-scale-x-100"
-            >Back to sign in</LazyVButton
-          >
-
-          <LazyVButton
-            variant="tertiary"
-            href="tel:+18004925866"
-            icon="lucide:headset"
-            >Need help? +1 (800) 492-5866</LazyVButton
+            >{{ t("btn.back_to_sign_in") }}</LazyVButton
           >
         </div>
       </template>
@@ -125,6 +113,7 @@
 <script lang="ts" setup>
 import type { Validatable } from "~/types/auth";
 
+const { t } = useI18n();
 const auth = useAuthStore();
 
 const email = ref("");
@@ -152,8 +141,8 @@ const submit = async () => {
 };
 
 useSeoMeta({
-  title: "Reset Password",
-  description: "Reset your account password.",
+  title: () => t("auth_ui.forgot_seo_title"),
+  description: () => t("auth_ui.forgot_seo_description"),
   robots: "noindex",
 });
 </script>

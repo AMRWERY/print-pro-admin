@@ -13,7 +13,7 @@
       <li>
         <LazyVStatCard
           size="lg"
-          label="Total registered clients"
+          :label="$t('customers_ui.kpi_total_accounts')"
           icon="lucide:users"
           :value="number(kpis.total)"
           :hint="`+${number(kpis.newThisQuarter)} this quarter · ${percent(kpis.retentionPct)} retention`"
@@ -22,7 +22,7 @@
       <li>
         <LazyVStatCard
           size="lg"
-          label="Total customer spend"
+          :label="$t('customers_ui.kpi_active_clients')"
           icon="lucide:landmark"
           :value="
             currency(kpis.spend, {
@@ -37,7 +37,7 @@
         <LazyVStatCard
           size="lg"
           tone="warning"
-          label="Open orders"
+          :label="$t('orders_ui.tab_all')"
           icon="lucide:shield-check"
           :value="number(kpis.activeOrders)"
           :hint="`Across ${number(kpis.activeClients)} regions`"
@@ -46,7 +46,7 @@
       <li>
         <LazyVStatCard
           size="lg"
-          label="Key accounts (AAA)"
+          :label="$t('customers_ui.kpi_enterprise')"
           icon="lucide:award"
           :value="number(kpis.vip)"
           hint="Dedicated account manager"

@@ -1,12 +1,12 @@
 <template>
   <VPanel
-    title="Recent orders"
-    subtitle="Latest orders and where they are in dispatch"
+    :title="t('dashboard_ui.recent_orders')"
+    :subtitle="t('dashboard_ui.recent_orders_subtitle')"
     icon="lucide:receipt-text"
     body-class=""
   >
     <template #actions>
-      <LazyVButton variant="tertiary" size="sm" to="/orders" icon-end="lucide:arrow-up-right" icon-end-class="rtl:-scale-x-100">All orders</LazyVButton>
+      <LazyVButton variant="tertiary" size="sm" to="/orders" icon-end="lucide:arrow-up-right" icon-end-class="rtl:-scale-x-100">{{ t('btn.all_orders') }}</LazyVButton>
     </template>
 
     <div v-if="!data" class="space-y-3 p-4 sm:p-5" aria-busy="true">
@@ -17,15 +17,15 @@
       <!-- Stacked cards on mobile, a real table from md. -->
       <div class="overflow-x-auto">
       <table class="block w-full text-sm md:table">
-        <caption class="sr-only">Latest customer orders awaiting dispatch or payment</caption>
+        <caption class="sr-only">{{ t('dashboard_ui.recent_orders_caption') }}</caption>
         <thead class="hidden md:table-header-group">
           <tr class="border-y border-line bg-ink">
-            <th scope="col" class="label-caps px-5 py-2.5 text-start font-normal">Order ID</th>
-            <th scope="col" class="label-caps px-3 py-2.5 text-start font-normal">Customer</th>
-            <th scope="col" class="label-caps hidden px-3 py-2.5 text-start font-normal 2xl:table-cell">Allocated equipment</th>
-            <th scope="col" class="label-caps px-3 py-2.5 text-end font-normal">Settlement</th>
-            <th scope="col" class="label-caps px-3 py-2.5 text-start font-normal">Status</th>
-            <th scope="col" class="px-5 py-2.5"><span class="sr-only">Action</span></th>
+            <th scope="col" class="label-caps px-5 py-2.5 text-start font-normal">{{ t('dashboard_ui.col_order_id') }}</th>
+            <th scope="col" class="label-caps px-3 py-2.5 text-start font-normal">{{ t('dashboard_ui.col_customer') }}</th>
+            <th scope="col" class="label-caps hidden px-3 py-2.5 text-start font-normal 2xl:table-cell">{{ t('dashboard_ui.col_allocated_equipment') }}</th>
+            <th scope="col" class="label-caps px-3 py-2.5 text-end font-normal">{{ t('dashboard_ui.col_settlement') }}</th>
+            <th scope="col" class="label-caps px-3 py-2.5 text-start font-normal">{{ t('dashboard_ui.col_status') }}</th>
+            <th scope="col" class="px-5 py-2.5"><span class="sr-only">{{ t('common_ui.action') }}</span></th>
           </tr>
         </thead>
         <tbody class="block divide-y divide-line md:table-row-group">
@@ -45,7 +45,7 @@
               <LazyVStatusBadge :tone="status[row.status].tone" :icon="status[row.status].icon">{{ statusText[row.status] }}</LazyVStatusBadge>
             </td>
             <td class="col-span-2 row-start-5 md:table-cell md:px-5 md:py-3 md:text-end">
-              <LazyVButton variant="tertiary" size="sm">{{ actionText[row.action] }}<span class="sr-only"> — {{ row.id }}</span></LazyVButton>
+              <LazyVButton variant="tertiary" size="sm">{{ actionText[row.action] ?? row.action }}<span class="sr-only"> — {{ row.id }}</span></LazyVButton>
             </td>
           </tr>
         </tbody>
@@ -53,7 +53,7 @@
       </div>
 
       <p class="flex flex-wrap items-center justify-between gap-2 border-t border-line px-4 py-3 font-mono text-2xs text-mute sm:px-5">
-        <span>Showing {{ data.rows.length }} of {{ number(data.total) }} pending orders</span>
+        <span>{{ t('dashboard_ui.showing_orders', { count: data.rows.length, total: number(data.total) }) }}</span>
       </p>
     </template>
   </VPanel>
@@ -62,25 +62,25 @@
 <script lang="ts" setup>
 import type { DashboardSummary, OrderStatus, Tone } from "~/types/admin/dashboard";
 
-const statusText: Record<string, string> = {
-  awaitingPayment: "Awaiting payment",
-  checking: "Being tested",
-  packing: "Packing",
-  inTransit: "With the courier",
-  completed: "Completed",
-};
-
-const actionText: Record<string, string> = {
-  completeOrder: "Complete order",
-  printDeliveryNote: "Print delivery note",
-  viewOrder: "View order",
-  checkBatch: "Check batch",
-};
-
-
 defineProps<{ data?: DashboardSummary["orders"] | null }>();
 
+const { t } = useI18n();
 const { number, currency, percent } = useFormatters();
+
+const statusText = computed<Record<string, string>>(() => ({
+  awaitingPayment: t("orders_ui.stage_awaiting_payment"),
+  checking: t("orders_ui.stage_checking"),
+  packing: t("orders_ui.stage_packing"),
+  inTransit: t("orders_ui.stage_in_transit"),
+  completed: t("orders_ui.stage_completed"),
+}));
+
+const actionText = computed<Record<string, string>>(() => ({
+  completeOrder: t("orders_ui.stage_completed"),
+  printDeliveryNote: t("orders_ui.shipment_card"),
+  viewOrder: t("orders_ui.inspect_modal_title"),
+  checkBatch: t("orders_ui.stage_checking"),
+}));
 
 const status: Record<OrderStatus, { tone: Tone; icon: string }> = {
   awaitingPayment: { tone: "warning", icon: "lucide:clock" },

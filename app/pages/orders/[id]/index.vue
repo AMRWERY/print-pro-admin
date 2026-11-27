@@ -1,10 +1,10 @@
 <template>
   <div class="space-y-5">
     <LazyVPageHeader
-      :title="`Order ${orderId}`"
+      :title="`${$t('orders_ui.title')} ${orderId}`"
       :breadcrumb="[
-        { label: 'Dashboard', to: '/' },
-        { label: 'Orders', to: '/orders' },
+        { label: $t('nav.dashboard'), to: '/' },
+        { label: $t('orders_ui.title'), to: '/orders' },
         { label: orderId },
       ]"
     >
@@ -44,7 +44,7 @@
       </template>
 
       <template #actions>
-        <LazyVMenu label="Print and export">
+        <LazyVMenu :label="$t('btn.download_invoice')">
           <template #trigger="{ attrs, toggle }">
             <LazyVButton
               v-bind="attrs"
@@ -53,7 +53,7 @@
               icon-end="lucide:chevron-down"
               :disabled="!detail"
               @click="toggle"
-              >Download invoice</LazyVButton
+              >{{ $t('btn.download_invoice') }}</LazyVButton
             >
           </template>
           <button
@@ -64,7 +64,7 @@
             @click="exportAs('pdf')"
           >
             <Icon name="lucide:file-text" size="16" aria-hidden="true" />
-            Download PDF
+            {{ $t('common_ui.export_pdf') }}
           </button>
           <button
             type="button"
@@ -74,7 +74,7 @@
             @click="exportAs('excel')"
           >
             <Icon name="lucide:file-spreadsheet" size="16" aria-hidden="true" />
-            Download Excel
+            {{ $t('common_ui.export_excel') }}
           </button>
         </LazyVMenu>
 
@@ -84,8 +84,8 @@
           @click="confirmOpen = true"
           >{{
             detail?.row.stage === "completed"
-              ? "Order completed"
-              : "Complete order"
+              ? $t('orders_ui.stage_completed')
+              : $t('orders_ui.stage_completed')
           }}</LazyVButton
         >
       </template>
@@ -95,7 +95,7 @@
     <LazyVEmptyState
       v-if="notFound"
       icon="lucide:search-x"
-      title="Order not found"
+      :title="$t('error_ui.not_found_title')"
       :description="`There is no order ${orderId}. It may have been mistyped or removed.`"
       eyebrow="LEDGER :: NOT_FOUND"
       tag="404"
@@ -105,13 +105,13 @@
         to="/orders"
         icon="lucide:arrow-left"
         icon-class="rtl:-scale-x-100"
-        >Back to orders</LazyVButton
+        >{{ $t('btn.all_orders') }}</LazyVButton
       >
     </LazyVEmptyState>
 
     <LazyVErrorBanner
       v-else-if="error"
-      message="This order could not be loaded. Check your connection and try again."
+      :message="$t('common_ui.connection_error')"
       @retry="() => refresh()"
     />
 
@@ -208,14 +208,14 @@
           variant="secondary"
           :disabled="moving"
           @click="confirmOpen = false"
-          >Keep order open</LazyVButton
+          >{{ $t('btn.cancel') }}</LazyVButton
         >
 
         <LazyVButton
           :loading="moving"
           icon="lucide:shield-check"
           @click="release"
-          >Complete order</LazyVButton
+          >{{ $t('orders_ui.stage_completed') }}</LazyVButton
         >
       </template>
     </LazyVDialog>
@@ -226,6 +226,7 @@
 import { priorityMeta, stageMeta, tierMeta } from "~/data/order-meta";
 import type { OrderDetail, OrderStage } from "~/types/admin/orders";
 
+const { t } = useI18n();
 const route = useRoute();
 const toast = useToast();
 const { currency } = useFormatters();
@@ -321,8 +322,7 @@ definePageMeta({
 });
 
 useSeoMeta({
-  title: () => `Order ${orderId.value}`,
-  description:
-    "Order progress, items, shipment details and notes for a customer order.",
+  title: () => `${t('orders_ui.title')} ${orderId.value}`,
+  description: () => t('orders_ui.seo_description'),
 });
 </script>

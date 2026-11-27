@@ -1,14 +1,14 @@
 <template>
   <div class="space-y-5">
     <LazyVPageHeader
-      title="Categories"
-      description="Organise the catalog into categories. Reorder them, control what shows on the storefront, and edit each category's URL and listing."
-      :breadcrumb="[{ label: 'Dashboard', to: '/' }, { label: 'Categories' }]"
+      :title="$t('categories_ui.title')"
+      :description="$t('categories_ui.description')"
+      :breadcrumb="[{ label: $t('nav.dashboard'), to: '/' }, { label: $t('categories_ui.title') }]"
     />
 
     <LazyVErrorBanner
       v-if="error"
-      message="The category tree could not be loaded. Check your connection and try again."
+      :message="$t('common_ui.connection_error')"
       @retry="() => refresh()"
     />
 
@@ -42,27 +42,21 @@
             <LazyVEmptyState
               bare
               :icon="filter ? 'lucide:search-x' : 'lucide:folder-tree'"
-              :title="
-                filter ? 'No categories match this filter' : 'No categories yet'
-              "
-              :description="
-                filter
-                  ? 'Try a different name, slug or code.'
-                  : 'Add your first master category to start organising the catalog.'
-              "
+              :title="filter ? $t('categories_ui.empty_filter_title') : $t('categories_ui.empty_title')"
+              :description="filter ? $t('categories_ui.empty_filter_desc') : $t('categories_ui.empty_desc')"
             >
               <LazyVButton
                 v-if="filter"
                 variant="secondary"
                 @click="filter = ''"
-                >Clear filter</LazyVButton
+                >{{ $t('categories_ui.btn_clear_filter') }}</LazyVButton
               >
 
               <LazyVButton
                 v-else
                 icon="lucide:circle-plus"
                 @click="openAdd(null)"
-                >Add category</LazyVButton
+                >{{ $t('categories_ui.btn_add_category') }}</LazyVButton
               >
             </LazyVEmptyState>
           </template>
@@ -113,7 +107,7 @@
 
     <LazyVDialog
       v-model:open="deleteOpen"
-      title="Delete this category?"
+      :title="$t('categories_ui.delete_category_title')"
       :description="deleteTarget ? deleteTarget.name : ''"
     >
       <p class="callout">
@@ -123,10 +117,7 @@
           class="bullet-icon"
           aria-hidden="true"
         />
-        <span v-if="deleteTarget">
-          This removes the category from the shop menu and from reports. It
-          cannot be undone from this screen.
-        </span>
+        <span v-if="deleteTarget">{{ $t('categories_ui.delete_category_confirm') }}</span>
       </p>
       <p v-if="deleteError" class="callout-accent mt-3" role="alert">
         <Icon name="lucide:circle-alert" size="16" class="bullet-icon" aria-hidden="true" />
@@ -137,13 +128,13 @@
           variant="secondary"
           :disabled="deleting"
           @click="deleteOpen = false"
-          >Keep</LazyVButton
+          >{{ $t('btn.cancel') }}</LazyVButton
         >
         <LazyVButton
           :loading="deleting"
           icon="lucide:trash-2"
           @click="confirmDelete"
-          >Delete</LazyVButton
+          >{{ $t('btn.delete') }}</LazyVButton
         >
       </template>
     </LazyVDialog>
@@ -154,6 +145,7 @@
 import type { Category, CategoryInput } from "~/types/admin/categories";
 
 const toast = useToast();
+const { t } = useI18n();
 const { number } = useFormatters();
 
 // lazy: the page renders at once; the KPIs and the tree show their own skeletons.
@@ -273,7 +265,7 @@ const save = async (values: CategoryInput) => {
     const saved = editing
       ? await store.update(editing.id, values)
       : await store.create(values);
-    toast.success(editing ? "Category updated" : "Category created", {
+    toast.success(editing ? t('categories_ui.toast_updated') : t('categories_ui.toast_created'), {
       description: saved.name,
     });
     await refresh();
@@ -285,8 +277,8 @@ const save = async (values: CategoryInput) => {
     formError.value = keyMessage
       ? `Key: ${keyMessage}`
       : status === 409
-        ? "Another category already uses that URL slug. Choose a different one."
-        : "The category could not be saved. Check the details and try again.";
+        ? t('categories_ui.err_slug_conflict')
+        : t('categories_ui.err_save_failed');
   } finally {
     saving.value = false;
   }
@@ -309,11 +301,11 @@ const setVisibility = async (c: Category, on: boolean) => {
   try {
     await store.setVisibility(c, on, toInput(c));
     toast.success(
-      on ? "Visible on the storefront" : "Hidden from the storefront",
+      on ? t('categories_ui.toast_visible') : t('categories_ui.toast_hidden'),
       { description: c.name },
     );
   } catch {
-    toast.error("Couldn't change visibility", {
+    toast.error(t('categories_ui.toast_visibility_error'), {
       description: `${c.name} is unchanged.`,
     });
   }
@@ -324,8 +316,8 @@ const reorder = async (parentId: string | null, ids: string[]) => {
   try {
     await store.reorder(parentId, ids);
   } catch {
-    toast.error("Couldn't save the new order", {
-      description: "The previous order was restored.",
+    toast.error(t('categories_ui.toast_reorder_error'), {
+      description: t('categories_ui.toast_reorder_error_desc'),
     });
   }
 };
@@ -349,7 +341,7 @@ const confirmDelete = async () => {
   deleteError.value = "";
   try {
     await store.remove(target.id);
-    toast.success("Category deleted", { description: target.name });
+    toast.success(t('categories_ui.toast_deleted'), { description: target.name });
     if (
       selectedId.value === target.id ||
       nodes.value.find((n) => n.id === selectedId.value)?.parentId === target.id
@@ -369,7 +361,7 @@ definePageMeta({
 });
 
 useSeoMeta({
-  title: "Categories",
-  description: "Organise the catalog into categories.",
+  title: () => t('categories_ui.seo_title'),
+  description: () => t('categories_ui.seo_description'),
 });
 </script>

@@ -1,12 +1,12 @@
 <template>
   <div class="space-y-5">
     <LazyVPageHeader
-      title="Discounts & Vouchers"
-      description="Promotional vouchers and offers: values, usage caps, eligibility and schedules."
-      :breadcrumb="[{ label: 'Dashboard', to: '/' }, { label: 'Coupons' }]"
+      :title="$t('coupons_ui.title')"
+      :description="$t('coupons_ui.description')"
+      :breadcrumb="[{ label: $t('nav.dashboard'), to: '/' }, { label: $t('nav.coupons') }]"
     >
       <template #actions>
-        <LazyVMenu label="Export ledger">
+        <LazyVMenu :label="$t('common_ui.export_ledger')">
           <template #trigger="{ attrs, toggle }">
             <LazyVButton
               v-bind="attrs"
@@ -14,7 +14,7 @@
               icon="lucide:download"
               icon-end="lucide:chevron-down"
               @click="toggle"
-              >Export ledger</LazyVButton
+              >{{ $t('common_ui.export_ledger') }}</LazyVButton
             >
           </template>
           <button
@@ -23,8 +23,7 @@
             class="menu-item w-full"
             @click="exportRows(rows, 'pdf')"
           >
-            <Icon name="lucide:file-text" size="16" aria-hidden="true" /> PDF ·
-            this page
+            <Icon name="lucide:file-text" size="16" aria-hidden="true" /> {{ $t('btn.export_pdf') }}
           </button>
           <button
             type="button"
@@ -33,11 +32,11 @@
             @click="exportRows(rows, 'excel')"
           >
             <Icon name="lucide:file-spreadsheet" size="16" aria-hidden="true" />
-            Excel · this page
+            {{ $t('btn.export_excel') }}
           </button>
         </LazyVMenu>
         <LazyVButton icon="lucide:circle-plus" @click="openCreate()"
-          >Create new voucher</LazyVButton
+          >{{ $t('btn.create_voucher') }}</LazyVButton
         >
       </template>
     </LazyVPageHeader>
@@ -61,14 +60,14 @@
           <div v-if="error" class="p-5">
             <LazyVEmptyState
               icon="lucide:triangle-alert"
-              title="Voucher ledger sync failed"
-              description="The voucher ledger could not be reached. Your filters are kept, so retrying picks up where you left off."
+              :title="$t('coupons_ui.error_title')"
+              :description="$t('coupons_ui.error_desc')"
               eyebrow="LEDGER :: SYNC_ERROR"
               tag="OFFLINE"
               tag-tone="accent"
             >
               <LazyVButton icon="lucide:refresh-cw" @click="() => refresh()"
-                >Retry sync</LazyVButton
+                >{{ $t('btn.retry_sync') }}</LazyVButton
               >
             </LazyVEmptyState>
           </div>
@@ -78,13 +77,13 @@
             class="p-5"
           >
             <LazyVEmptyState
-              title="No vouchers match these filters"
-              description="Try a different code or campaign name, another type or tier, or the All vouchers tab."
+              :title="$t('coupons_ui.empty_filter_title')"
+              :description="$t('coupons_ui.empty_filter_desc')"
               eyebrow="QUERY :: NO_RESULTS"
               tag="0 RESULTS"
             >
               <LazyVButton variant="secondary" @click="resetFilters"
-                >Clear all filters</LazyVButton
+                >{{ $t('common_ui.clear_all_filters') }}</LazyVButton
               >
             </LazyVEmptyState>
           </div>
@@ -93,11 +92,11 @@
             <LazyVEmptyState
               bare
               icon="lucide:ticket-percent"
-              title="No vouchers yet"
-              description="Create a voucher to give customers a discount, free delivery or a service credit."
+              :title="$t('coupons_ui.empty_title')"
+              :description="$t('coupons_ui.empty_desc')"
             >
               <LazyVButton icon="lucide:circle-plus" @click="openCreate()"
-                >Create new voucher</LazyVButton
+                >{{ $t('btn.create_voucher') }}</LazyVButton
               >
             </LazyVEmptyState>
           </div>
@@ -127,7 +126,7 @@
             :total="data?.total ?? 0"
             :per-page-options="[10, 25, 50]"
             show-per-page
-            item-label="vouchers"
+            :item-label="$t('coupons_ui.item_label')"
             scroll-to="#vouchers"
           />
         </div>
@@ -178,7 +177,7 @@
         size="sm"
         icon="lucide:pause"
         @click="runBulk(selected, 'pause')"
-        >Pause</LazyVButton
+        >{{ $t('coupons_ui.bulk_pause') }}</LazyVButton
       >
 
       <LazyVButton
@@ -186,7 +185,7 @@
         variant="secondary"
         icon="lucide:play"
         @click="runBulk(selected, 'resume')"
-        >Resume</LazyVButton
+        >{{ $t('coupons_ui.bulk_resume') }}</LazyVButton
       >
 
       <LazyVButton
@@ -194,7 +193,7 @@
         variant="secondary"
         icon="lucide:archive"
         @click="runBulk(selected, 'archive')"
-        >Archive</LazyVButton
+        >{{ $t('coupons_ui.bulk_archive') }}</LazyVButton
       >
 
       <LazyVButton
@@ -203,13 +202,13 @@
         icon="lucide:trash-2"
         class="!border-accent !text-accent"
         @click="askDelete(selected, `${selected.length} vouchers`)"
-        >Delete</LazyVButton
+        >{{ $t('btn.delete') }}</LazyVButton
       >
     </LazyVBulkBar>
 
     <LazyVDialog
       v-model:open="deleteOpen"
-      title="Delete voucher?"
+      :title="$t('coupons_ui.delete_title')"
       :description="
         pendingDelete ? `${pendingDelete.label} will be removed.` : ''
       "
@@ -221,23 +220,21 @@
           class="bullet-icon"
           aria-hidden="true"
         />
-        Clients can no longer redeem it. Orders that already used it keep their
-        concession. To stop a voucher without losing its history, pause or
-        archive it instead. This cannot be undone from this screen.
+        {{ $t('coupons_ui.delete_confirm') }}
       </p>
       <template #footer>
         <LazyVButton
           variant="secondary"
           :disabled="deleting"
           @click="deleteOpen = false"
-          >Keep</LazyVButton
+          >{{ $t('btn.cancel') }}</LazyVButton
         >
 
         <LazyVButton
           :loading="deleting"
           icon="lucide:trash-2"
           @click="confirmDelete"
-          >Delete</LazyVButton
+          >{{ $t('btn.delete') }}</LazyVButton
         >
       </template>
     </LazyVDialog>
@@ -258,6 +255,7 @@ import type {
 } from "~/types/admin/coupons";
 
 const toast = useToast();
+const { t } = useI18n();
 const { currency } = useFormatters();
 
 const filters = reactive({
@@ -393,7 +391,7 @@ const save = async (values: CouponInput) => {
   const target = panel.value?.coupon;
   try {
     const saved = await store.save(target ? target.id : null, values);
-    toast.success(target ? "Voucher updated" : "Voucher created", {
+    toast.success(target ? t('coupons_ui.toast_updated') : t('coupons_ui.toast_created'), {
       description: saved.code,
     });
     if (!target) {
@@ -433,7 +431,7 @@ const runBulk = async (
         `${changed} voucher${changed > 1 ? "s" : ""} ${bulkWords[action]}`,
       );
     else
-      toast.warning("Nothing changed", {
+      toast.warning(t('coupons_ui.toast_nothing_changed'), {
         description:
           "Those vouchers can't be " +
           bulkWords[action] +
@@ -442,8 +440,8 @@ const runBulk = async (
     selected.value = [];
     await refresh();
   } catch {
-    toast.error("Couldn't update the vouchers", {
-      description: "Nothing was changed. Try again.",
+    toast.error(t('coupons_ui.toast_update_error'), {
+      description: t('common_ui.try_again'),
     });
   }
 };
@@ -464,15 +462,15 @@ const confirmDelete = async () => {
   try {
     const { ids, label } = pendingDelete.value;
     await store.remove(ids);
-    toast.success("Voucher deleted", { description: label });
+    toast.success(t('coupons_ui.toast_deleted'), { description: label });
     if (panel.value?.coupon && ids.includes(panel.value.coupon.id))
       closePanel();
     selected.value = [];
     deleteOpen.value = false;
     await refresh();
   } catch {
-    toast.error("Couldn't delete", {
-      description: "Nothing was removed. Try again.",
+    toast.error(t('coupons_ui.toast_delete_error'), {
+      description: t('common_ui.try_again'),
     });
   } finally {
     deleting.value = false;
@@ -482,8 +480,8 @@ const confirmDelete = async () => {
 // --- Export ---
 const exportRows = async (list: CouponRow[], format: "pdf" | "excel") => {
   if (!list.length) {
-    toast.warning("Nothing to export", {
-      description: "There are no vouchers on this page.",
+    toast.warning(t('coupons_ui.toast_export_empty'), {
+      description: t('coupons_ui.toast_export_empty_desc'),
     });
     return;
   }
@@ -537,7 +535,7 @@ definePageMeta({
 });
 
 useSeoMeta({
-  title: "Coupons",
-  description: "Promotional vouchers and offers with usage caps and schedules.",
+  title: () => t('coupons_ui.seo_title'),
+  description: () => t('coupons_ui.seo_description'),
 });
 </script>

@@ -33,7 +33,7 @@
 
         <div class="flex flex-wrap items-center justify-center gap-3">
           <LazyVButton variant="primary" icon="lucide:house" @click="go('/')"
-            >Go to home page</LazyVButton
+            >{{ t("btn.go_to_dashboard") }}</LazyVButton
           >
         </div>
 
@@ -55,7 +55,7 @@
 const props = defineProps<{ error: NuxtError }>();
 
 const localePath = useLocalePath();
-const { locale } = useI18n();
+const { locale, t } = useI18n();
 const { theme } = useTheme();
 
 const code = computed(() => props.error.statusCode ?? 500);
@@ -65,29 +65,29 @@ const copy = computed(() => {
   if (code.value === 404)
     return {
       icon: "lucide:search-x",
-      eyebrow: "Page not found",
-      title: "We can't find that page",
-      body: "It may have moved, or the link might be mistyped. Try searching, or head back to the catalog.",
+      eyebrow: t("error_ui.not_found_title"),
+      title: t("error_ui.not_found_title"),
+      body: t("error_ui.not_found_desc"),
     };
   if (code.value === 401 || code.value === 403)
     return {
       icon: "lucide:lock",
-      eyebrow: "Access restricted",
-      title: "You don't have access to this page",
-      body: "Sign in with an account that has permission, or head back to the catalog.",
+      eyebrow: t("common_ui.error"),
+      title: t("profile_ui.not_signed_in_title"),
+      body: t("profile_ui.not_signed_in_desc"),
     };
   if (code.value === 429)
     return {
       icon: "lucide:timer",
-      eyebrow: "Too many requests",
-      title: "Slow down for a moment",
-      body: "We've received a lot of requests from you. Wait a minute, then try again.",
+      eyebrow: t("common_ui.error"),
+      title: t("auth_ui.too_many_attempts"),
+      body: t("auth_ui.too_many_attempts"),
     };
   return {
     icon: "lucide:triangle-alert",
-    eyebrow: "Something went wrong",
-    title: "We hit a problem on our side",
-    body: "It isn't anything you did. Try again in a moment, and call us if it keeps happening.",
+    eyebrow: t("error_ui.server_error_title"),
+    title: t("error_ui.server_error_title"),
+    body: t("error_ui.server_error_desc"),
   };
 });
 

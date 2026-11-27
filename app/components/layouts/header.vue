@@ -11,26 +11,18 @@
         icon="lucide:menu"
         class="shrink-0 lg:hidden"
         aria-controls="admin-nav"
-        aria-label="Open navigation"
+        :aria-label="t('common_ui.open_navigation')"
         @click="emit('openNav')"
       />
 
       <LazyVBrandMark compact class="min-w-0 lg:hidden" />
-
-      <!-- <LazyVSearchInput
-        name="adminSearch"
-        label="Search orders, customers and products"
-        placeholder="Search orders, customers, products…"
-        to=""
-        class="order-last md:order-none md:ms-auto md:w-72 lg:w-80"
-      /> -->
 
       <div class="ms-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
         <p
           class="me-1 hidden items-center gap-1.5 whitespace-nowrap font-mono text-2xs text-success 2xl:flex"
         >
           <span class="status-dot" aria-hidden="true" />
-          ISO 14644-1 active
+          {{ t("common_ui.system_active") }}
         </p>
 
         <LazyVThemeToggle />
@@ -46,5 +38,7 @@
 </template>
 
 <script lang="ts" setup>
+const { t } = useI18n();
+
 const emit = defineEmits<{ openNav: [] }>();
 </script>

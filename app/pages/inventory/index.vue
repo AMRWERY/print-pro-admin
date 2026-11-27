@@ -1,19 +1,19 @@
 <template>
   <div class="space-y-5">
     <LazyVPageHeader
-      title="Inventory"
-      description="Real-time stock for printers, photocopiers, ink and toner across the Cairo, Giza and Alexandria warehouses."
-      :breadcrumb="[{ label: 'Dashboard', to: '/' }, { label: 'Inventory' }]"
+      :title="$t('inventory_ui.title')"
+      :description="$t('inventory_ui.description')"
+      :breadcrumb="[{ label: $t('nav.dashboard'), to: '/' }, { label: $t('inventory_ui.title') }]"
     >
       <template #actions>
         <LazyVButton
           variant="secondary"
           icon="lucide:arrow-right-left"
           @click="openAdjust(null)"
-          >Stock adjustment / transfer</LazyVButton
+          >{{ $t('btn.stock_adjustment') }}</LazyVButton
         >
 
-        <LazyVMenu label="Export ledger">
+        <LazyVMenu :label="$t('common_ui.export_ledger')">
           <template #trigger="{ attrs, toggle }">
             <LazyVButton
               v-bind="attrs"
@@ -21,7 +21,7 @@
               icon="lucide:download"
               icon-end="lucide:chevron-down"
               @click="toggle"
-              >Export ledger</LazyVButton
+              >{{ $t('common_ui.export_ledger') }}</LazyVButton
             >
           </template>
           <button
@@ -30,8 +30,7 @@
             class="menu-item w-full"
             @click="exportRows('pdf')"
           >
-            <Icon name="lucide:file-text" size="16" aria-hidden="true" /> PDF ·
-            this page
+            <Icon name="lucide:file-text" size="16" aria-hidden="true" /> {{ $t('inventory_ui.export_pdf_label') }}
           </button>
 
           <button
@@ -41,17 +40,17 @@
             @click="exportRows('excel')"
           >
             <Icon name="lucide:file-spreadsheet" size="16" aria-hidden="true" />
-            Excel · this page
+            {{ $t('inventory_ui.export_excel_label') }}
           </button>
         </LazyVMenu>
         <LazyVButton
           variant="secondary"
           icon="lucide:circle-plus"
           @click="openItem(null)"
-          >Add item</LazyVButton
+          >{{ $t('btn.add_item') }}</LazyVButton
         >
         <LazyVButton icon="lucide:package-plus" @click="receiveOpen = true"
-          >Receive inbound consignment</LazyVButton
+          >{{ $t('btn.receive_inbound') }}</LazyVButton
         >
       </template>
     </LazyVPageHeader>
@@ -75,14 +74,14 @@
           <div v-if="error" class="p-5">
             <LazyVEmptyState
               icon="lucide:triangle-alert"
-              title="Ledger sync failed"
-              description="The inventory ledger could not be reached. Your filters are kept, so retrying picks up where you left off."
+              :title="$t('inventory_ui.error_title')"
+              :description="$t('inventory_ui.error_desc')"
               eyebrow="LEDGER :: SYNC_ERROR"
               tag="OFFLINE"
               tag-tone="accent"
             >
               <LazyVButton icon="lucide:refresh-cw" @click="() => refresh()"
-                >Retry sync</LazyVButton
+                >{{ $t('btn.retry_sync') }}</LazyVButton
               >
             </LazyVEmptyState>
           </div>
@@ -90,11 +89,11 @@
           <div v-else-if="!pending && data && !rows.length" class="p-5">
             <LazyVEmptyState
               bare
-              title="No stock matches these filters"
-              description="Try a different SKU or bin, another warehouse, or the All inventory tab."
+              :title="$t('inventory_ui.empty_filter_title')"
+              :description="$t('inventory_ui.empty_filter_desc')"
             >
               <LazyVButton variant="secondary" @click="resetFilters"
-                >Clear all filters</LazyVButton
+                >{{ $t('common_ui.clear_all_filters') }}</LazyVButton
               >
             </LazyVEmptyState>
           </div>
@@ -121,7 +120,7 @@
             :total="data?.total ?? 0"
             :per-page-options="[10, 25, 50]"
             show-per-page
-            item-label="registered SKUs"
+            :item-label="$t('inventory_ui.item_label')"
             scroll-to="#ledger"
           />
         </div>
@@ -149,7 +148,7 @@
 
     <LazyVDialog
       v-model:open="deleteOpen"
-      title="Delete this item?"
+      :title="$t('inventory_ui.delete_item_title')"
       :description="deleteTarget ? deleteTarget.name : ''"
     >
       <p class="callout">
@@ -159,31 +158,20 @@
           class="bullet-icon"
           aria-hidden="true"
         />
-        <span v-if="deleteTarget">
-          This removes {{ deleteTarget.sku }} and its
-          {{ number(deleteTarget.stock) }} unit{{
-            deleteTarget.stock === 1 ? "" : "s"
-          }}
-          ({{
-            currency(deleteTarget.price * deleteTarget.stock, {
-              maximumFractionDigits: 0,
-            })
-          }}) from the register and the Products list. The removal is recorded
-          in the movement ledger. It cannot be undone from this screen.
-        </span>
+        <span v-if="deleteTarget">{{ $t('inventory_ui.delete_item_confirm') }}</span>
       </p>
       <template #footer>
         <LazyVButton
           variant="secondary"
           :disabled="deleting"
           @click="deleteOpen = false"
-          >Keep</LazyVButton
+          >{{ $t('btn.cancel') }}</LazyVButton
         >
         <LazyVButton
           :loading="deleting"
           icon="lucide:trash-2"
           @click="confirmDelete"
-          >Delete</LazyVButton
+          >{{ $t('btn.delete') }}</LazyVButton
         >
       </template>
     </LazyVDialog>
@@ -203,6 +191,7 @@ import type { ProductCategory } from "~/types/admin/products";
 const categories = useCategories();
 
 const toast = useToast();
+const { t } = useI18n();
 const { number, currency } = useFormatters();
 
 const filters = reactive({
@@ -309,12 +298,12 @@ const confirmDelete = async () => {
   deleting.value = true;
   try {
     await store.removeItem(target.id);
-    toast.success("Item deleted", { description: target.name });
+    toast.success(t('inventory_ui.toast_item_deleted'), { description: target.name });
     deleteOpen.value = false;
     onChanged();
   } catch {
-    toast.error("Couldn't delete the item", {
-      description: "Nothing was removed. Try again.",
+    toast.error(t('inventory_ui.toast_item_delete_error'), {
+      description: t('common_ui.try_again'),
     });
   } finally {
     deleting.value = false;
@@ -325,14 +314,14 @@ const confirmDelete = async () => {
 const exportRows = async (format: "pdf" | "excel") => {
   const list = rows.value;
   if (!list.length) {
-    toast.warning("Nothing to export", {
-      description: "There is no stock on this page.",
+    toast.warning(t('inventory_ui.toast_export_empty'), {
+      description: t('inventory_ui.toast_export_empty_desc'),
     });
     return;
   }
   try {
     await downloadTable(format, {
-      title: "Inventory ledger",
+      title: t('inventory_ui.ledger_title'),
       subtitle: `${list.length} SKU${list.length > 1 ? "s" : ""}`,
       fileName: `inventory-ledger-${new Date().toISOString().slice(0, 10)}`,
       head: [
@@ -364,8 +353,8 @@ const exportRows = async (format: "pdf" | "excel") => {
     });
     toast.success(`Exported ${list.length} SKU${list.length > 1 ? "s" : ""}`);
   } catch {
-    toast.error("Couldn't create the file", {
-      description: "Try again in a moment.",
+    toast.error(t('inventory_ui.toast_export_error'), {
+      description: t('common_ui.try_again'),
     });
   }
 };
@@ -375,8 +364,7 @@ definePageMeta({
 });
 
 useSeoMeta({
-  title: "Inventory",
-  description:
-    "Stock levels, warehouse locations and movement history for the whole catalog.",
+  title: () => t('inventory_ui.seo_title'),
+  description: () => t('inventory_ui.seo_description'),
 });
 </script>

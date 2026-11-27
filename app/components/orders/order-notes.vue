@@ -1,5 +1,5 @@
 <template>
-  <LazyVPanel title="Internal admin notes" icon="lucide:lock">
+  <LazyVPanel :title="$t('orders_ui.order_notes')" icon="lucide:lock">
     <template #actions>
       <LazyVStatusBadge tone="neutral" icon="lucide:lock"
         >Staff only</LazyVStatusBadge
@@ -55,7 +55,7 @@
           size="sm"
           icon="lucide:check"
           :loading="saving"
-          >Save note</LazyVButton
+          >{{ $t('btn.save') }}</LazyVButton
         >
       </div>
     </form>

@@ -1,12 +1,12 @@
 <template>
   <div class="space-y-5">
     <LazyVPageHeader
-      title="Customer Accounts & Registries"
-      description="Directory of businesses, schools, print shops and home offices: contact details, payment standing and order history."
-      :breadcrumb="[{ label: 'Dashboard', to: '/' }, { label: 'Customers' }]"
+      :title="$t('customers_ui.title')"
+      :description="$t('customers_ui.description')"
+      :breadcrumb="[{ label: $t('nav.dashboard'), to: '/' }, { label: $t('customers_ui.title') }]"
     >
       <template #actions>
-        <LazyVMenu label="Export customers">
+        <LazyVMenu :label="$t('btn.export_customers')">
           <template #trigger="{ attrs, toggle }">
             <LazyVButton
               v-bind="attrs"
@@ -14,7 +14,7 @@
               icon="lucide:download"
               icon-end="lucide:chevron-down"
               @click="toggle"
-              >Export customers</LazyVButton
+              >{{ $t('btn.export_customers') }}</LazyVButton
             >
           </template>
           <button
@@ -23,8 +23,7 @@
             class="menu-item w-full"
             @click="exportRows(rows, 'pdf')"
           >
-            <Icon name="lucide:file-text" size="16" aria-hidden="true" /> PDF ·
-            this page
+            <Icon name="lucide:file-text" size="16" aria-hidden="true" /> {{ $t('common_ui.export_pdf') }}
           </button>
           <button
             type="button"
@@ -33,19 +32,19 @@
             @click="exportRows(rows, 'excel')"
           >
             <Icon name="lucide:file-spreadsheet" size="16" aria-hidden="true" />
-            Excel · this page
+            {{ $t('common_ui.export_excel') }}
           </button>
         </LazyVMenu>
 
         <LazyVButton icon="lucide:user-plus" @click="openForm(null)"
-          >Register customer</LazyVButton
+          >{{ $t('btn.register_customer') }}</LazyVButton
         >
       </template>
     </LazyVPageHeader>
 
     <customers-kpis :kpis="data?.kpis" />
 
-    <section class="card min-w-0" aria-label="Client registry">
+    <section class="card min-w-0" :aria-label="$t('customers_ui.title')">
       <div class="border-b border-line p-4 sm:p-5">
         <customers-toolbar
           v-model:q="filters.q"
@@ -61,14 +60,14 @@
         <div v-if="error" class="p-5">
           <LazyVEmptyState
             icon="lucide:triangle-alert"
-            title="Registry sync failed"
-            description="The client registry could not be reached. Your filters are kept, so retrying picks up where you left off."
+            :title="$t('common_ui.sync_error')"
+            :description="$t('common_ui.connection_error')"
             eyebrow="REGISTRY :: SYNC_ERROR"
             tag="OFFLINE"
             tag-tone="accent"
           >
             <LazyVButton icon="lucide:refresh-cw" @click="() => refresh()"
-              >Retry sync</LazyVButton
+              >{{ $t('btn.retry_sync') }}</LazyVButton
             >
           </LazyVEmptyState>
         </div>
@@ -78,13 +77,13 @@
           class="p-5"
         >
           <LazyVEmptyState
-            title="No clients match these filters"
-            description="Try a different name or email, another segment or status, or a wider activity window."
+            :title="$t('common_ui.empty_title')"
+            :description="$t('common_ui.empty_description')"
             eyebrow="QUERY :: NO_RESULTS"
             tag="0 RESULTS"
           >
             <LazyVButton variant="secondary" @click="resetFilters"
-              >Clear all filters</LazyVButton
+              >{{ $t('common_ui.clear_all_filters') }}</LazyVButton
             >
           </LazyVEmptyState>
         </div>
@@ -93,8 +92,8 @@
           <LazyVEmptyState
             bare
             icon="lucide:users"
-            title="No clients registered yet"
-            description="Register your first business, school or print shop to start building the directory."
+            :title="$t('common_ui.empty_title')"
+            :description="$t('customers_ui.description')"
           />
         </div>
 
@@ -121,7 +120,7 @@
           :total="data?.total ?? 0"
           :per-page-options="[10, 25, 50]"
           show-per-page
-          item-label="registered customers"
+          :item-label="$t('customers_ui.title')"
           scroll-to="#registry"
         />
       </div>
@@ -167,7 +166,7 @@
         size="sm"
         icon="lucide:file-text"
         @click="exportRows(selectedRows, 'pdf')"
-        >Export PDF</LazyVButton
+        >{{ $t('btn.export') }} PDF</LazyVButton
       >
 
       <LazyVButton
@@ -175,7 +174,7 @@
         variant="secondary"
         icon="lucide:file-spreadsheet"
         @click="exportRows(selectedRows, 'excel')"
-        >Export Excel</LazyVButton
+        >{{ $t('btn.export') }} Excel</LazyVButton
       >
 
       <LazyVButton
@@ -184,7 +183,7 @@
         icon="lucide:trash-2"
         class="!border-accent !text-accent"
         @click="askDelete(selected, `${selected.length} clients`)"
-        >Delete selected</LazyVButton
+        >{{ $t('btn.delete') }}</LazyVButton
       >
     </LazyVBulkBar>
 
@@ -218,14 +217,14 @@
           variant="secondary"
           :disabled="deleting"
           @click="deleteOpen = false"
-          >Keep</LazyVButton
+          >{{ $t('btn.cancel') }}</LazyVButton
         >
 
         <LazyVButton
           :loading="deleting"
           icon="lucide:trash-2"
           @click="confirmDelete"
-          >Delete</LazyVButton
+          >{{ $t('btn.delete') }}</LazyVButton
         >
       </template>
     </LazyVDialog>
@@ -243,6 +242,7 @@ import type {
   CustomersResponse,
 } from "~/types/admin/customers";
 
+const { t } = useI18n();
 const toast = useToast();
 
 const filters = reactive({
@@ -462,8 +462,7 @@ definePageMeta({
 });
 
 useSeoMeta({
-  title: "Customers",
-  description:
-    "Customer directory: contact details, payment standing and order history.",
+  title: () => t("customers_ui.seo_title"),
+  description: () => t("customers_ui.seo_description"),
 });
 </script>

@@ -2,13 +2,13 @@
   <auth-shell>
     <template #aside>
       <auth-aside
-        eyebrow="Admin sign-in"
-        tag="Orders, stock and customers"
-        title="Manage orders, stock and customers in one place."
+        :eyebrow="t('auth_ui.admin_signin')"
+        :tag="t('auth_ui.aside_tag')"
+        :title="t('auth_ui.aside_title')"
         :stats="[
-          { label: 'Orders', value: 'Tracked' },
-          { label: 'Stock', value: 'Live' },
-          { label: 'Reports', value: 'Daily' },
+          { label: t('nav.orders'), value: t('auth_ui.stat_orders_val') },
+          { label: t('nav.inventory'), value: t('auth_ui.stat_stock_val') },
+          { label: t('nav.analytics'), value: t('auth_ui.stat_reports_val') },
         ]"
       />
     </template>
@@ -16,13 +16,13 @@
     <section class="card space-y-5 p-6 sm:p-8" aria-labelledby="login-title">
       <div class="space-y-2">
         <p class="eyebrow flex items-center gap-2">
-          <span class="pip" aria-hidden="true" />Admin account
+          <span class="pip" aria-hidden="true" />{{ t('auth_ui.admin_account') }}
         </p>
         <h1 id="login-title" class="font-display text-3xl sm:text-4xl">
-          Sign in
+          {{ t('auth_ui.signin_title') }}
         </h1>
         <p class="text-sm text-mute">
-          Access your equipment orders, saved registry and delivery tracking.
+          {{ t('auth_ui.signin_desc') }}
         </p>
       </div>
 
@@ -45,8 +45,8 @@
           v-model="email"
           name="email"
           type="email"
-          label="Email"
-          placeholder="name@company.com"
+          :label="t('auth_ui.email_label')"
+          :placeholder="t('auth_ui.email_placeholder')"
           required
           rules="required|email"
           autocomplete="email"
@@ -59,7 +59,7 @@
           v-model="password"
           name="password"
           type="password"
-          label="Password"
+          :label="t('auth_ui.password_label')"
           placeholder="*******"
           required
           revealable
@@ -72,11 +72,11 @@
           <LazyVCheckboxImput
             v-model="remember"
             label-class="items-center"
-            >Remember this device</LazyVCheckboxImput
+            >{{ t('auth_ui.remember_device') }}</LazyVCheckboxImput
           >
 
           <LazyVButton variant="tertiary" to="/auth/forgot-password" size="sm"
-            >Forgot password?</LazyVButton
+            >{{ t('auth_ui.forgot_password') }}</LazyVButton
           >
         </div>
 
@@ -103,7 +103,7 @@
           icon-end="lucide:arrow-right"
           icon-end-class="icon-nudge rtl:-scale-x-100"
         >
-          {{ lockedFor > 0 ? `Try again in ${lockedFor}s` : "Sign in" }}
+          {{ lockedFor > 0 ? `${t('btn.try_again_in')} ${lockedFor}s` : t('btn.sign_in') }}
         </LazyVButton>
       </form>
     </section>
@@ -113,6 +113,7 @@
 <script lang="ts" setup>
 import type { Validatable } from "~/types/auth";
 
+const { t } = useI18n();
 const auth = useAuthStore();
 const route = useRoute();
 const localePath = useLocalePath();
@@ -121,7 +122,7 @@ const redirect = computed(() => safeRedirect(route.query.redirect));
 
 const notice = computed(() => {
   if (route.query.reset)
-    return "Password updated. Sign in with your new password.";
+    return t("auth_ui.password_updated_notice");
   return "";
 });
 
@@ -168,16 +169,15 @@ const submit = async () => {
   if (result.reason === "locked") {
     lockedFor.value = result.retryInSeconds;
     resume();
-    error.value = "Too many attempts. Wait a moment before trying again.";
+    error.value = t("auth_ui.too_many_attempts");
   } else {
-    error.value =
-      "That email and password don't match. Check them and try again, or reset your password.";
+    error.value = t("auth_ui.invalid_credentials");
   }
 };
 
 useSeoMeta({
-  title: "Sign In",
-  description: "Sign in to your admin account.",
+  title: () => t("auth_ui.signin_seo_title"),
+  description: () => t("auth_ui.signin_seo_description"),
   robots: "noindex",
 });
 </script>

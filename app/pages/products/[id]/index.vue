@@ -2,8 +2,8 @@
   <LazyVEmptyState
     v-if="notFound"
     icon="lucide:search-x"
-    title="Product not found"
-    description="This product is not in the register. It may have been deleted."
+    :title="$t('products_ui.product_not_found')"
+    :description="$t('products_ui.product_not_found_desc')"
     eyebrow="REGISTER :: NOT_FOUND"
     tag="404"
     tag-tone="accent"
@@ -12,13 +12,13 @@
       to="/products"
       icon="lucide:arrow-left"
       icon-class="rtl:-scale-x-100"
-      >Back to products</LazyVButton
+      >{{ $t('products_ui.back_to_products') }}</LazyVButton
     >
   </LazyVEmptyState>
 
   <LazyVErrorBanner
     v-else-if="error"
-    message="This product could not be loaded. Check your connection and try again."
+    :message="$t('products_ui.product_load_error')"
     @retry="() => refresh()"
   />
 
@@ -48,6 +48,7 @@
 <script lang="ts" setup>
 import type { ProductFormValues } from "~/types/admin/products";
 
+const { t } = useI18n();
 const route = useRoute();
 const id = computed(() => String(route.params.id));
 
@@ -96,8 +97,7 @@ definePageMeta({
 });
 
 useSeoMeta({
-  title: () => (detail.value ? `Edit ${detail.value.name}` : "Edit product"),
-  description:
-    "Edit a product's details, pricing and inventory.",
+  title: () => (detail.value ? t('products_ui.editor_edit_title', { name: detail.value.name }) : t('products_ui.edit_product')),
+  description: () => t('products_ui.edit_product_desc'),
 });
 </script>

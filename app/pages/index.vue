@@ -1,14 +1,14 @@
 <template>
   <div class="space-y-5">
     <LazyVPageHeader
-      title="Dashboard"
-      description="Sales, customers and stock at a glance."
+      :title="t('dashboard_ui.title')"
+      :description="t('dashboard_ui.description')"
     >
       <template #actions>
         <LazyVSegmented
           v-model="range"
           :options="rangeOptions"
-          label="Reporting period"
+          :label="t('dashboard_ui.reporting_period')"
         />
       </template>
     </LazyVPageHeader>
@@ -16,7 +16,7 @@
     <!-- A failed summary only replaces the sections it feeds, with a way to retry. -->
     <LazyVErrorBanner
       v-if="summaryError"
-      message="The dashboard data could not be loaded. Check your connection and try again."
+      :message="t('dashboard_ui.load_error')"
       @retry="() => refreshSummary()"
     />
 
@@ -27,8 +27,8 @@
 
     <div class="grid gap-4 xl:grid-cols-2">
       <dashboard-chart
-        title="Revenue"
-        subtitle="Gross sales over the selected period"
+        :title="t('dashboard_ui.revenue')"
+        :subtitle="t('dashboard_ui.revenue_subtitle')"
         icon="lucide:chart-line"
         kind="line"
         metric="revenue"
@@ -40,8 +40,8 @@
       />
 
       <dashboard-chart
-        title="Orders"
-        subtitle="Orders placed over the selected period"
+        :title="t('dashboard_ui.orders')"
+        :subtitle="t('dashboard_ui.orders_subtitle')"
         icon="lucide:receipt-text"
         kind="bar"
         metric="orders"
@@ -76,12 +76,12 @@ import type {
   RevenueSeries,
 } from "~/types/admin/dashboard";
 
+const { t } = useI18n();
 const { number, compactCurrency } = useFormatters();
 
 useSeoMeta({
-  title: "PrintPro — Dashboard",
-  description:
-    "Revenue, orders, customers, best-selling products and inventory alerts at a glance.",
+  title: () => t("dashboard_ui.seo_title"),
+  description: () => t("dashboard_ui.seo_description"),
 });
 
 // The page renders straight away and each section shows its own skeleton.
@@ -95,21 +95,15 @@ store.fetchSummary();
 const range = ref<RangeKey>("month");
 watch(range, (r) => store.fetchSeries(r), { immediate: true });
 
-const rangeOptions: { value: RangeKey; label: string }[] = [
-  { value: "today", label: "Today" },
-  { value: "week", label: "7 days" },
-  { value: "month", label: "30 days" },
-  { value: "quarter", label: "Quarter" },
-  { value: "year", label: "Year" },
-];
+const rangeOptions = computed<{ value: RangeKey; label: string }[]>(() => [
+  { value: "today", label: t("dashboard_ui.period_today") },
+  { value: "week", label: t("dashboard_ui.period_week") },
+  { value: "month", label: t("dashboard_ui.period_month") },
+  { value: "quarter", label: t("dashboard_ui.period_quarter") },
+  { value: "year", label: t("dashboard_ui.period_year") },
+]);
 
 definePageMeta({
   layout: "admin",
-});
-
-useSeoMeta({
-  title: "PrintPro",
-  description:
-    "Sales, orders and stock for printers, photocopiers, ink and toner.",
 });
 </script>

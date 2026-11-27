@@ -1,8 +1,8 @@
 <template>
   <LazyVDialog
     v-model:open="open"
-    title="Create manual order"
-    description="Opens an order awaiting payment for an existing customer."
+    :title="$t('btn.create_manual_order')"
+    :description="$t('orders_ui.create_modal_desc')"
   >
     <form
       id="create-order"
@@ -13,7 +13,7 @@
       <LazyVSelectInput
         v-model="form.customerId"
         name="customerId"
-        label="Customer"
+        :label="$t('orders_ui.customer_field')"
         required
         rules="required"
         :options="customerOptions"
@@ -22,7 +22,7 @@
       <LazyVSelectInput
         v-model="form.productId"
         name="productId"
-        label="Product"
+        :label="$t('orders_ui.product_field')"
         required
         rules="required"
         :options="productOptions"
@@ -33,7 +33,7 @@
           v-model="form.quantity"
           name="quantity"
           type="number"
-          label="Quantity"
+          :label="$t('orders_ui.quantity_field')"
           required
           rules="required|integer|min_value:1|max_value:50"
           min="1"
@@ -43,7 +43,7 @@
         <LazyVSelectInput
           v-model="form.priority"
           name="priority"
-          label="Priority"
+          :label="$t('orders_ui.priority_field')"
           :options="priorityOptions"
         />
       </div>
@@ -56,11 +56,10 @@
           aria-hidden="true"
         />
         <span>
-          Order value (incl. setup, courier and VAT)
+          {{ $t('orders_ui.order_value_callout') }}
           <strong class="font-mono text-paper tabular-nums">{{
             currency(total, { maximumFractionDigits: 0 })
           }}</strong>
-          will be requested from the client before dispatch.
         </span>
       </p>
 
@@ -77,7 +76,7 @@
 
     <template #footer>
       <LazyVButton variant="secondary" :disabled="loading" @click="open = false"
-        >Cancel</LazyVButton
+        >{{ $t('btn.cancel') }}</LazyVButton
       >
 
       <LazyVButton
@@ -85,7 +84,7 @@
         form="create-order"
         :loading="loading"
         icon="lucide:circle-plus"
-        >Create order</LazyVButton
+        >{{ $t('btn.create_order') }}</LazyVButton
       >
     </template>
   </LazyVDialog>

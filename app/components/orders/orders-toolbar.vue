@@ -4,7 +4,7 @@
     <div class="flex flex-wrap items-center justify-between gap-3">
       <div
         role="group"
-        aria-label="Filter by order status"
+        :aria-label="$t('orders_ui.filter_payment_label')"
         class="-mx-1 flex max-w-full gap-1.5 overflow-x-auto px-1 pb-1"
       >
         <button
@@ -27,7 +27,7 @@
         </button>
       </div>
 
-      <LazyVSegmented v-model="view" label="Layout" :options="viewOptions" />
+      <LazyVSegmented v-model="view" :label="$t('common_ui.view')" :options="viewOptions" />
     </div>
 
     <!-- Filters -->
@@ -41,18 +41,18 @@
           v-model="q"
           name="orderSearch"
           type="search"
-          label="Search orders"
+          :label="$t('orders_ui.filter_search_label')"
           hide-label
           icon="lucide:search"
           autocomplete="off"
-          placeholder="Search order ID, customer, company, product…"
+          :placeholder="$t('orders_ui.filter_search_placeholder')"
         />
       </form>
 
       <LazyVSelectInput
         v-model="range"
         name="orderRange"
-        label="Date range"
+        :label="$t('orders_ui.filter_range_label')"
         hide-label
         :options="rangeOptions"
       />
@@ -60,7 +60,7 @@
       <LazyVSelectInput
         v-model="payment"
         name="orderPayment"
-        label="Payment"
+        :label="$t('orders_ui.filter_payment_label')"
         hide-label
         :options="paymentOptions"
       />
@@ -68,7 +68,7 @@
       <LazyVSelectInput
         v-model="stage"
         name="orderStage"
-        label="Status"
+        :label="$t('common_ui.status')"
         hide-label
         :options="stageSelect"
       />
@@ -76,7 +76,7 @@
       <LazyVSelectInput
         v-model="tier"
         name="orderTier"
-        label="Client tier"
+        :label="$t('orders_ui.filter_tier_label')"
         hide-label
         :options="tierOptions"
       />
@@ -101,7 +101,7 @@
         </li>
         <li>
           <LazyVButton variant="tertiary" size="sm" @click="clearAll"
-            >Clear all</LazyVButton
+            >{{ $t('common_ui.clear_all') }}</LazyVButton
           >
         </li>
       </ul>
@@ -110,7 +110,7 @@
       <LazyVSelectInput
         v-model="sort"
         name="orderSort"
-        label="Sort"
+        :label="$t('orders_ui.filter_sort_label')"
         inline
         :options="sortOptions"
         class="ms-auto"
@@ -139,6 +139,8 @@ import type {
 
 defineProps<{ counts?: OrderCounts | null }>();
 
+const { t } = useI18n();
+
 const q = defineModel<string>("q", { required: true });
 const stage = defineModel<"all" | OrderStage>("stage", { required: true });
 const payment = defineModel<"all" | PaymentState>("payment", { required: true });
@@ -149,13 +151,13 @@ const view = defineModel<"table" | "kanban">("view", { required: true });
 
 const { number } = useFormatters();
 
-const viewOptions = [
-  { value: "table" as const, label: "Table" },
-  { value: "kanban" as const, label: "Kanban" },
-];
+const viewOptions = computed(() => [
+  { value: "table" as const, label: t("orders_ui.view_table") },
+  { value: "kanban" as const, label: t("orders_ui.view_kanban") },
+]);
 
 const tabs = computed(() => [
-  { value: "all" as const, label: "All orders" },
+  { value: "all" as const, label: t("orders_ui.tab_all") },
   ...(Object.keys(stageMeta) as OrderStage[]).map((value) => ({
     value,
     label: stageMeta[value].tab,
@@ -163,7 +165,7 @@ const tabs = computed(() => [
 ]);
 
 const stageSelect = computed(() => [
-  { value: "all", label: "All statuses" },
+  { value: "all", label: t("orders_ui.tab_all") },
   ...(Object.keys(stageMeta) as OrderStage[]).map((value) => ({
     value,
     label: stageMeta[value].tab,

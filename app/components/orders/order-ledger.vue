@@ -1,5 +1,5 @@
 <template>
-  <LazyVPanel title="Order history" icon="lucide:database">
+  <LazyVPanel :title="$t('orders_ui.ledger_title')" icon="lucide:database">
     <template #actions>
       <span class="chip" dir="ltr">{{ chain }}</span>
     </template>

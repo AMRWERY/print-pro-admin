@@ -15,20 +15,18 @@
       <template v-else-if="!state.valid">
         <div class="space-y-2">
           <p class="eyebrow-accent">
-            <Icon name="lucide:link-2-off" size="14" aria-hidden="true" />Link
-            not valid
+            <Icon name="lucide:link-2-off" size="14" aria-hidden="true" />{{ t("auth_ui.link_not_valid") }}
           </p>
           <h1 id="reset-title" class="font-display text-3xl">
-            This reset link has expired
+            {{ t("auth_ui.link_expired_title") }}
           </h1>
           <p class="text-sm text-mute">
-            Reset links work once and last 15 minutes. Request a new one to
-            continue.
+            {{ t("auth_ui.link_expired_desc") }}
           </p>
         </div>
 
         <LazyVButton variant="primary" to="/auth/forgot-password"
-          >Request a new link</LazyVButton
+          >{{ t("btn.request_new_link") }}</LazyVButton
         >
       </template>
 
@@ -37,21 +35,20 @@
         <div class="space-y-2">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <p class="eyebrow flex items-center gap-2">
-              <span class="pip" aria-hidden="true" />Password
-              reset
+              <span class="pip" aria-hidden="true" />{{ t("auth_ui.reset_title") }}
             </p>
             <p
               class="rounded-control border border-line px-2 py-0.5 meta"
               role="timer"
             >
-              Link expires in {{ remaining }}
+              {{ t("auth_ui.link_expires_in", { time: remaining }) }}
             </p>
           </div>
           <h1 id="reset-title" class="font-display text-3xl sm:text-4xl">
-            Set a new password
+            {{ t("auth_ui.reset_title") }}
           </h1>
           <p class="text-sm text-mute">
-            Choose a strong password for your account.
+            {{ t("auth_ui.reset_desc") }}
           </p>
         </div>
 
@@ -60,7 +57,7 @@
             v-model="password"
             name="password"
             type="password"
-            label="New password"
+            :label="t('profile_ui.new_password')"
             required
             revealable
             :rules="strongPasswordRule"
@@ -74,7 +71,7 @@
             v-model="confirm"
             name="confirm"
             type="password"
-            label="Confirm new password"
+            :label="t('profile_ui.confirm_new_password')"
             required
             revealable
             :rules="matchesRule(() => password)"
@@ -103,7 +100,7 @@
             :loading="loading"
             icon-end="lucide:arrow-right"
             icon-end-class="icon-nudge rtl:-scale-x-100"
-            >Update password</LazyVButton
+            >{{ t("btn.update_password") }}</LazyVButton
           >
         </form>
 
@@ -112,7 +109,7 @@
           to="/auth"
           icon="lucide:arrow-left"
           icon-class="rtl:-scale-x-100"
-          >Back to sign in</LazyVButton
+          >{{ t("btn.back_to_sign_in") }}</LazyVButton
         >
       </template>
     </section>
@@ -120,6 +117,7 @@
 </template>
 
 <script lang="ts" setup>
+const { t } = useI18n();
 const auth = useAuthStore();
 const route = useRoute();
 const localePath = useLocalePath();
@@ -175,16 +173,15 @@ const submit = async () => {
   loading.value = false;
 
   if (!done.ok) {
-    error.value =
-      "This link has expired or was already used. Request a new one.";
+    error.value = t("auth_ui.link_expired_desc");
     return;
   }
   await navigateTo({ path: localePath("/auth"), query: { reset: "1" } });
 };
 
 useSeoMeta({
-  title: "New Password",
-  description: "Set a new password for your account.",
+  title: () => t("auth_ui.reset_seo_title"),
+  description: () => t("auth_ui.reset_seo_description"),
   robots: "noindex",
 });
 </script>

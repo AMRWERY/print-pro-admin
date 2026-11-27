@@ -1,11 +1,11 @@
 <template>
   <VPanel
-    title="Inventory alerts"
-    subtitle="Items below their safe stock level"
+    :title="t('dashboard_ui.inventory_alerts')"
+    :subtitle="t('dashboard_ui.inventory_alerts_subtitle')"
     icon="lucide:triangle-alert"
   >
     <template #actions>
-      <LazyVButton variant="tertiary" size="sm" to="/inventory" icon-end="lucide:arrow-up-right" icon-end-class="rtl:-scale-x-100">View inventory</LazyVButton>
+      <LazyVButton variant="tertiary" size="sm" to="/inventory" icon-end="lucide:arrow-up-right" icon-end-class="rtl:-scale-x-100">{{ t('btn.view_inventory') }}</LazyVButton>
     </template>
 
     <ul class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" :aria-busy="!items || undefined">
@@ -26,7 +26,7 @@
         <div class="flex items-center justify-between gap-2">
           <LazyVStatusBadge :tone="tone[item.status]" :icon="icon[item.status]">{{ statusText[item.status] }}</LazyVStatusBadge>
           <span class="font-mono text-2xs text-mute tabular-nums">
-            Min {{ item.threshold }}
+            {{ t('dashboard_ui.min_threshold', { n: item.threshold }) }}
           </span>
         </div>
 
@@ -42,12 +42,12 @@
             :label="`Stock level for ${item.name}`"
           />
           <p class="flex flex-wrap justify-between gap-x-2 font-mono text-2xs text-mute">
-            <span>Remaining: {{ `${item.remaining} ${item.unit}` }}</span>
-            <span>{{ noteText[item.note] }}: {{ item.noteValue }}</span>
+            <span>{{ t('dashboard_ui.remaining') }}: {{ `${item.remaining} ${item.unit}` }}</span>
+            <span>{{ noteText[item.note] ?? item.note }}: {{ item.noteValue }}</span>
           </p>
         </div>
 
-        <LazyVButton variant="secondary" size="sm" block>{{ actionText[item.action] }}</LazyVButton>
+        <LazyVButton variant="secondary" size="sm" block>{{ actionText[item.action] ?? item.action }}</LazyVButton>
       </li>
     </ul>
   </VPanel>
@@ -56,26 +56,27 @@
 <script lang="ts" setup>
 import type { LowStockItem, StockStatus, Tone } from "~/types/admin/dashboard";
 
-const statusText: Record<string, string> = {
-  critical: "Critical reserve",
-  depleting: "Depleting",
-  scheduled: "Scheduled replenish",
-};
+const { t } = useI18n();
 
-const noteText: Record<string, string> = {
-  lead: "Supplier lead",
-  run: "Supplier run",
-  edi: "EDI line",
-  priority: "Service priority",
-};
+const statusText = computed<Record<string, string>>(() => ({
+  critical: t("dashboard_ui.critical_reserve"),
+  depleting: t("dashboard_ui.depleted"),
+  scheduled: t("coupons_ui.tab_scheduled"),
+}));
 
-const actionText: Record<string, string> = {
-  restockMachines: "Restock machines",
-  restockToner: "Restock toner and ink",
-  confirmEdi: "Confirm EDI line",
-  emergencySpares: "Emergency spares order",
-};
+const noteText = computed<Record<string, string>>(() => ({
+  lead: t("dashboard_ui.note_lead"),
+  run: t("dashboard_ui.note_burn"),
+  edi: "EDI",
+  priority: t("orders_ui.priority_field"),
+}));
 
+const actionText = computed<Record<string, string>>(() => ({
+  restockMachines: t("btn.order_stock"),
+  restockToner: t("btn.order_stock"),
+  confirmEdi: t("common_ui.confirm_action"),
+  emergencySpares: t("btn.expedite_delivery"),
+}));
 
 defineProps<{ items?: LowStockItem[] | null }>();
 

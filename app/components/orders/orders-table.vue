@@ -4,14 +4,14 @@
     <div class="hidden overflow-x-auto lg:block">
       <table class="w-full min-w-[960px] text-sm">
         <caption class="sr-only">
-          Orders
+          {{ $t('orders_ui.title') }}
         </caption>
         <thead>
           <tr class="border-y border-line bg-ink">
             <th scope="col" class="w-10 px-4 py-3">
               <LazyVCheckboxImput
                 name="selectAll"
-                label="Select all orders on this page"
+                :label="$t('orders_ui.select_all_page')"
                 hide-label
                 size="sm"
                 :model-value="allSelected"
@@ -21,25 +21,25 @@
               />
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Order ID
+              {{ $t('orders_ui.col_order_id') }}
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Timestamp (UTC)
+              {{ $t('orders_ui.col_timestamp') }}
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Customer &amp; account type
+              {{ $t('orders_ui.col_customer_type') }}
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Items ordered
+              {{ $t('orders_ui.col_items') }}
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Payment
+              {{ $t('orders_ui.col_payment') }}
             </th>
             <th scope="col" class="label-caps px-3 py-3 text-start font-normal">
-              Status
+              {{ $t('orders_ui.col_status') }}
             </th>
             <th scope="col" class="px-4 py-3">
-              <span class="sr-only">Actions</span>
+              <span class="sr-only">{{ $t('orders_ui.col_actions') }}</span>
             </th>
           </tr>
         </thead>
@@ -173,7 +173,7 @@
                 size="sm"
                 icon="lucide:eye"
                 @click="emit('inspect', row)"
-                >Inspect<span class="sr-only"> {{ row.id }}</span></LazyVButton
+                >{{ $t('btn.view') }}<span class="sr-only"> {{ row.id }}</span></LazyVButton
               >
             </td>
           </tr>
@@ -259,7 +259,7 @@
             size="sm"
             icon="lucide:eye"
             @click="emit('inspect', row)"
-            >Inspect</LazyVButton
+            >{{ $t('btn.view') }}</LazyVButton
           >
         </div>
       </li>

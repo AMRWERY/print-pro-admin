@@ -1,6 +1,6 @@
 <template>
   <LazyVPanel
-    title="Items in this order"
+    :title="$t('orders_ui.line_items')"
     :subtitle="`${count} ${count === 1 ? 'unit' : 'units'} across ${lines.length} ${lines.length === 1 ? 'batch' : 'batches'}`"
     icon="lucide:package"
   >
@@ -27,7 +27,7 @@
         <p
           class="col-start-2 font-mono text-sm font-semibold tabular-nums sm:col-start-auto sm:text-end"
         >
-          <span class="label-caps block sm:sr-only">Total</span>
+          <span class="label-caps block sm:sr-only">{{ $t('orders_ui.total_amount') }}</span>
           {{ currency(line.total, cents) }}
         </p>
       </li>
@@ -37,15 +37,15 @@
       class="mt-4 space-y-1.5 rounded-card border border-line bg-ink p-4 font-mono text-xs"
     >
       <div class="flex justify-between gap-4">
-        <dt class="text-mute">Subtotal</dt>
+        <dt class="text-mute">{{ $t('orders_ui.subtotal') }}</dt>
         <dd class="tabular-nums">{{ currency(pricing.subtotal, cents) }}</dd>
       </div>
       <div class="flex justify-between gap-4">
-        <dt class="text-mute">Testing & setup fee</dt>
+        <dt class="text-mute">Testing &amp; setup fee</dt>
         <dd class="tabular-nums">{{ currency(pricing.setupFee, cents) }}</dd>
       </div>
       <div class="flex justify-between gap-4">
-        <dt class="text-mute">Insured courier delivery</dt>
+        <dt class="text-mute">{{ $t('orders_ui.shipping_fee') }}</dt>
         <dd class="tabular-nums">{{ currency(pricing.courier, cents) }}</dd>
       </div>
       <div
@@ -60,7 +60,7 @@
         <dd class="tabular-nums">−{{ currency(pricing.discount, cents) }}</dd>
       </div>
       <div class="flex justify-between gap-4">
-        <dt class="text-mute">Value added tax (19%)</dt>
+        <dt class="text-mute">{{ $t('orders_ui.vat') }}</dt>
         <dd class="tabular-nums">{{ currency(pricing.vat, cents) }}</dd>
       </div>
     </dl>
@@ -70,7 +70,7 @@
     >
       <div>
         <p class="font-display text-base font-bold">
-          Total order value
+          {{ $t('orders_ui.total_amount') }}
         </p>
         <p class="font-mono text-2xs text-success">{{ deliveryNote }}</p>
       </div>

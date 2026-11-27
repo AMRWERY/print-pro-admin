@@ -1,12 +1,12 @@
 <template>
   <div class="space-y-5">
     <LazyVPageHeader
-      title="System Parameters & Configuration"
-      description="Store identity, money, commerce rules, security and integrations. Edit as many sections as you need, then save them together."
-      :breadcrumb="[{ label: 'Dashboard', to: '/' }, { label: 'Settings' }]"
+      :title="$t('settings_ui.title')"
+      :description="$t('settings_ui.description')"
+      :breadcrumb="[{ label: $t('nav.dashboard'), to: '/' }, { label: $t('nav.settings') }]"
     >
       <template #actions>
-        <LazyVMenu label="Export settings">
+        <LazyVMenu :label="$t('common_ui.export_settings')">
           <template #trigger="{ attrs, toggle }">
             <LazyVButton
               v-bind="attrs"
@@ -15,7 +15,7 @@
               icon-end="lucide:chevron-down"
               :disabled="!data"
               @click="toggle"
-              >Export settings</LazyVButton
+              >{{ $t('common_ui.export_settings') }}</LazyVButton
             >
           </template>
           <button
@@ -25,7 +25,7 @@
             @click="exportSettings('pdf')"
           >
             <Icon name="lucide:file-text" size="16" aria-hidden="true" /> PDF ·
-            saved settings
+            {{ $t('common_ui.saved') }}
           </button>
           <button
             type="button"
@@ -34,7 +34,7 @@
             @click="exportSettings('excel')"
           >
             <Icon name="lucide:file-spreadsheet" size="16" aria-hidden="true" />
-            Excel · saved settings
+            Excel · {{ $t('common_ui.saved') }}
           </button>
         </LazyVMenu>
       </template>
@@ -42,7 +42,7 @@
 
     <LazyVErrorBanner
       v-if="error && !form"
-      message="The settings could not be loaded. Check your connection and try again."
+      :message="$t('common_ui.connection_error')"
       @retry="() => refresh()"
     />
 
@@ -83,7 +83,7 @@
         <p class="meta flex flex-wrap items-center gap-x-3 gap-y-1">
           <span class="inline-flex items-center gap-1.5">
             <Icon name="lucide:history" size="14" aria-hidden="true" />
-            Last saved {{ savedLabel }} by {{ data?.updatedBy }}
+            {{ $t('settings_ui.last_saved_by', { time: savedLabel, user: data?.updatedBy }) }}
           </span>
         </p>
 
@@ -119,10 +119,11 @@
                 aria-hidden="true"
               />
               <span>
-                Unsaved changes in
-                <strong>{{ changedKeys.length }}</strong>
-                section{{ changedKeys.length === 1 ? "" : "s" }}:
-                <span class="text-mute">{{ changedNames }}</span>
+                {{ $t('settings_ui.unsaved_changes_msg', {
+                  count: changedKeys.length,
+                  s: changedKeys.length === 1 ? '' : 's',
+                  names: changedNames
+                }) }}
               </span>
             </p>
             <div class="flex items-center gap-2">
@@ -131,11 +132,11 @@
                 icon="lucide:undo-2"
                 :disabled="saving"
                 @click="discard"
-                >Discard</LazyVButton
+                >{{ $t('btn.discard') }}</LazyVButton
               >
 
               <LazyVButton type="submit" icon="lucide:save" :loading="saving"
-                >Save &amp; apply</LazyVButton
+                >{{ $t('settings_ui.save_apply') }}</LazyVButton
               >
             </div>
           </div>
@@ -146,8 +147,8 @@
     <!-- Rotate secret -->
     <LazyVDialog
       v-model:open="rotateOpen"
-      title="Rotate the webhook signing secret?"
-      description="The old secret stops working at once."
+      :title="$t('settings_ui.rotate_secret_title')"
+      :description="$t('settings_ui.rotate_secret_desc')"
     >
       <p class="callout">
         <Icon
@@ -156,22 +157,21 @@
           class="bullet-icon"
           aria-hidden="true"
         />
-        Receivers that still verify with the old secret will reject our events
-        until you give them the new one. Your other unsaved edits are kept.
+        {{ $t('settings_ui.rotate_secret_body') }}
       </p>
       <template #footer>
         <LazyVButton
           variant="secondary"
           :disabled="rotating"
           @click="rotateOpen = false"
-          >Cancel</LazyVButton
+          >{{ $t('btn.cancel') }}</LazyVButton
         >
 
         <LazyVButton
           :loading="rotating"
           icon="lucide:refresh-cw"
           @click="rotateSecret"
-          >Rotate secret</LazyVButton
+          >{{ $t('settings_ui.rotate_secret_btn') }}</LazyVButton
         >
       </template>
     </LazyVDialog>
@@ -186,6 +186,7 @@ import type {
 } from "~/types/admin/settings";
 
 const toast = useToast();
+const { t } = useI18n();
 
 // The page renders at once and shows a skeleton until the settings arrive.
 const store = useSettingsStore();
@@ -250,8 +251,8 @@ const save = async () => {
   if (!form.value || saving.value) return;
   const { valid } = await validate();
   if (!valid) {
-    toast.error("Some values need fixing", {
-      description: "The first problem is highlighted.",
+    toast.error(t('settings_ui.toast_validation_error'), {
+      description: t('settings_ui.toast_validation_error_desc'),
     });
     await focusFirstError();
     return;
@@ -261,12 +262,12 @@ const save = async () => {
     const res = await store.save(form.value);
     form.value = clone(res.settings);
     resetForm();
-    toast.success("Settings saved", {
-      description: "The new values are live across the platform.",
+    toast.success(t('settings_ui.toast_saved'), {
+      description: t('settings_ui.toast_saved_desc'),
     });
   } catch {
-    toast.error("Couldn't save the settings", {
-      description: "Nothing was changed. Check the values and try again.",
+    toast.error(t('settings_ui.toast_save_error'), {
+      description: t('common_ui.try_again'),
     });
   } finally {
     saving.value = false;
@@ -277,7 +278,7 @@ const discard = () => {
   if (!data.value) return;
   form.value = clone(data.value.settings);
   resetForm();
-  toast.info("Changes discarded");
+  toast.info(t('settings_ui.toast_discarded'));
 };
 
 // --- Webhook secret: rotating doesn't touch the other edits ---
@@ -288,12 +289,12 @@ const rotateSecret = async () => {
   try {
     const res = await store.rotateSecret();
     rotateOpen.value = false;
-    toast.success("Signing secret rotated", {
+    toast.success(t('settings_ui.toast_secret_rotated'), {
       description: `The new secret ends in ${res.secretLast4}.`,
     });
   } catch {
-    toast.error("Couldn't rotate the secret", {
-      description: "The old secret is still in use. Try again.",
+    toast.error(t('settings_ui.toast_secret_error'), {
+      description: t('settings_ui.toast_secret_error_desc'),
     });
   } finally {
     rotating.value = false;
@@ -343,7 +344,7 @@ onBeforeUnmount(() => observer?.disconnect());
 onBeforeRouteLeave(() => {
   if (!dirty.value) return true;
   return window.confirm(
-    "You have unsaved changes. Leave this page and discard them?",
+    t('settings_ui.leave_confirm'),
   );
 });
 useEventListener("beforeunload", (e: BeforeUnloadEvent) => {
@@ -390,8 +391,8 @@ const exportSettings = async (format: "pdf" | "excel") => {
     });
     toast.success("Settings exported");
   } catch {
-    toast.error("Couldn't create the file", {
-      description: "Try again in a moment.",
+    toast.error(t('settings_ui.toast_export_error'), {
+      description: t('common_ui.try_again'),
     });
   }
 };
@@ -401,8 +402,8 @@ definePageMeta({
 });
 
 useSeoMeta({
-  title: "Settings",
-  description: "Store, finance, commerce, security and integration settings.",
+  title: () => t('settings_ui.seo_title'),
+  description: () => t('settings_ui.seo_description'),
 });
 </script>
 

@@ -1,6 +1,6 @@
 <template>
   <LazyVPanel
-    title="Shipment tracking"
+    :title="$t('orders_ui.shipment_title')"
     icon="lucide:truck"
   >
     <template #actions>
@@ -13,57 +13,57 @@
       <div class="space-y-3 rounded-card border border-line bg-ink p-4">
         <dl class="space-y-3 text-sm">
           <div>
-            <dt class="label-caps">Carrier logistics</dt>
+            <dt class="label-caps">{{ $t('orders_ui.shipment_carrier') }}</dt>
             <dd class="font-medium">{{ shipment.carrier }}</dd>
           </div>
           <div>
-            <dt class="label-caps">Tracking number</dt>
+            <dt class="label-caps">{{ $t('orders_ui.shipment_waybill') }}</dt>
             <dd class="flex items-center gap-2 font-mono text-xs" dir="ltr">
               {{ shipment.waybill }}
               <LazyVButton
                 variant="icon"
                 size="sm"
                 icon="lucide:copy"
-                aria-label="Copy tracking number"
+                :aria-label="$t('orders_ui.shipment_copy_aria')"
                 @click="copy"
               />
             </dd>
           </div>
           <div>
-            <dt class="label-caps">Dispatch origin</dt>
+            <dt class="label-caps">{{ $t('orders_ui.shipment_origin') }}</dt>
             <dd>{{ shipment.origin }}</dd>
           </div>
           <div>
-            <dt class="label-caps">Delivery address</dt>
+            <dt class="label-caps">{{ $t('orders_ui.shipment_destination') }}</dt>
             <dd>{{ shipment.destination }}</dd>
           </div>
         </dl>
       </div>
 
       <div class="space-y-3 rounded-card border border-line bg-ink p-4">
-        <p class="label-caps">Parcel details</p>
+        <p class="label-caps">{{ $t('orders_ui.shipment_parcel_details') }}</p>
         <dl class="grid grid-cols-3 gap-2 text-center">
           <div class="rounded-control border border-line bg-surface p-2">
-            <dt class="label-caps">Parcels</dt>
+            <dt class="label-caps">{{ $t('orders_ui.shipment_parcels') }}</dt>
             <dd class="font-mono text-sm font-semibold">
               {{ shipment.parcel.parcels }}
             </dd>
           </div>
           <div class="rounded-control border border-line bg-surface p-2">
-            <dt class="label-caps">Weight</dt>
+            <dt class="label-caps">{{ $t('orders_ui.shipment_weight') }}</dt>
             <dd class="font-mono text-sm font-semibold">
               {{ shipment.parcel.weight }}
             </dd>
           </div>
           <div class="rounded-control border border-line bg-surface p-2">
-            <dt class="label-caps">Signature</dt>
+            <dt class="label-caps">{{ $t('orders_ui.shipment_signature') }}</dt>
             <dd class="font-mono text-sm font-semibold">
               {{ shipment.parcel.signature }}
             </dd>
           </div>
         </dl>
         <div>
-          <p class="label-caps mb-1">Courier progress over the last 24 hours</p>
+          <p class="label-caps mb-1">{{ $t('orders_ui.shipment_progress_label') }}</p>
 
           <dashboard-sparkline :values="shipment.trace" />
         </div>
@@ -78,14 +78,15 @@ import type { OrderDetail } from "~/types/admin/orders";
 const props = defineProps<{ shipment: OrderDetail["shipment"] }>();
 
 const toast = useToast();
+const { t } = useI18n();
 
 const copy = async () => {
   try {
     await navigator.clipboard.writeText(props.shipment.waybill);
-    toast.success("Tracking number copied");
+    toast.success(t('orders_ui.shipment_copied'));
   } catch {
-    toast.error("Couldn't copy", {
-      description: "Select the tracking number and copy it manually.",
+    toast.error(t('orders_ui.shipment_copy_error'), {
+      description: t('orders_ui.shipment_copy_error_desc'),
     });
   }
 };

@@ -17,7 +17,7 @@
       <li>
         <LazyVStatCard
           size="lg"
-          label="Total orders"
+          :label="$t('orders_ui.kpi_total_orders')"
           icon="lucide:archive"
           :value="number(data.kpis.totalOrders)"
           hint="All-time order count"
@@ -34,7 +34,7 @@
       <li>
         <LazyVStatCard
           size="lg"
-          label="Total volume"
+          :label="$t('orders_ui.kpi_total_volume')"
           icon="lucide:landmark"
           :value="currency(data.kpis.volume, { maximumFractionDigits: 0 })"
           hint="Rolling 30-day custodial value"
@@ -45,7 +45,7 @@
         <LazyVStatCard
           size="lg"
           tone="warning"
-          label="Awaiting payment"
+          :label="$t('orders_ui.kpi_awaiting_payment')"
           icon="lucide:lock"
           :value="
             currency(data.kpis.pendingPayment, { maximumFractionDigits: 0 })
@@ -53,7 +53,7 @@
           hint="Orders held until payment arrives"
         >
           <p class="font-mono text-2xs text-mute">
-            {{ number(data.counts.awaitingPayment) }} orders
+            {{ number(data.counts.awaitingPayment) }} {{ $t('orders_ui.title') }}
           </p>
         </LazyVStatCard>
       </li>
@@ -61,14 +61,14 @@
       <li>
         <LazyVStatCard
           size="lg"
-          label="With the courier"
+          :label="$t('orders_ui.kpi_dispatched')"
           icon="lucide:truck"
           hint="High-security courier network"
         >
           <template #value>
             {{ number(data.counts.inTransit) }}
             <LazyVStatusBadge tone="success" icon="lucide:truck"
-              >Active</LazyVStatusBadge
+              >{{ $t('common_ui.active') }}</LazyVStatusBadge
             >
           </template>
         </LazyVStatCard>
@@ -78,7 +78,7 @@
         <LazyVStatCard
           size="lg"
           tone="accent"
-          label="On hold"
+          :label="$t('orders_ui.kpi_testing_packing')"
           icon="lucide:shield-alert"
           hint="Waiting on tests or customer details"
         >

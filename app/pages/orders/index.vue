@@ -1,16 +1,16 @@
 <template>
   <div class="space-y-5">
     <LazyVPageHeader
-      title="Orders"
-      description="Customer orders for printers, photocopiers, ink and toner: payment, testing, packing and delivery."
-      :breadcrumb="[{ label: 'Dashboard', to: '/' }, { label: 'Orders' }]"
+      :title="$t('orders_ui.title')"
+      :description="$t('orders_ui.description')"
+      :breadcrumb="[{ label: $t('nav.dashboard'), to: '/' }, { label: $t('orders_ui.title') }]"
     >
       <template #meta>
         <p class="chip" dir="ltr">STATION ID // CAL-902</p>
       </template>
 
       <template #actions>
-        <LazyVMenu label="Export manifest">
+        <LazyVMenu :label="$t('common_ui.export_manifest')">
           <template #trigger="{ attrs, toggle }">
             <LazyVButton
               v-bind="attrs"
@@ -18,7 +18,7 @@
               icon="lucide:download"
               icon-end="lucide:chevron-down"
               @click="toggle"
-              >Export manifest</LazyVButton
+              >{{ $t('common_ui.export_manifest') }}</LazyVButton
             >
           </template>
           <button
@@ -28,7 +28,7 @@
             @click="exportRows(rows, 'pdf')"
           >
             <Icon name="lucide:file-text" size="16" aria-hidden="true" />
-            PDF · this page
+            {{ $t('common_ui.export_pdf') }}
           </button>
           <button
             type="button"
@@ -37,19 +37,19 @@
             @click="exportRows(rows, 'excel')"
           >
             <Icon name="lucide:file-spreadsheet" size="16" aria-hidden="true" />
-            Excel · this page
+            {{ $t('common_ui.export_excel') }}
           </button>
         </LazyVMenu>
 
         <LazyVButton icon="lucide:circle-plus" @click="createOpen = true"
-          >Create manual order</LazyVButton
+          >{{ $t('btn.create_manual_order') }}</LazyVButton
         >
       </template>
     </LazyVPageHeader>
 
     <orders-kpis :data="data" />
 
-    <section class="card" aria-label="Orders">
+    <section class="card" :aria-label="$t('orders_ui.title')">
       <div class="space-y-4 p-4 sm:p-5">
         <orders-toolbar
           v-model:q="filters.q"
@@ -68,14 +68,14 @@
         <div v-if="error" class="p-5">
           <LazyVEmptyState
             icon="lucide:triangle-alert"
-            title="Ledger sync failed"
-            description="The orders could not be loaded. Your filters are kept, so retrying picks up where you left off."
+            :title="$t('orders_ui.sync_failed_title')"
+            :description="$t('orders_ui.sync_failed_desc')"
             eyebrow="LEDGER :: SYNC_ERROR"
             tag="OFFLINE"
             tag-tone="accent"
           >
             <LazyVButton icon="lucide:refresh-cw" @click="() => refresh()"
-              >Retry sync</LazyVButton
+              >{{ $t('btn.retry_sync') }}</LazyVButton
             >
           </LazyVEmptyState>
         </div>
@@ -86,13 +86,13 @@
           class="p-5"
         >
           <LazyVEmptyState
-            title="No orders match these filters"
-            description="Try a different order ID, widen the date range or clear the stage and tier filters."
+            :title="$t('orders_ui.empty_filtered_title')"
+            :description="$t('orders_ui.empty_filtered_desc')"
             eyebrow="QUERY :: NO_RESULTS"
             tag="0 RESULTS"
           >
             <LazyVButton variant="secondary" @click="resetFilters"
-              >Clear all filters</LazyVButton
+              >{{ $t('common_ui.clear_all_filters') }}</LazyVButton
             >
           </LazyVEmptyState>
         </div>
@@ -102,8 +102,8 @@
           <LazyVEmptyState
             bare
             icon="lucide:receipt-text"
-            title="No orders yet "
-            description="New orders and their payment status appear here as soon as they are placed."
+            :title="$t('orders_ui.empty_ledger_title')"
+            :description="$t('orders_ui.empty_ledger_desc')"
           />
         </div>
 
@@ -136,7 +136,7 @@
           :total="data?.total ?? 0"
           :per-page-options="[10, 25, 50]"
           show-per-page
-          item-label="orders"
+          :item-label="$t('orders_ui.title')"
           scroll-to="#ledger"
         />
       </div>
@@ -167,14 +167,14 @@
         size="sm"
         icon="lucide:file-text"
         @click="exportRows(selectedRows, 'pdf')"
-        >Export PDF</LazyVButton
+        >{{ $t('btn.export') }} PDF</LazyVButton
       >
       <LazyVButton
         size="sm"
         variant="secondary"
         icon="lucide:file-spreadsheet"
         @click="exportRows(selectedRows, 'excel')"
-        >Export Excel</LazyVButton
+        >{{ $t('btn.export') }} Excel</LazyVButton
       >
     </LazyVBulkBar>
 
@@ -199,6 +199,7 @@ import type {
   OrderStage,
 } from "~/types/admin/orders";
 
+const { t } = useI18n();
 const toast = useToast();
 
 const filters = reactive({
@@ -340,7 +341,7 @@ definePageMeta({
 });
 
 useSeoMeta({
-  title: "Orders",
-  description: "Customer orders for printers, photocopiers, ink and toner.",
+  title: () => t("orders_ui.seo_title"),
+  description: () => t("orders_ui.seo_description"),
 });
 </script>
