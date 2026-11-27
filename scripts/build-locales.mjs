@@ -1,4 +1,5 @@
 import { writeFileSync } from "node:fs";
+import { baseCompile } from "@intlify/message-compiler";
 
 const en = {
   common_ui: {
@@ -765,7 +766,7 @@ const en = {
     signin_seo_title: "PrintPro — Admin Sign In",
     signin_seo_description: "Sign in to the PrintPro administration portal.",
     email_label: "Email",
-    email_placeholder: "name@company.com",
+    email_placeholder: "name{'@'}company.com",
     password_label: "Password",
     remember_device: "Remember this device",
     forgot_password: "Forgot password?",
@@ -796,7 +797,7 @@ const en = {
     req_upper: "Uppercase letter (A-Z)",
     req_lower: "Lowercase letter (a-z)",
     req_number: "At least one number (0-9)",
-    req_symbol: "Special character (!@#$%^&*)",
+    req_symbol: "Special character (!{'@'}#$%^&*)",
     invalid_credentials: "That email and password don't match. Check them and try again, or reset your password.",
     too_many_attempts: "Too many attempts. Wait a moment before trying again.",
     account_locked: "Account temporarily locked for security. Please try again later.",
@@ -1578,7 +1579,7 @@ const ar = {
     signin_seo_title: "برينت برو — تسجيل دخول الإدارة",
     signin_seo_description: "تسجيل الدخول إلى لوحة إدارة نظام برينت برو.",
     email_label: "البريد الإلكتروني",
-    email_placeholder: "name@company.com",
+    email_placeholder: "name{'@'}company.com",
     password_label: "كلمة المرور",
     remember_device: "تذكر هذا الجهاز",
     forgot_password: "نسيت كلمة المرور؟",
@@ -1609,7 +1610,7 @@ const ar = {
     req_upper: "حرف كبير واحد على الأقل (A-Z)",
     req_lower: "حرف صغير واحد على الأقل (a-z)",
     req_number: "رقم واحد على الأقل (0-9)",
-    req_symbol: "رمز خاص واحد على الأقل (!@#$%^&*)",
+    req_symbol: "رمز خاص واحد على الأقل (!{'@'}#$%^&*)",
     invalid_credentials: "بيانات الدخول غير متطابقة. تحقق من البريد وكلمة المرور أو قم باستعادتها.",
     too_many_attempts: "محاولات كثيرة خاطئة. يرجى الانتظار قليلاً قبل المحاولة مجدداً.",
     account_locked: "تم تعليق الحساب مؤقتاً لأسباب أمنية. يرجى المحاولة لاحقاً.",
@@ -1625,6 +1626,28 @@ const ar = {
     error_code: "رمز الخطأ {code}"
   }
 };
+
+// vue-i18n reads @ { } | specially inside a message. One bad message stops a whole language from loading,
+// so refuse to write anything until every message parses. (Write a literal @ as {'@'}.)
+const failures = [];
+const check = (lang, node, path) => {
+  for (const [key, value] of Object.entries(node)) {
+    if (value && typeof value === "object") check(lang, value, `${path}${key}.`);
+    else if (typeof value === "string") {
+      try {
+        baseCompile(value, { onError: (e) => { throw e; } });
+      } catch (e) {
+        failures.push(`${lang}: ${path}${key} -> ${String(e.message).split("\n")[0]} [${value.slice(0, 60)}]`);
+      }
+    }
+  }
+};
+check("en", en, "");
+check("ar", ar, "");
+if (failures.length) {
+  console.error(`${failures.length} message(s) are not valid vue-i18n syntax; nothing was written:\n${failures.join("\n")}`);
+  process.exit(1);
+}
 
 writeFileSync("app/config/i18n/locales/en.json", JSON.stringify(en, null, 2), "utf8");
 writeFileSync("app/config/i18n/locales/ar.json", JSON.stringify(ar, null, 2), "utf8");
